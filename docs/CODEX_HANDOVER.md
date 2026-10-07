@@ -190,10 +190,11 @@ Frozen database decisions:
 - Phase 5A - ML Pipeline Foundation: APPROVED / FROZEN
 - Phase 5B - Real Dataset Training and Evaluation: APPROVED / FROZEN
 - Phase 5 - Weather Forecasting Model: COMPLETE / APPROVED / FROZEN
+- Phase 6 - Backend Forecast Integration: COMPLETE
 
-Next planned phase: Phase 6 - Backend Forecast Integration
+Next planned phase: Phase 7 - Suitability Engine
 
-Phase 6 has **not** started yet.
+Phase 7 has **not** started yet.
 
 ## 10. Authentication / RBAC Implementation
 
@@ -420,9 +421,9 @@ These require explicit project-owner approval.
 
 Next planned development phase:
 
-- Phase 6 - Backend Forecast Integration
+- Phase 7 - Suitability Engine
 
-Do not include implementation instructions for Phase 6 in this handover task. Do not start Phase 6.
+Do not start Phase 7 without project-owner approval.
 
 ## Startup Prompt for a New Codex Session
 

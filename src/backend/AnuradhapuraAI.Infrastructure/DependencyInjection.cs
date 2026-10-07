@@ -1,8 +1,10 @@
 using AnuradhapuraAI.Application.Authentication;
 using AnuradhapuraAI.Application.Admin;
+using AnuradhapuraAI.Application.Forecasting;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Admin;
 using AnuradhapuraAI.Infrastructure.Authentication;
+using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +28,24 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IAdminManagementService, AdminManagementService>();
+        services.AddScoped<IForecastService, ForecastService>();
+        services.Configure<ForecastingServiceOptions>(
+            configuration.GetSection(ForecastingServiceOptions.SectionName));
+        services.Configure<WeatherModelFeatureOptions>(
+            configuration.GetSection(WeatherModelFeatureOptions.SectionName));
+        services.AddHttpClient<IWeatherForecastingClient, PythonForecastingClient>((serviceProvider, client) =>
+        {
+            var options = serviceProvider
+                .GetRequiredService<Microsoft.Extensions.Options.IOptions<ForecastingServiceOptions>>()
+                .Value;
+
+            if (Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out var baseUri))
+            {
+                client.BaseAddress = baseUri;
+            }
+
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddSingleton(TimeProvider.System);
 
