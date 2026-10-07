@@ -402,3 +402,27 @@ This document does not:
 - start Phase 7B
 - start Phase 8
 
+## 15. Phase 7B Schema Compatibility Correction
+
+The approved runtime mapping keeps the existing one-row-per-crop-variable design.
+
+`CropEnvironmentalRequirement.MinimumValue` and `CropEnvironmentalRequirement.MaximumValue` represent the optimal/preferred range.
+
+The following metadata is required for runtime scoring:
+
+- `AcceptableMinimumValue`: acceptable/absolute lower boundary, nullable.
+- `AcceptableMaximumValue`: acceptable/absolute upper boundary, nullable.
+- `TimeBasis`: temporal basis of the requirement, nullable.
+- `IsCompatibleWithSevenDayForecast`: explicit permission to use the requirement directly with the 7-day forecast, default `false`.
+
+Supported time-basis labels are:
+
+- `Daily`
+- `SevenDay`
+- `GrowingPeriod`
+- `Seasonal`
+- `Annual`
+
+The engine must not infer compatibility from `Unit` or from the existence of a requirement row. Annual, seasonal, and growing-period rainfall requirements are not automatically converted to seven-day scoring thresholds.
+
+If an acceptable boundary or time basis is missing, the factor is not evaluable. Missing or non-compatible factors are excluded from overall-score calculation and the remaining evaluable factor weights are re-normalized.

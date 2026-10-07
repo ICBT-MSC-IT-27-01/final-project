@@ -80,7 +80,11 @@ public sealed class AdminManagementService(
                     requirement.VariableType,
                     requirement.MinimumValue,
                     requirement.MaximumValue,
+                    requirement.AcceptableMinimumValue,
+                    requirement.AcceptableMaximumValue,
                     requirement.Unit,
+                    requirement.TimeBasis,
+                    requirement.IsCompatibleWithSevenDayForecast,
                     requirement.IsActive)),
             page,
             pageSize,
@@ -95,7 +99,7 @@ public sealed class AdminManagementService(
 
     public async Task<AdminResult<CropRequirementResponse>> CreateCropRequirementAsync(CreateCropRequirementRequest request, CancellationToken cancellationToken = default)
     {
-        var validation = await ValidateRequirementAsync(request.CropId, request.VariableType, request.MinimumValue, request.MaximumValue, excludingId: null, cancellationToken);
+        var validation = await ValidateRequirementAsync(request, excludingId: null, cancellationToken);
         if (validation is not null) return AdminResult<CropRequirementResponse>.Failure(validation);
 
         var requirement = new CropEnvironmentalRequirement
@@ -104,7 +108,11 @@ public sealed class AdminManagementService(
             VariableType = request.VariableType.Trim(),
             MinimumValue = request.MinimumValue,
             MaximumValue = request.MaximumValue,
+            AcceptableMinimumValue = request.AcceptableMinimumValue,
+            AcceptableMaximumValue = request.AcceptableMaximumValue,
             Unit = request.Unit.Trim(),
+            TimeBasis = string.IsNullOrWhiteSpace(request.TimeBasis) ? null : request.TimeBasis.Trim(),
+            IsCompatibleWithSevenDayForecast = request.IsCompatibleWithSevenDayForecast,
             IsActive = true
         };
         dbContext.CropEnvironmentalRequirements.Add(requirement);
@@ -117,14 +125,18 @@ public sealed class AdminManagementService(
     {
         var requirement = await dbContext.CropEnvironmentalRequirements.Include(candidate => candidate.Crop).SingleOrDefaultAsync(candidate => candidate.Id == id, cancellationToken);
         if (requirement is null) return NotFound<CropRequirementResponse>();
-        var validation = await ValidateRequirementAsync(request.CropId, request.VariableType, request.MinimumValue, request.MaximumValue, id, cancellationToken);
+        var validation = await ValidateRequirementAsync(request, id, cancellationToken);
         if (validation is not null) return AdminResult<CropRequirementResponse>.Failure(validation);
 
         requirement.CropId = request.CropId;
         requirement.VariableType = request.VariableType.Trim();
         requirement.MinimumValue = request.MinimumValue;
         requirement.MaximumValue = request.MaximumValue;
+        requirement.AcceptableMinimumValue = request.AcceptableMinimumValue;
+        requirement.AcceptableMaximumValue = request.AcceptableMaximumValue;
         requirement.Unit = request.Unit.Trim();
+        requirement.TimeBasis = string.IsNullOrWhiteSpace(request.TimeBasis) ? null : request.TimeBasis.Trim();
+        requirement.IsCompatibleWithSevenDayForecast = request.IsCompatibleWithSevenDayForecast;
         requirement.IsActive = request.IsActive;
         await dbContext.SaveChangesAsync(cancellationToken);
         await dbContext.Entry(requirement).Reference(item => item.Crop).LoadAsync(cancellationToken);
@@ -373,12 +385,22 @@ public sealed class AdminManagementService(
         return validation is null ? NotFound<AdminValidationResponse>() : AdminResult<AdminValidationResponse>.Success(ToValidationResponse(validation));
     }
 
-    private async Task<string?> ValidateRequirementAsync(int cropId, string variableType, decimal minimum, decimal maximum, int? excludingId, CancellationToken cancellationToken)
+    private async Task<string?> ValidateRequirementAsync(CreateCropRequirementRequest request, int? excludingId, CancellationToken cancellationToken)
     {
-        if (!await dbContext.Crops.AnyAsync(crop => crop.Id == cropId, cancellationToken)) return AdminErrorCodes.InvalidReference;
-        if (!ApprovedVariableTypes.All.Contains(variableType.Trim())) return AdminErrorCodes.InvalidVariableType;
-        if (minimum > maximum) return AdminErrorCodes.InvalidRange;
-        if (await dbContext.CropEnvironmentalRequirements.AnyAsync(item => item.Id != excludingId && item.CropId == cropId && item.VariableType == variableType.Trim(), cancellationToken)) return AdminErrorCodes.Duplicate;
+        var variableType = request.VariableType.Trim();
+        var timeBasis = request.TimeBasis?.Trim();
+        if (!await dbContext.Crops.AnyAsync(crop => crop.Id == request.CropId, cancellationToken)) return AdminErrorCodes.InvalidReference;
+        if (!ApprovedVariableTypes.All.Contains(variableType)) return AdminErrorCodes.InvalidVariableType;
+        if (request.MinimumValue > request.MaximumValue) return AdminErrorCodes.InvalidRange;
+        if (request.AcceptableMinimumValue.HasValue &&
+            request.AcceptableMaximumValue.HasValue &&
+            (request.AcceptableMinimumValue.Value > request.MinimumValue || request.MaximumValue > request.AcceptableMaximumValue!.Value))
+        {
+            return AdminErrorCodes.InvalidRange;
+        }
+
+        if (!string.IsNullOrWhiteSpace(timeBasis) && !ApprovedTimeBases.All.Contains(timeBasis)) return AdminErrorCodes.InvalidTimeBasis;
+        if (await dbContext.CropEnvironmentalRequirements.AnyAsync(item => item.Id != excludingId && item.CropId == request.CropId && item.VariableType == variableType, cancellationToken)) return AdminErrorCodes.Duplicate;
         return null;
     }
 
@@ -409,7 +431,7 @@ public sealed class AdminManagementService(
     }
 
     private static CropResponse ToCropResponse(Crop crop) => new(crop.Id, crop.Name, crop.IsActive);
-    private static CropRequirementResponse ToRequirementResponse(CropEnvironmentalRequirement item) => new(item.Id, item.CropId, item.Crop?.Name ?? string.Empty, item.VariableType, item.MinimumValue, item.MaximumValue, item.Unit, item.IsActive);
+    private static CropRequirementResponse ToRequirementResponse(CropEnvironmentalRequirement item) => new(item.Id, item.CropId, item.Crop?.Name ?? string.Empty, item.VariableType, item.MinimumValue, item.MaximumValue, item.AcceptableMinimumValue, item.AcceptableMaximumValue, item.Unit, item.TimeBasis, item.IsCompatibleWithSevenDayForecast, item.IsActive);
     private static SoilCompatibilityResponse ToSoilResponse(SoilCompatibility item) => new(item.Id, item.CropId, item.Crop?.Name ?? string.Empty, item.SoilType, item.CompatibilityScore, item.IsActive);
     private static SuitabilityConfigurationResponse ToConfigurationResponse(SuitabilityConfiguration item) => new(item.Id, item.ConfigurationType, item.ConfigurationKey, item.Value, item.IsActive, item.UpdatedAt, item.UpdatedByUserId);
     private static AdminUserResponse ToUserResponse(User user) => new(user.Id, user.Name, user.Email, user.Role?.Name ?? string.Empty, user.IsActive, user.CreatedAt);

@@ -20,6 +20,7 @@ public static class AdminErrorCodes
     public const string InvalidConfigurationType = "InvalidConfigurationType";
     public const string InvalidConfigurationKey = "InvalidConfigurationKey";
     public const string InvalidRange = "InvalidRange";
+    public const string InvalidTimeBasis = "InvalidTimeBasis";
     public const string InvalidReference = "InvalidReference";
 }
 
@@ -53,7 +54,11 @@ public sealed record CropRequirementResponse(
     string VariableType,
     decimal MinimumValue,
     decimal MaximumValue,
+    decimal? AcceptableMinimumValue,
+    decimal? AcceptableMaximumValue,
     string Unit,
+    string? TimeBasis,
+    bool IsCompatibleWithSevenDayForecast,
     bool IsActive);
 
 public class CreateCropRequirementRequest
@@ -68,9 +73,18 @@ public class CreateCropRequirementRequest
 
     public decimal MaximumValue { get; set; }
 
+    public decimal? AcceptableMinimumValue { get; set; }
+
+    public decimal? AcceptableMaximumValue { get; set; }
+
     [Required]
     [MaxLength(50)]
     public string Unit { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    public string? TimeBasis { get; set; }
+
+    public bool IsCompatibleWithSevenDayForecast { get; set; }
 }
 
 public sealed class UpdateCropRequirementRequest : CreateCropRequirementRequest

@@ -7,6 +7,7 @@ using AnuradhapuraAI.Infrastructure.Admin;
 using AnuradhapuraAI.Infrastructure.Authentication;
 using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
+using AnuradhapuraAI.Infrastructure.Suitability;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminManagementService, AdminManagementService>();
         services.AddScoped<IForecastService, ForecastService>();
         services.AddScoped<ICropSuitabilityEngine, CropSuitabilityEngine>();
+        services.AddScoped<ISuitabilityConfigurationProvider, SuitabilityConfigurationProvider>();
         services.Configure<ForecastingServiceOptions>(
             configuration.GetSection(ForecastingServiceOptions.SectionName));
         services.Configure<WeatherModelFeatureOptions>(

@@ -34,6 +34,25 @@ It accepts:
 
 It returns factor-level suitability results, evidence coverage, overall score/category where possible, climate-risk indicators where configured, and a human-readable explanation.
 
+## Runtime Configuration Mapping
+
+The runtime database-to-engine mapping is explicit:
+
+- `CropEnvironmentalRequirement.MinimumValue` maps to `SuitabilityRangeRequirement.OptimalMinimum`.
+- `CropEnvironmentalRequirement.MaximumValue` maps to `SuitabilityRangeRequirement.OptimalMaximum`.
+- `CropEnvironmentalRequirement.AcceptableMinimumValue` maps to `SuitabilityRangeRequirement.AcceptableMinimum`.
+- `CropEnvironmentalRequirement.AcceptableMaximumValue` maps to `SuitabilityRangeRequirement.AcceptableMaximum`.
+- `CropEnvironmentalRequirement.TimeBasis` maps to `SuitabilityRangeRequirement.TimeBasis`.
+- `CropEnvironmentalRequirement.IsCompatibleWithSevenDayForecast` maps to `SuitabilityRangeRequirement.IsCompatibleWithSevenDayForecast`.
+
+`MinimumValue` and `MaximumValue` now mean the optimal/preferred range for the crop-variable.
+
+`AcceptableMinimumValue` and `AcceptableMaximumValue` are the acceptable/absolute scoring boundaries used by the piecewise-linear method.
+
+`TimeBasis` is temporal metadata for the requirement. Supported labels are `Daily`, `SevenDay`, `GrowingPeriod`, `Seasonal`, and `Annual`.
+
+`IsCompatibleWithSevenDayForecast` is explicit permission for direct use with the current 7-day forecast scoring method. Its database default is `false`, so existing records do not automatically become seven-day compatible.
+
 ## Forecast Aggregation
 
 Temperature uses the approved Phase 7B aggregation:
@@ -45,6 +64,8 @@ Tmean = (T1 + T2 + ... + T7) / 7
 Humidity uses the 7-day mean only when an approved compatible numeric humidity requirement is supplied.
 
 Rainfall uses the 7-day total only when a supplied requirement explicitly declares compatibility with the 7-day forecast. Annual, seasonal, or growing-period rainfall values are not automatically compared with the 7-day forecast.
+
+Incomplete requirements are excluded from scoring. If either acceptable boundary or the time basis is unavailable, the corresponding factor is treated as not evaluable and the existing missing-factor weight re-normalization behavior applies.
 
 ## Scoring Formula
 

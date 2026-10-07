@@ -120,6 +120,7 @@ public sealed class AdminController(IAdminManagementService adminService) : Cont
         AdminErrorCodes.InvalidConfigurationType => BadRequest(new { message = "Configuration type is invalid." }),
         AdminErrorCodes.InvalidConfigurationKey => BadRequest(new { message = "Configuration key is invalid." }),
         AdminErrorCodes.InvalidRange => BadRequest(new { message = "Minimum value must not exceed maximum value." }),
+        AdminErrorCodes.InvalidTimeBasis => BadRequest(new { message = "Time basis is invalid." }),
         AdminErrorCodes.InvalidReference => BadRequest(new { message = "Referenced record is invalid." }),
         _ => BadRequest(new { message = "Request is invalid." })
     };

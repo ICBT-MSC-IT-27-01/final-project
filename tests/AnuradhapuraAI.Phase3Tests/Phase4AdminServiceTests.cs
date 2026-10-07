@@ -37,6 +37,8 @@ public sealed class Phase4AdminServiceTests
             VariableType = ApprovedVariableTypes.Rainfall,
             MinimumValue = 1,
             MaximumValue = 2,
+            AcceptableMinimumValue = 0,
+            AcceptableMaximumValue = 3,
             Unit = "mm"
         });
         var invalidVariable = await host.AdminService.CreateCropRequirementAsync(new CreateCropRequirementRequest { CropId = 1, VariableType = "Wind", MinimumValue = 1, MaximumValue = 2, Unit = "m/s" });
@@ -47,6 +49,95 @@ public sealed class Phase4AdminServiceTests
         Assert.Equal(AdminErrorCodes.InvalidVariableType, invalidVariable.ErrorCode);
         Assert.Equal(AdminErrorCodes.InvalidRange, invalidRange.ErrorCode);
         Assert.Equal(AdminErrorCodes.Duplicate, duplicate.ErrorCode);
+    }
+
+    [Fact]
+    public async Task CropRequirement_CreateUpdateAndRead_PreservesScoringMetadata()
+    {
+        await using var host = await Phase4AdminServiceTestHost.CreateAsync();
+
+        var create = await host.AdminService.CreateCropRequirementAsync(new CreateCropRequirementRequest
+        {
+            CropId = 1,
+            VariableType = ApprovedVariableTypes.Temperature,
+            MinimumValue = 20,
+            MaximumValue = 30,
+            AcceptableMinimumValue = 10,
+            AcceptableMaximumValue = 40,
+            Unit = "synthetic-test-unit",
+            TimeBasis = ApprovedTimeBases.SevenDay,
+            IsCompatibleWithSevenDayForecast = true
+        });
+        var update = await host.AdminService.UpdateCropRequirementAsync(create.Value!.Id, new UpdateCropRequirementRequest
+        {
+            CropId = 1,
+            VariableType = ApprovedVariableTypes.Temperature,
+            MinimumValue = 21,
+            MaximumValue = 29,
+            AcceptableMinimumValue = 11,
+            AcceptableMaximumValue = 39,
+            Unit = "synthetic-updated-unit",
+            TimeBasis = ApprovedTimeBases.Daily,
+            IsCompatibleWithSevenDayForecast = false,
+            IsActive = true
+        });
+        var read = await host.AdminService.GetCropRequirementAsync(create.Value.Id);
+
+        Assert.True(create.Succeeded);
+        Assert.True(update.Succeeded);
+        Assert.True(read.Succeeded);
+        Assert.Equal(21, read.Value!.MinimumValue);
+        Assert.Equal(29, read.Value.MaximumValue);
+        Assert.Equal(11, read.Value.AcceptableMinimumValue);
+        Assert.Equal(39, read.Value.AcceptableMaximumValue);
+        Assert.Equal("synthetic-updated-unit", read.Value.Unit);
+        Assert.Equal(ApprovedTimeBases.Daily, read.Value.TimeBasis);
+        Assert.False(read.Value.IsCompatibleWithSevenDayForecast);
+    }
+
+    [Fact]
+    public async Task CropRequirement_AllowsIncompleteAcceptableRangeButRejectsInvalidOrderingAndInvalidTimeBasis()
+    {
+        await using var host = await Phase4AdminServiceTestHost.CreateAsync();
+
+        var incomplete = await host.AdminService.CreateCropRequirementAsync(new CreateCropRequirementRequest
+        {
+            CropId = 1,
+            VariableType = ApprovedVariableTypes.Temperature,
+            MinimumValue = 20,
+            MaximumValue = 30,
+            AcceptableMinimumValue = 10,
+            Unit = "synthetic-test-unit",
+            TimeBasis = ApprovedTimeBases.SevenDay
+        });
+        var invalidOrdering = await host.AdminService.CreateCropRequirementAsync(new CreateCropRequirementRequest
+        {
+            CropId = 1,
+            VariableType = ApprovedVariableTypes.Humidity,
+            MinimumValue = 20,
+            MaximumValue = 30,
+            AcceptableMinimumValue = 25,
+            AcceptableMaximumValue = 40,
+            Unit = "synthetic-test-unit",
+            TimeBasis = ApprovedTimeBases.SevenDay
+        });
+        var invalidTimeBasis = await host.AdminService.CreateCropRequirementAsync(new CreateCropRequirementRequest
+        {
+            CropId = 1,
+            VariableType = ApprovedVariableTypes.Rainfall,
+            MinimumValue = 20,
+            MaximumValue = 30,
+            AcceptableMinimumValue = 10,
+            AcceptableMaximumValue = 40,
+            Unit = "synthetic-test-unit",
+            TimeBasis = "Monthly"
+        });
+
+        Assert.True(incomplete.Succeeded);
+        Assert.Equal(10, incomplete.Value!.AcceptableMinimumValue);
+        Assert.Null(incomplete.Value.AcceptableMaximumValue);
+        Assert.Equal(AdminErrorCodes.InvalidRange, invalidOrdering.ErrorCode);
+        Assert.Equal(AdminErrorCodes.InvalidTimeBasis, invalidTimeBasis.ErrorCode);
     }
 
     [Fact]

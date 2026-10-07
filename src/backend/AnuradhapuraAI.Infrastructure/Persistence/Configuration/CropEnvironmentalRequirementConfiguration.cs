@@ -17,6 +17,12 @@ public sealed class CropEnvironmentalRequirementConfiguration : IEntityTypeConfi
             table.HasCheckConstraint(
                 "CK_CropEnvironmentalRequirement_MinimumMaximum",
                 "[MinimumValue] <= [MaximumValue]");
+            table.HasCheckConstraint(
+                "CK_CropEnvironmentalRequirement_TimeBasis",
+                $"[TimeBasis] IS NULL OR {CheckConstraintSql.In(nameof(CropEnvironmentalRequirement.TimeBasis), ApprovedTimeBases.All)}");
+            table.HasCheckConstraint(
+                "CK_CropEnvironmentalRequirement_AcceptableOptimalOrdering",
+                "[AcceptableMinimumValue] IS NULL OR ([AcceptableMinimumValue] <= [MinimumValue] AND [MaximumValue] <= [AcceptableMaximumValue])");
         });
 
         builder.HasKey(requirement => requirement.Id);
@@ -33,8 +39,21 @@ public sealed class CropEnvironmentalRequirementConfiguration : IEntityTypeConfi
             .HasPrecision(10, 2)
             .IsRequired();
 
+        builder.Property(requirement => requirement.AcceptableMinimumValue)
+            .HasPrecision(10, 2);
+
+        builder.Property(requirement => requirement.AcceptableMaximumValue)
+            .HasPrecision(10, 2);
+
         builder.Property(requirement => requirement.Unit)
             .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(requirement => requirement.TimeBasis)
+            .HasMaxLength(50);
+
+        builder.Property(requirement => requirement.IsCompatibleWithSevenDayForecast)
+            .HasDefaultValue(false)
             .IsRequired();
 
         builder.Property(requirement => requirement.IsActive)
