@@ -1,0 +1,287 @@
+{
+  "model_version": "v1",
+  "training_timestamp_utc": "2026-10-03T10:25:41.440798+00:00",
+  "python_version": "3.11.9",
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "tensorflow": "2.21.0",
+    "keras": "3.15.1"
+  },
+  "dataset_path": "..\\..\\docs\\anuradhapura_weather_2010_2025_era5.csv",
+  "dataset_profile": {
+    "row_count": 5844,
+    "date_range_start": "2010-01-01",
+    "date_range_end": "2025-12-31",
+    "columns": [
+      "Date",
+      "Rainfall",
+      "Temperature",
+      "Humidity"
+    ],
+    "duplicate_dates": 0,
+    "missing_values": {
+      "Date": 0,
+      "Rainfall": 0,
+      "Temperature": 0,
+      "Humidity": 0
+    },
+    "non_numeric_values": {
+      "Rainfall": 0,
+      "Temperature": 0,
+      "Humidity": 0
+    },
+    "suspicious_values": {
+      "Rainfall": 0,
+      "Temperature": 0,
+      "Humidity": 0
+    },
+    "long_missing_periods": {
+      "Rainfall": [],
+      "Temperature": [],
+      "Humidity": []
+    },
+    "descriptive_statistics": {
+      "Rainfall": {
+        "count": 5844.0,
+        "mean": 3.8174024640657085,
+        "std": 8.839817230872825,
+        "min": 0.0,
+        "25%": 0.1,
+        "50%": 0.9,
+        "75%": 3.5,
+        "max": 171.8
+      },
+      "Temperature": {
+        "count": 5844.0,
+        "mean": 27.211430527036278,
+        "std": 1.5881210388882527,
+        "min": 21.2,
+        "25%": 26.0,
+        "50%": 27.5,
+        "75%": 28.5,
+        "max": 31.3
+      },
+      "Humidity": {
+        "count": 5844.0,
+        "mean": 79.82768651608487,
+        "std": 6.579253670995737,
+        "min": 57.0,
+        "25%": 75.0,
+        "50%": 79.0,
+        "75%": 84.0,
+        "max": 99.0
+      }
+    }
+  },
+  "split_metadata": {
+    "train": {
+      "count": 4383,
+      "start": "2010-01-01",
+      "end": "2021-12-31"
+    },
+    "validation": {
+      "count": 730,
+      "start": "2022-01-01",
+      "end": "2023-12-31"
+    },
+    "test": {
+      "count": 731,
+      "start": "2024-01-01",
+      "end": "2025-12-31"
+    }
+  },
+  "config": {
+    "dataset_path": "..\\..\\docs\\anuradhapura_weather_2010_2025_era5.csv",
+    "output_dir": "artifacts\\v1_era5_2010_2025",
+    "model_version": "v1",
+    "date_column": "Date",
+    "feature_columns": [
+      "Rainfall",
+      "Temperature",
+      "Humidity"
+    ],
+    "lookback_days": 30,
+    "forecast_horizon_days": 7,
+    "max_interpolation_gap_days": 3,
+    "split": {
+      "train_ratio": 0.7,
+      "validation_ratio": 0.15,
+      "test_ratio": 0.15
+    },
+    "train_start": "2010-01-01",
+    "train_end": "2021-12-31",
+    "validation_start": "2022-01-01",
+    "validation_end": "2023-12-31",
+    "test_start": "2024-01-01",
+    "test_end": "2025-12-31",
+    "lstm_units": 64,
+    "lstm_layers": 1,
+    "dropout": 0.2,
+    "batch_size": 32,
+    "epochs": 100,
+    "learning_rate": 0.001,
+    "early_stopping_patience": 10,
+    "random_seed": 42
+  },
+  "preprocessing_metadata": {
+    "duplicate_dates_removed": 0,
+    "invalid_values_marked_missing": {
+      "Rainfall": 0,
+      "Temperature": 0,
+      "Humidity": 0
+    },
+    "missing_before_interpolation": {
+      "Rainfall": 0,
+      "Temperature": 0,
+      "Humidity": 0
+    },
+    "missing_after_interpolation": {
+      "Rainfall": 0,
+      "Temperature": 0,
+      "Humidity": 0
+    },
+    "max_interpolation_gap_days": 3,
+    "outlier_policy": "Genuine extremes are preserved; only impossible or malformed values are marked missing.",
+    "date_continuity": {
+      "expected_count": 5844,
+      "present_count": 5844,
+      "missing_count": 0,
+      "unexpected_count": 0,
+      "missing_dates": [],
+      "unexpected_dates": [],
+      "is_continuous": true
+    }
+  },
+  "baseline_metrics": {
+    "overall_mae": 3.583540229885058,
+    "overall_rmse": 8.737924137150712,
+    "per_variable": {
+      "Rainfall": {
+        "mae": 5.493004926108374,
+        "rmse": 13.91569776673004
+      },
+      "Temperature": {
+        "mae": 0.7929852216748768,
+        "rmse": 1.0404716626550563
+      },
+      "Humidity": {
+        "mae": 4.464630541871921,
+        "rmse": 5.858731011408479
+      }
+    },
+    "per_horizon_day": {
+      "day_1": {
+        "mae": 2.415954022988506,
+        "rmse": 6.280932283095209
+      },
+      "day_2": {
+        "mae": 3.1782988505747127,
+        "rmse": 8.018940222925382
+      },
+      "day_3": {
+        "mae": 3.58951724137931,
+        "rmse": 8.741196951100635
+      },
+      "day_4": {
+        "mae": 3.8230804597701153,
+        "rmse": 9.120287351794916
+      },
+      "day_5": {
+        "mae": 3.928183908045977,
+        "rmse": 9.322543188114114
+      },
+      "day_6": {
+        "mae": 4.034114942528736,
+        "rmse": 9.54402262235856
+      },
+      "day_7": {
+        "mae": 4.115632183908046,
+        "rmse": 9.649837828427094
+      }
+    }
+  },
+  "lstm_metrics": {
+    "overall_mae": 3.1633121592043656,
+    "overall_rmse": 6.729411662966595,
+    "per_variable": {
+      "Rainfall": {
+        "mae": 4.904241988486377,
+        "rmse": 10.546710224459384
+      },
+      "Temperature": {
+        "mae": 0.7071271240535042,
+        "rmse": 0.8912331819204669
+      },
+      "Humidity": {
+        "mae": 3.878567365073218,
+        "rmse": 4.881347236751383
+      }
+    },
+    "per_horizon_day": {
+      "day_1": {
+        "mae": 2.5305539972122073,
+        "rmse": 5.882060870209129
+      },
+      "day_2": {
+        "mae": 2.9803483770797996,
+        "rmse": 6.523038199672164
+      },
+      "day_3": {
+        "mae": 3.177950404805784,
+        "rmse": 6.765400723938841
+      },
+      "day_4": {
+        "mae": 3.2699904071466848,
+        "rmse": 6.882494623750265
+      },
+      "day_5": {
+        "mae": 3.343609954910717,
+        "rmse": 6.948419903385633
+      },
+      "day_6": {
+        "mae": 3.4000618144123034,
+        "rmse": 6.993242802746196
+      },
+      "day_7": {
+        "mae": 3.440670158863068,
+        "rmse": 7.037104420080589
+      }
+    }
+  },
+  "artifact_paths": {
+    "model": "artifacts\\v1_era5_2010_2025\\v1.keras",
+    "scaler": "artifacts\\v1_era5_2010_2025\\v1_scaler.joblib",
+    "metadata": "artifacts\\v1_era5_2010_2025\\v1_metadata.json",
+    "evaluation": "artifacts\\v1_era5_2010_2025\\v1_evaluation.json",
+    "training_history": "artifacts\\v1_era5_2010_2025\\v1_training_history.json",
+    "sample_forecast": "artifacts\\v1_era5_2010_2025\\v1_sample_forecast.json"
+  },
+  "sequence_metadata": {
+    "train_sequence_count": 4347,
+    "validation_sequence_count": 724,
+    "test_sequence_count": 725,
+    "train_target_date_range": {
+      "first": "2010-01-31",
+      "last": "2021-12-31"
+    },
+    "validation_target_date_range": {
+      "first": "2022-01-01",
+      "last": "2023-12-31"
+    },
+    "test_target_date_range": {
+      "first": "2024-01-01",
+      "last": "2025-12-31"
+    },
+    "input_shape": [
+      30,
+      3
+    ],
+    "output_shape": [
+      7,
+      3
+    ],
+    "boundary_context_rule": "Inputs may include immediately preceding historical rows; targets remain inside the approved split date range."
+  }
+}

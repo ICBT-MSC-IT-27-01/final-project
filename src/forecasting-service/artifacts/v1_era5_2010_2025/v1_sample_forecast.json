@@ -1,0 +1,93 @@
+[
+  {
+    "target_date": "2024-01-01",
+    "predicted": {
+      "Rainfall": 6.212566375732422,
+      "Temperature": 25.934080123901367,
+      "Humidity": 86.8476333618164
+    },
+    "actual": {
+      "Rainfall": 9.1,
+      "Temperature": 24.9,
+      "Humidity": 92.0
+    }
+  },
+  {
+    "target_date": "2024-01-02",
+    "predicted": {
+      "Rainfall": 6.663206100463867,
+      "Temperature": 25.834197998046875,
+      "Humidity": 86.97872161865234
+    },
+    "actual": {
+      "Rainfall": 2.4,
+      "Temperature": 25.4,
+      "Humidity": 90.0
+    }
+  },
+  {
+    "target_date": "2024-01-03",
+    "predicted": {
+      "Rainfall": 6.7938385009765625,
+      "Temperature": 25.740509033203125,
+      "Humidity": 86.96964263916016
+    },
+    "actual": {
+      "Rainfall": 0.4,
+      "Temperature": 26.300000000000004,
+      "Humidity": 83.0
+    }
+  },
+  {
+    "target_date": "2024-01-04",
+    "predicted": {
+      "Rainfall": 6.549440383911133,
+      "Temperature": 25.711442947387695,
+      "Humidity": 86.98966217041016
+    },
+    "actual": {
+      "Rainfall": 0.6,
+      "Temperature": 26.5,
+      "Humidity": 83.0
+    }
+  },
+  {
+    "target_date": "2024-01-05",
+    "predicted": {
+      "Rainfall": 6.2817182540893555,
+      "Temperature": 25.665098190307617,
+      "Humidity": 86.87380981445312
+    },
+    "actual": {
+      "Rainfall": 2.4,
+      "Temperature": 26.9,
+      "Humidity": 83.0
+    }
+  },
+  {
+    "target_date": "2024-01-06",
+    "predicted": {
+      "Rainfall": 6.48171329498291,
+      "Temperature": 25.654428482055664,
+      "Humidity": 86.8219985961914
+    },
+    "actual": {
+      "Rainfall": 7.0,
+      "Temperature": 26.5,
+      "Humidity": 88.0
+    }
+  },
+  {
+    "target_date": "2024-01-07",
+    "predicted": {
+      "Rainfall": 6.284333229064941,
+      "Temperature": 25.611228942871094,
+      "Humidity": 86.852294921875
+    },
+    "actual": {
+      "Rainfall": 4.4,
+      "Temperature": 26.4,
+      "Humidity": 90.0
+    }
+  }
+]
