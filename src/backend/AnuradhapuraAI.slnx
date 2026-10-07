@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../../tests/AnuradhapuraAI.Phase3Tests/AnuradhapuraAI.Phase3Tests.csproj" />
+  <Project Path="AnuradhapuraAI.Api/AnuradhapuraAI.Api.csproj" />
+  <Project Path="AnuradhapuraAI.Application/AnuradhapuraAI.Application.csproj" />
+  <Project Path="AnuradhapuraAI.Domain/AnuradhapuraAI.Domain.csproj" />
+  <Project Path="AnuradhapuraAI.Infrastructure/AnuradhapuraAI.Infrastructure.csproj" />
+</Solution>

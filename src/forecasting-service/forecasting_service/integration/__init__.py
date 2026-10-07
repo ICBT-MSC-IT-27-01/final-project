@@ -1,0 +1,1 @@
+"""Backend service integration boundary."""
