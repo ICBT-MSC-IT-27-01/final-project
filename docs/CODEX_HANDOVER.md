@@ -190,11 +190,13 @@ Frozen database decisions:
 - Phase 5A - ML Pipeline Foundation: APPROVED / FROZEN
 - Phase 5B - Real Dataset Training and Evaluation: APPROVED / FROZEN
 - Phase 5 - Weather Forecasting Model: COMPLETE / APPROVED / FROZEN
-- Phase 6 - Backend Forecast Integration: COMPLETE
+- Phase 6 - Backend Forecast Integration: COMPLETE / APPROVED / FROZEN
+- Phase 7A - Agricultural Evidence and Suitability Scoring Definition: APPROVED / FROZEN
+- Phase 7B - Crop Suitability Engine Implementation: IMPLEMENTED / PENDING PROJECT-OWNER REVIEW
 
-Next planned phase: Phase 7 - Suitability Engine
+Next planned phase after Phase 7B approval: Phase 8 - Recommendation Flow
 
-Phase 7 has **not** started yet.
+Phase 8 has **not** started yet.
 
 ## 10. Authentication / RBAC Implementation
 
@@ -421,9 +423,9 @@ These require explicit project-owner approval.
 
 Next planned development phase:
 
-- Phase 7 - Suitability Engine
+- Phase 8 - Recommendation Flow, after Phase 7B project-owner approval
 
-Do not start Phase 7 without project-owner approval.
+Do not start Phase 8 without project-owner approval.
 
 ## Startup Prompt for a New Codex Session
 

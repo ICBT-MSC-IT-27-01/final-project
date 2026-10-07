@@ -4,9 +4,11 @@ This repository contains the MSc prototype for Anuradhapura District. Developmen
 
 ## Phase
 
-Current approved status: **Phase 6 - Backend Forecast Integration complete**.
+Current approved status: **Phase 6 - Backend Forecast Integration approved/frozen**.
 
-Next planned phase: **Phase 7 - Suitability Engine**. Do not start Phase 7 without project-owner approval.
+Current implementation status: **Phase 7B - Crop Suitability Engine implemented for review**.
+
+Next planned phase: **Phase 8 - Recommendation Flow**. Do not start Phase 8 without project-owner approval.
 
 ## Local Commands
 
@@ -37,6 +39,14 @@ Configure the backend with:
 - `ForecastingService:BaseUrl`
 
 The backend forecast endpoint is `POST /api/forecasts` and requires exactly 30 chronological observed-weather rows. Live recent-weather acquisition is not yet approved; do not add a provider without approval.
+
+## Phase 7B Suitability Engine
+
+The Phase 7B suitability calculation engine is implemented in `AnuradhapuraAI.Application/Suitability`.
+
+It evaluates the six approved crops only, using configured/supplied rainfall, temperature, humidity, and soil compatibility inputs. The engine supports missing-factor handling, weight re-normalization, configurable category thresholds, evidence-aware explanations, and approved climate-risk indicators when configured.
+
+Phase 7B does not implement recommendation creation, crop ranking, recommendation persistence, officer validation, or Angular UI. Those belong to later phases.
 
 ## Local JWT Secret
 

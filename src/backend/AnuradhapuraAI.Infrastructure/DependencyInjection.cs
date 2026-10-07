@@ -1,6 +1,7 @@
 using AnuradhapuraAI.Application.Authentication;
 using AnuradhapuraAI.Application.Admin;
 using AnuradhapuraAI.Application.Forecasting;
+using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Admin;
 using AnuradhapuraAI.Infrastructure.Authentication;
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IAdminManagementService, AdminManagementService>();
         services.AddScoped<IForecastService, ForecastService>();
+        services.AddScoped<ICropSuitabilityEngine, CropSuitabilityEngine>();
         services.Configure<ForecastingServiceOptions>(
             configuration.GetSection(ForecastingServiceOptions.SectionName));
         services.Configure<WeatherModelFeatureOptions>(
