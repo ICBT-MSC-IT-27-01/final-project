@@ -35,7 +35,37 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
         using var scope = testFactory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AnuradhapuraAiDbContext>();
         Assert.Equal(7, dbContext.ForecastRecords.Count());
+        var forecastRunIds = dbContext.ForecastRecords.Select(record => record.ForecastRunId).Distinct().ToList();
+        Assert.Single(forecastRunIds);
+        Assert.NotEqual(Guid.Empty, forecastRunIds[0]);
         Assert.Empty(dbContext.Recommendations);
+    }
+
+    [Fact]
+    public async Task CreateForecast_UsesDifferentForecastRunId_ForDifferentExecutions()
+    {
+        var fakeClient = new FakeForecastingClient(ForecastResult<ForecastResponse>.Success(SampleForecastResponse()));
+        using var testFactory = factory.CreateIsolated(services =>
+        {
+            EnableWeatherModelIntegration(services);
+            services.RemoveAll<IWeatherForecastingClient>();
+            services.AddSingleton<IWeatherForecastingClient>(fakeClient);
+        });
+        var client = testFactory.CreateClient();
+
+        var firstResponse = await client.PostAsJsonAsync("/api/forecasts", SampleRequest());
+        var secondResponse = await client.PostAsJsonAsync("/api/forecasts", SampleRequest());
+
+        Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, secondResponse.StatusCode);
+        using var scope = testFactory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AnuradhapuraAiDbContext>();
+        var forecastRunIds = dbContext.ForecastRecords
+            .Select(record => record.ForecastRunId)
+            .Distinct()
+            .ToList();
+        Assert.Equal(2, forecastRunIds.Count);
+        Assert.DoesNotContain(Guid.Empty, forecastRunIds);
     }
 
     [Fact]

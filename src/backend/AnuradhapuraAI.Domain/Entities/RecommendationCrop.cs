@@ -8,21 +8,25 @@ public sealed class RecommendationCrop
 
     public int CropId { get; set; }
 
-    public decimal RainfallScore { get; set; }
+    public decimal? RainfallScore { get; set; }
 
-    public decimal TemperatureScore { get; set; }
+    public decimal? TemperatureScore { get; set; }
 
-    public decimal HumidityScore { get; set; }
+    public decimal? HumidityScore { get; set; }
 
-    public decimal SoilScore { get; set; }
+    public decimal? SoilScore { get; set; }
 
-    public decimal OverallScore { get; set; }
+    public decimal? OverallScore { get; set; }
 
-    public string SuitabilityCategory { get; set; } = string.Empty;
+    public string? SuitabilityCategory { get; set; }
 
     public string Explanation { get; set; } = string.Empty;
 
-    public int Rank { get; set; }
+    public int? Rank { get; set; }
+
+    public string EvaluationStatus { get; set; } = string.Empty;
+
+    public string EvidenceSnapshotJson { get; set; } = string.Empty;
 
     public Recommendation? Recommendation { get; set; }
 

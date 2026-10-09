@@ -40,6 +40,9 @@ public sealed class Phase6ControlledIntegrationTests(Phase3WebApplicationFactory
         using var scope = testFactory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AnuradhapuraAiDbContext>();
         Assert.Equal(7, dbContext.ForecastRecords.Count());
+        var forecastRunIds = dbContext.ForecastRecords.Select(record => record.ForecastRunId).Distinct().ToList();
+        Assert.Single(forecastRunIds);
+        Assert.NotEqual(Guid.Empty, forecastRunIds[0]);
     }
 
     private static CreateForecastRequest HistoricalWindowRequest()

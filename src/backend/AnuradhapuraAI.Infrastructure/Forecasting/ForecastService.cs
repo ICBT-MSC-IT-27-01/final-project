@@ -46,10 +46,12 @@ public sealed class ForecastService(
         try
         {
             var createdAt = timeProvider.GetUtcNow();
+            var forecastRunId = Guid.NewGuid();
             foreach (var forecast in response.Forecasts)
             {
                 dbContext.ForecastRecords.Add(new ForecastRecord
                 {
+                    ForecastRunId = forecastRunId,
                     ForecastDate = forecast.ForecastDate,
                     TargetDate = forecast.TargetDate,
                     Temperature = forecast.Temperature,

@@ -202,7 +202,13 @@ public sealed class Phase4AdminServiceTests
     {
         await using var host = await Phase4AdminServiceTestHost.CreateAsync();
         var officer = await host.SeedUserAsync("officer@example.com", ApprovedRoleNames.AgriculturalOfficer);
-        var recommendation = new Recommendation { CreatedAt = DateTimeOffset.UtcNow };
+        var forecastRunId = Guid.NewGuid();
+        var recommendation = new Recommendation
+        {
+            ForecastRunId = forecastRunId,
+            EvidenceSnapshotJson = """{"schemaVersion":1,"source":"synthetic-test"}""",
+            CreatedAt = DateTimeOffset.UtcNow
+        };
         host.DbContext.Recommendations.Add(recommendation);
         await host.DbContext.SaveChangesAsync();
         host.DbContext.RecommendationCrops.Add(new RecommendationCrop
@@ -216,7 +222,9 @@ public sealed class Phase4AdminServiceTests
             OverallScore = 1,
             SuitabilityCategory = ApprovedSuitabilityCategories.Suitable,
             Explanation = "Test explanation",
-            Rank = 1
+            Rank = 1,
+            EvaluationStatus = ApprovedRecommendationEvaluationStatuses.Complete,
+            EvidenceSnapshotJson = """{"schemaVersion":1,"source":"synthetic-test"}"""
         });
         host.DbContext.RecommendationValidations.Add(new RecommendationValidation
         {
@@ -233,7 +241,9 @@ public sealed class Phase4AdminServiceTests
 
         Assert.Single(recommendations.Items);
         Assert.True(recommendationDetail.Succeeded);
+        Assert.Equal(forecastRunId, recommendationDetail.Value!.ForecastRunId);
         Assert.Single(recommendationDetail.Value!.Crops);
+        Assert.Equal(ApprovedRecommendationEvaluationStatuses.Complete, recommendationDetail.Value.Crops[0].EvaluationStatus);
         Assert.Single(validations.Items);
     }
 }

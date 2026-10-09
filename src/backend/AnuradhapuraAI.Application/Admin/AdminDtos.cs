@@ -162,19 +162,23 @@ public sealed record AdminRecommendationCropResponse(
     int Id,
     int CropId,
     string CropName,
-    decimal RainfallScore,
-    decimal TemperatureScore,
-    decimal HumidityScore,
-    decimal SoilScore,
-    decimal OverallScore,
-    string SuitabilityCategory,
+    decimal? RainfallScore,
+    decimal? TemperatureScore,
+    decimal? HumidityScore,
+    decimal? SoilScore,
+    decimal? OverallScore,
+    string? SuitabilityCategory,
     string Explanation,
-    int Rank);
+    int? Rank,
+    string EvaluationStatus,
+    string EvidenceSnapshotJson);
 
 public sealed record AdminRecommendationSummaryResponse(
     int Id,
     int? UserId,
     string? UserEmail,
+    Guid ForecastRunId,
+    string? SoilType,
     DateTimeOffset CreatedAt,
     int CropResultCount);
 
@@ -182,6 +186,9 @@ public sealed record AdminRecommendationDetailResponse(
     int Id,
     int? UserId,
     string? UserEmail,
+    Guid ForecastRunId,
+    string? SoilType,
+    string EvidenceSnapshotJson,
     DateTimeOffset CreatedAt,
     IReadOnlyList<AdminRecommendationCropResponse> Crops);
 

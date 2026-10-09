@@ -8,9 +8,17 @@ public sealed class ForecastRecordConfiguration : IEntityTypeConfiguration<Forec
 {
     public void Configure(EntityTypeBuilder<ForecastRecord> builder)
     {
-        builder.ToTable("ForecastRecord");
+        builder.ToTable("ForecastRecord", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_ForecastRecord_ForecastRunId_NotEmpty",
+                "[ForecastRunId] <> '00000000-0000-0000-0000-000000000000'");
+        });
 
         builder.HasKey(forecast => forecast.Id);
+
+        builder.Property(forecast => forecast.ForecastRunId)
+            .IsRequired();
 
         builder.Property(forecast => forecast.ForecastDate)
             .IsRequired();
@@ -37,5 +45,8 @@ public sealed class ForecastRecordConfiguration : IEntityTypeConfiguration<Forec
             .IsRequired();
 
         builder.HasIndex(forecast => new { forecast.ForecastDate, forecast.TargetDate });
+
+        builder.HasIndex(forecast => new { forecast.ForecastRunId, forecast.TargetDate })
+            .IsUnique();
     }
 }

@@ -4,6 +4,8 @@ public sealed class ForecastRecord
 {
     public int Id { get; set; }
 
+    public Guid ForecastRunId { get; set; }
+
     public DateOnly ForecastDate { get; set; }
 
     public DateOnly TargetDate { get; set; }

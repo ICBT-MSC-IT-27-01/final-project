@@ -346,7 +346,7 @@ public sealed class AdminManagementService(
         if (from.HasValue) query = query.Where(recommendation => recommendation.CreatedAt >= from.Value);
         if (to.HasValue) query = query.Where(recommendation => recommendation.CreatedAt <= to.Value);
 
-        return await ToPagedResponseAsync(query.OrderByDescending(recommendation => recommendation.CreatedAt).Select(recommendation => new AdminRecommendationSummaryResponse(recommendation.Id, recommendation.UserId, recommendation.User == null ? null : recommendation.User.Email, recommendation.CreatedAt, recommendation.RecommendationCrops.Count)), page, pageSize, cancellationToken);
+        return await ToPagedResponseAsync(query.OrderByDescending(recommendation => recommendation.CreatedAt).Select(recommendation => new AdminRecommendationSummaryResponse(recommendation.Id, recommendation.UserId, recommendation.User == null ? null : recommendation.User.Email, recommendation.ForecastRunId, recommendation.SoilType, recommendation.CreatedAt, recommendation.RecommendationCrops.Count)), page, pageSize, cancellationToken);
     }
 
     public async Task<AdminResult<AdminRecommendationDetailResponse>> GetRecommendationAsync(int id, CancellationToken cancellationToken = default)
@@ -356,7 +356,7 @@ public sealed class AdminManagementService(
             .Include(candidate => candidate.RecommendationCrops).ThenInclude(result => result.Crop)
             .SingleOrDefaultAsync(candidate => candidate.Id == id, cancellationToken);
         if (recommendation is null) return NotFound<AdminRecommendationDetailResponse>();
-        return AdminResult<AdminRecommendationDetailResponse>.Success(new AdminRecommendationDetailResponse(recommendation.Id, recommendation.UserId, recommendation.User?.Email, recommendation.CreatedAt, recommendation.RecommendationCrops.OrderBy(result => result.Rank).Select(ToRecommendationCropResponse).ToList()));
+        return AdminResult<AdminRecommendationDetailResponse>.Success(new AdminRecommendationDetailResponse(recommendation.Id, recommendation.UserId, recommendation.User?.Email, recommendation.ForecastRunId, recommendation.SoilType, recommendation.EvidenceSnapshotJson, recommendation.CreatedAt, recommendation.RecommendationCrops.OrderBy(result => result.Rank ?? int.MaxValue).Select(ToRecommendationCropResponse).ToList()));
     }
 
     public async Task<PagedResponse<AdminValidationResponse>> ListValidationsAsync(string? status, int? officerUserId, int page, int pageSize, CancellationToken cancellationToken = default)
@@ -435,7 +435,7 @@ public sealed class AdminManagementService(
     private static SoilCompatibilityResponse ToSoilResponse(SoilCompatibility item) => new(item.Id, item.CropId, item.Crop?.Name ?? string.Empty, item.SoilType, item.CompatibilityScore, item.IsActive);
     private static SuitabilityConfigurationResponse ToConfigurationResponse(SuitabilityConfiguration item) => new(item.Id, item.ConfigurationType, item.ConfigurationKey, item.Value, item.IsActive, item.UpdatedAt, item.UpdatedByUserId);
     private static AdminUserResponse ToUserResponse(User user) => new(user.Id, user.Name, user.Email, user.Role?.Name ?? string.Empty, user.IsActive, user.CreatedAt);
-    private static AdminRecommendationCropResponse ToRecommendationCropResponse(RecommendationCrop item) => new(item.Id, item.CropId, item.Crop?.Name ?? string.Empty, item.RainfallScore, item.TemperatureScore, item.HumidityScore, item.SoilScore, item.OverallScore, item.SuitabilityCategory, item.Explanation, item.Rank);
+    private static AdminRecommendationCropResponse ToRecommendationCropResponse(RecommendationCrop item) => new(item.Id, item.CropId, item.Crop?.Name ?? string.Empty, item.RainfallScore, item.TemperatureScore, item.HumidityScore, item.SoilScore, item.OverallScore, item.SuitabilityCategory, item.Explanation, item.Rank, item.EvaluationStatus, item.EvidenceSnapshotJson);
     private static AdminValidationResponse ToValidationResponse(RecommendationValidation item) => new(item.Id, item.RecommendationId, item.OfficerUserId, item.OfficerUser?.Email ?? string.Empty, item.Status, item.Comment, item.CreatedAt);
 
     private static AdminResult<T> NotFound<T>() => AdminResult<T>.Failure(AdminErrorCodes.NotFound);
