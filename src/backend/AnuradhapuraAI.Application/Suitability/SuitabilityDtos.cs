@@ -51,7 +51,8 @@ public sealed record SuitabilityEvaluationRequest(
     SuitabilityFactorWeights Weights,
     SuitabilityCategoryThresholds CategoryThresholds,
     bool EnableClimateRiskIndicators,
-    ClimateRiskThresholds? ClimateRiskThresholds = null);
+    ClimateRiskThresholds? ClimateRiskThresholds = null,
+    bool AllowInsufficientEvidenceResults = false);
 
 public sealed record SuitabilityEvaluationResponse(
     IReadOnlyList<CropSuitabilityResult> Crops);

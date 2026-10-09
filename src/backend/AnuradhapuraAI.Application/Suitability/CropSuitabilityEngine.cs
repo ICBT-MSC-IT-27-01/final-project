@@ -59,6 +59,19 @@ public sealed class CropSuitabilityEngine : ICropSuitabilityEngine
         var evaluableFactors = factors.Where(factor => factor.IsEvaluable).ToList();
         if (evaluableFactors.Count == 0)
         {
+            if (request.AllowInsufficientEvidenceResults)
+            {
+                var insufficientEvidenceExplanation = BuildInsufficientEvidenceExplanation(profile.CropName, factors);
+                return SuitabilityResult<CropSuitabilityResult>.Success(new CropSuitabilityResult(
+                    profile.CropName,
+                    OverallScore: null,
+                    SuitabilityCategory: null,
+                    factors,
+                    ClimateRisks: [],
+                    insufficientEvidenceExplanation,
+                    EvaluatedFactorCount: 0));
+            }
+
             return SuitabilityResult<CropSuitabilityResult>.Failure(
                 SuitabilityErrorCodes.InsufficientEvidence,
                 $"No suitability factor can be evaluated for {profile.CropName}.");
@@ -301,6 +314,16 @@ public sealed class CropSuitabilityEngine : ICropSuitabilityEngine
             $"Unavailable factors: {string.Join(", ", unavailable.DefaultIfEmpty("None"))}. " +
             $"Weights were re-normalized across evaluable factors. Overall score {overallScore:0.##}; category {category}. " +
             risksText;
+    }
+
+    private static string BuildInsufficientEvidenceExplanation(
+        string cropName,
+        IReadOnlyList<SuitabilityFactorResult> factors)
+    {
+        var unavailable = factors.Where(factor => !factor.IsEvaluable).Select(factor => factor.Factor);
+        return $"{cropName}: no suitability factors could be evaluated. " +
+            $"Unavailable factors: {string.Join(", ", unavailable)}. " +
+            "No overall score or suitability category was assigned.";
     }
 
     private static (string ErrorCode, string Message)? ValidateRequest(SuitabilityEvaluationRequest request)

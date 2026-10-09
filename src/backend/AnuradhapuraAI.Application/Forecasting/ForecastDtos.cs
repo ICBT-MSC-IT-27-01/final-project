@@ -33,5 +33,11 @@ public sealed record WeatherModelFeatureOptions
 {
     public const string SectionName = "FeatureFlags";
 
+    public bool EnableOfficerValidation { get; set; }
+
+    public bool EnableRecommendationHistory { get; set; }
+
+    public bool EnableClimateRiskIndicators { get; set; }
+
     public bool EnableWeatherModelIntegration { get; set; }
 }
