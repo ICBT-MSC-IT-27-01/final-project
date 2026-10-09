@@ -34,6 +34,8 @@ public static class DependencyInjection
         services.AddScoped<IAdminManagementService, AdminManagementService>();
         services.AddScoped<IForecastService, ForecastService>();
         services.AddScoped<IRecommendationOrchestrationService, RecommendationOrchestrationService>();
+        services.AddScoped<IRecommendationRankingService, RecommendationRankingService>();
+        services.AddScoped<IRecommendationPersistenceService, RecommendationPersistenceService>();
         services.AddScoped<ICropSuitabilityEngine, CropSuitabilityEngine>();
         services.AddScoped<ISuitabilityConfigurationProvider, SuitabilityConfigurationProvider>();
         services.Configure<ForecastingServiceOptions>(

@@ -87,7 +87,10 @@ public sealed class RecommendationOrchestrationService(
             .ToList();
 
         return RecommendationOrchestrationResult<RecommendationEvaluationResponse>.Success(
-            new RecommendationEvaluationResponse(selectedForecast, crops));
+            new RecommendationEvaluationResponse(selectedForecast, crops)
+            {
+                AppliedConfiguration = ToAppliedConfiguration(configuration)
+            });
     }
 
     private async Task<SelectedForecastRun?> SelectLatestValidForecastRunAsync(CancellationToken cancellationToken)
@@ -200,6 +203,40 @@ public sealed class RecommendationOrchestrationService(
                     .Where(factor => factor.IsEvaluable)
                     .Sum(factor => factor.ConfiguredWeight)));
     }
+
+    private static AppliedRecommendationConfiguration ToAppliedConfiguration(
+        SuitabilityConfigurationSnapshot configuration) =>
+        new(
+            configuration.Weights,
+            configuration.CategoryThresholds,
+            configuration.CropProfiles
+                .OrderBy(profile => Array.IndexOf(ApprovedCropNames.All, profile.CropName))
+                .Select(ToAppliedCropConfiguration)
+                .ToList());
+
+    private static AppliedCropConfiguration ToAppliedCropConfiguration(CropSuitabilityProfile profile) =>
+        new(
+            profile.CropName,
+            ToAppliedRangeRequirement(profile.RainfallRequirement),
+            ToAppliedRangeRequirement(profile.TemperatureRequirement),
+            ToAppliedRangeRequirement(profile.HumidityRequirement),
+            profile.SoilCompatibilities
+                .Select(compatibility => new AppliedSoilCompatibility(
+                    compatibility.SoilType,
+                    compatibility.CompatibilityScore))
+                .ToList());
+
+    private static AppliedRangeRequirement? ToAppliedRangeRequirement(SuitabilityRangeRequirement? requirement) =>
+        requirement is null
+            ? null
+            : new AppliedRangeRequirement(
+                requirement.OptimalMinimum,
+                requirement.OptimalMaximum,
+                requirement.AcceptableMinimum,
+                requirement.AcceptableMaximum,
+                requirement.Unit,
+                requirement.TimeBasis,
+                requirement.IsCompatibleWithSevenDayForecast);
 
     private static string? ValidateApprovedCropScope(IReadOnlyList<CropSuitabilityProfile> profiles)
     {
