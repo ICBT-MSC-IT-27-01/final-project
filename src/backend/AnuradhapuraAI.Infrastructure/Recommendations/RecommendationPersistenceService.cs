@@ -124,6 +124,7 @@ public sealed class RecommendationPersistenceService(
                 new PersistedRecommendationResponse(
                     recommendation.Id,
                     recommendation.ForecastRunId,
+                    rankedEvaluation.Forecast,
                     recommendation.UserId,
                     recommendation.SoilType,
                     recommendation.CreatedAt,

@@ -95,10 +95,67 @@ public sealed record CreateRecommendationPersistenceRequest(
 public sealed record PersistedRecommendationResponse(
     int RecommendationId,
     Guid ForecastRunId,
+    SelectedForecastRun Forecast,
     int? UserId,
     string? SoilType,
     DateTimeOffset CreatedAt,
     IReadOnlyList<RankedCropRecommendationEvaluation> Crops);
+
+public sealed class CreateRecommendationRequest
+{
+    public string District { get; set; } = string.Empty;
+
+    public string? SoilType { get; set; }
+}
+
+public sealed record RecommendationResponse(
+    int RecommendationId,
+    Guid ForecastRunId,
+    int? UserId,
+    string? SoilType,
+    DateTimeOffset CreatedAt,
+    RecommendationForecastResponse Forecast,
+    IReadOnlyList<RecommendationCropResponse> Crops);
+
+public sealed record RecommendationForecastResponse(
+    Guid ForecastRunId,
+    DateOnly ForecastDate,
+    DateOnly TargetStartDate,
+    DateOnly TargetEndDate,
+    string? ModelVersion,
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<RecommendationForecastDayResponse> Days);
+
+public sealed record RecommendationForecastDayResponse(
+    DateOnly TargetDate,
+    decimal Rainfall,
+    decimal Temperature,
+    decimal Humidity);
+
+public sealed record RecommendationCropResponse(
+    string CropName,
+    string EvaluationStatus,
+    decimal? RainfallScore,
+    decimal? TemperatureScore,
+    decimal? HumidityScore,
+    decimal? SoilScore,
+    decimal? OverallScore,
+    string? SuitabilityCategory,
+    int? Rank,
+    IReadOnlyList<string> UnavailableFactors,
+    IReadOnlyList<RecommendationFactorResponse> Factors,
+    EvidenceCoverage EvidenceCoverage,
+    IReadOnlyList<string> ClimateRisks,
+    string Explanation);
+
+public sealed record RecommendationFactorResponse(
+    string Factor,
+    bool IsEvaluable,
+    decimal? Score,
+    decimal? AggregatedValue,
+    decimal ConfiguredWeight,
+    decimal? EffectiveWeight,
+    string Explanation);
 
 public static class RecommendationOrchestrationErrorCodes
 {
