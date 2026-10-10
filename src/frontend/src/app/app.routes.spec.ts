@@ -12,9 +12,13 @@ describe('Phase 10 routing and model contracts', () => {
   it('protects officer and administrator routes with role guards', () => {
     const officerRoute = routes.find(route => route.path === 'officer');
     const adminRoute = routes.find(route => route.path === 'admin');
+    const historyRoute = routes.find(route => route.path === 'history');
+    const historyDetailRoute = routes.find(route => route.path === 'history/:id');
 
     expect(officerRoute?.canActivate?.length).toBe(1);
     expect(adminRoute?.canActivate?.length).toBe(1);
+    expect(historyRoute?.canActivate?.length).toBe(1);
+    expect(historyDetailRoute?.canActivate?.length).toBe(1);
   });
 
   it('renders only the approved six crop names in frontend scope constants', () => {

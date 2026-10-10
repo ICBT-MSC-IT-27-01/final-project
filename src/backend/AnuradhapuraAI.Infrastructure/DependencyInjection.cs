@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<IRecommendationOrchestrationService, RecommendationOrchestrationService>();
         services.AddScoped<IRecommendationRankingService, RecommendationRankingService>();
         services.AddScoped<IRecommendationPersistenceService, RecommendationPersistenceService>();
+        services.AddScoped<IRecommendationHistoryService, RecommendationHistoryService>();
         services.AddScoped<IRecommendationValidationService, RecommendationValidationService>();
         services.AddScoped<ICropSuitabilityEngine, CropSuitabilityEngine>();
         services.AddScoped<ISuitabilityConfigurationProvider, SuitabilityConfigurationProvider>();

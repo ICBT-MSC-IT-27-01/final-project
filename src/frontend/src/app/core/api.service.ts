@@ -4,11 +4,14 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import {
   ApiMessage,
+  AdminResource,
   CreateRecommendationRequest,
   CurrentUserResponse,
   LoginRequest,
   LoginResponse,
   PagedResponse,
+  RecommendationHistoryDetailResponse,
+  RecommendationHistorySummaryResponse,
   RecommendationResponse,
   RecommendationReviewResponse,
   RecommendationReviewSummaryResponse,
@@ -61,8 +64,46 @@ export class ApiService {
       .pipe(catchError(toApiError));
   }
 
-  listAdminResources<T>(resource: string): Observable<PagedResponse<T>> {
-    return this.http.get<PagedResponse<T>>(`${this.baseUrl}/admin/${resource}`).pipe(catchError(toApiError));
+  listRecommendationHistory(page = 1, pageSize = 20): Observable<PagedResponse<RecommendationHistorySummaryResponse>> {
+    return this.http
+      .get<PagedResponse<RecommendationHistorySummaryResponse>>(`${this.baseUrl}/recommendations/history`, {
+        params: { page, pageSize },
+      })
+      .pipe(catchError(toApiError));
+  }
+
+  getRecommendationHistoryDetail(recommendationId: number): Observable<RecommendationHistoryDetailResponse> {
+    return this.http
+      .get<RecommendationHistoryDetailResponse>(`${this.baseUrl}/recommendations/${recommendationId}`)
+      .pipe(catchError(toApiError));
+  }
+
+  listAdminResources<T>(resource: AdminResource, page = 1, pageSize = 20): Observable<PagedResponse<T>> {
+    return this.http
+      .get<PagedResponse<T>>(`${this.baseUrl}/admin/${resource}`, { params: { page, pageSize } })
+      .pipe(catchError(toApiError));
+  }
+
+  createAdminResource<TRequest, TResponse>(resource: AdminResource, request: TRequest): Observable<TResponse> {
+    return this.http.post<TResponse>(`${this.baseUrl}/admin/${resource}`, request).pipe(catchError(toApiError));
+  }
+
+  updateAdminResource<TRequest, TResponse>(resource: AdminResource, id: number, request: TRequest): Observable<TResponse> {
+    return this.http.put<TResponse>(`${this.baseUrl}/admin/${resource}/${id}`, request).pipe(catchError(toApiError));
+  }
+
+  setAdminResourceActiveStatus<TResponse>(
+    resource: Exclude<AdminResource, 'recommendations' | 'validations'>,
+    id: number,
+    isActive: boolean,
+  ): Observable<TResponse> {
+    return this.http
+      .patch<TResponse>(`${this.baseUrl}/admin/${resource}/${id}/active-status`, { isActive })
+      .pipe(catchError(toApiError));
+  }
+
+  updateAdminUserRole(userId: number, role: string): Observable<unknown> {
+    return this.http.put(`${this.baseUrl}/admin/users/${userId}/role`, { role }).pipe(catchError(toApiError));
   }
 }
 

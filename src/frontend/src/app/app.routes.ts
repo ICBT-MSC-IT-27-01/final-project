@@ -6,6 +6,7 @@ import { AdminReadinessComponent } from './features/admin/admin-readiness.compon
 import { OfficerDetailComponent } from './features/officer/officer-detail.component';
 import { OfficerListComponent } from './features/officer/officer-list.component';
 import { PublicDashboardComponent } from './features/public-dashboard/public-dashboard.component';
+import { RegisteredHistoryDetailComponent } from './features/registered/registered-history-detail.component';
 import { RegisteredHistoryBlockedComponent } from './features/registered/registered-history-blocked.component';
 import { RecommendationPageComponent } from './features/recommendation/recommendation-page.component';
 
@@ -37,6 +38,12 @@ export const routes: Routes = [
     component: RegisteredHistoryBlockedComponent,
     canActivate: [roleGuard(['Registered User'])],
     title: 'Recommendation history',
+  },
+  {
+    path: 'history/:id',
+    component: RegisteredHistoryDetailComponent,
+    canActivate: [roleGuard(['Registered User'])],
+    title: 'Saved recommendation',
   },
   { path: '**', redirectTo: '' },
 ];

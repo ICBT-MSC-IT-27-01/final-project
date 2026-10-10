@@ -8,7 +8,9 @@ namespace AnuradhapuraAI.Api.Controllers;
 
 [ApiController]
 [Route("api/recommendations")]
-public sealed class RecommendationsController(IRecommendationPersistenceService recommendationService) : ControllerBase
+public sealed class RecommendationsController(
+    IRecommendationPersistenceService recommendationService,
+    IRecommendationHistoryService historyService) : ControllerBase
 {
     private const int MaximumSoilTypeLength = 100;
 
@@ -50,6 +52,54 @@ public sealed class RecommendationsController(IRecommendationPersistenceService 
         }
 
         return ToFailureResult(result.ErrorCode, result.Message);
+    }
+
+    [Authorize]
+    [HttpGet("history")]
+    public async Task<IActionResult> ListHistory(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var registeredUserIdResult = GetTrustedRegisteredUserId();
+        if (!registeredUserIdResult.Succeeded || registeredUserIdResult.UserId is null)
+        {
+            return registeredUserIdResult.IsAuthenticated
+                ? Forbid()
+                : Unauthorized(new { message = "Registered user identity is required." });
+        }
+
+        var result = await historyService.ListHistoryAsync(
+            new RecommendationHistoryQuery(registeredUserIdResult.UserId.Value, page, pageSize),
+            cancellationToken);
+
+        return result.Succeeded && result.Value is not null
+            ? Ok(result.Value)
+            : ToHistoryFailureResult(result.ErrorCode);
+    }
+
+    [Authorize]
+    [HttpGet("{recommendationId:int}")]
+    public async Task<IActionResult> GetHistoryDetail(
+        int recommendationId,
+        CancellationToken cancellationToken = default)
+    {
+        var registeredUserIdResult = GetTrustedRegisteredUserId();
+        if (!registeredUserIdResult.Succeeded || registeredUserIdResult.UserId is null)
+        {
+            return registeredUserIdResult.IsAuthenticated
+                ? Forbid()
+                : Unauthorized(new { message = "Registered user identity is required." });
+        }
+
+        var result = await historyService.GetDetailAsync(
+            recommendationId,
+            registeredUserIdResult.UserId.Value,
+            cancellationToken);
+
+        return result.Succeeded && result.Value is not null
+            ? Ok(result.Value)
+            : ToHistoryFailureResult(result.ErrorCode);
     }
 
     private static string? ValidateRequest(CreateRecommendationRequest request)
@@ -158,6 +208,22 @@ public sealed class RecommendationsController(IRecommendationPersistenceService 
             StatusCodes.Status500InternalServerError,
             new { message = "Recommendation evidence could not be prepared." }),
         _ => BadRequest(new { message = "Recommendation request failed." })
+    };
+
+    private IActionResult ToHistoryFailureResult(string? errorCode) => errorCode switch
+    {
+        RecommendationHistoryErrorCodes.FeatureDisabled => StatusCode(
+            StatusCodes.Status503ServiceUnavailable,
+            new { message = "Recommendation history is disabled." }),
+        RecommendationHistoryErrorCodes.InvalidUserContext => Forbid(),
+        RecommendationHistoryErrorCodes.InvalidPaging => BadRequest(
+            new { message = "History pagination is invalid." }),
+        RecommendationHistoryErrorCodes.RecommendationNotFound => NotFound(
+            new { message = "Recommendation was not found." }),
+        RecommendationHistoryErrorCodes.DatabaseReadFailed => StatusCode(
+            StatusCodes.Status503ServiceUnavailable,
+            new { message = "Recommendation history is temporarily unavailable." }),
+        _ => BadRequest(new { message = "Recommendation history request failed." })
     };
 
     private sealed record TrustedUserResult(

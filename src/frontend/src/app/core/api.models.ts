@@ -163,3 +163,145 @@ export interface PagedResponse<T> {
   pageSize: number;
   totalCount: number;
 }
+
+export interface RecommendationHistorySummaryResponse {
+  recommendationId: number;
+  forecastRunId: string;
+  soilType: string | null;
+  createdAt: string;
+  cropResultCount: number;
+  topCropName: string | null;
+  topSuitabilityCategory: string | null;
+  topOverallScore: number | null;
+}
+
+export interface RecommendationHistoryDetailResponse {
+  recommendationId: number;
+  forecastRunId: string;
+  soilType: string | null;
+  createdAt: string;
+  forecast: RecommendationHistoryForecastResponse | null;
+  crops: RecommendationHistoryCropResponse[];
+  provenance: string[];
+  limitations: string[];
+}
+
+export interface RecommendationHistoryForecastResponse {
+  forecastRunId: string;
+  forecastDate: string | null;
+  targetStartDate: string | null;
+  targetEndDate: string | null;
+  modelVersion: string | null;
+  days: RecommendationHistoryForecastDayResponse[];
+}
+
+export interface RecommendationHistoryForecastDayResponse {
+  targetDate: string;
+  rainfall: number | null;
+  temperature: number | null;
+  humidity: number | null;
+}
+
+export interface RecommendationHistoryCropResponse {
+  cropName: string;
+  evaluationStatus: string;
+  rainfallScore: number | null;
+  temperatureScore: number | null;
+  humidityScore: number | null;
+  soilScore: number | null;
+  overallScore: number | null;
+  suitabilityCategory: string | null;
+  rank: number | null;
+  unavailableFactors: string[];
+  factors: RecommendationHistoryFactorResponse[];
+  climateRisks: string[];
+  explanation: string;
+}
+
+export interface RecommendationHistoryFactorResponse {
+  factor: string;
+  isEvaluable: boolean;
+  score: number | null;
+  aggregatedValue: number | null;
+  configuredWeight: number | null;
+  effectiveWeight: number | null;
+  explanation: string;
+}
+
+export interface CropResponse {
+  id: number;
+  name: string;
+  isActive: boolean;
+}
+
+export interface CropRequirementResponse {
+  id: number;
+  cropId: number;
+  cropName: string;
+  variableType: string;
+  minimumValue: number;
+  maximumValue: number;
+  acceptableMinimumValue: number | null;
+  acceptableMaximumValue: number | null;
+  unit: string;
+  timeBasis: string | null;
+  isCompatibleWithSevenDayForecast: boolean;
+  isActive: boolean;
+}
+
+export interface SoilCompatibilityResponse {
+  id: number;
+  cropId: number;
+  cropName: string;
+  soilType: string;
+  compatibilityScore: number;
+  isActive: boolean;
+}
+
+export interface SuitabilityConfigurationResponse {
+  id: number;
+  configurationType: string;
+  configurationKey: string;
+  value: number;
+  isActive: boolean;
+  updatedAt: string;
+  updatedByUserId: number | null;
+}
+
+export interface AdminUserResponse {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface AdminRecommendationSummaryResponse {
+  id: number;
+  userId: number | null;
+  userEmail: string | null;
+  forecastRunId: string;
+  soilType: string | null;
+  createdAt: string;
+  cropResultCount: number;
+}
+
+export interface AdminValidationResponse {
+  id: number;
+  recommendationId: number;
+  officerUserId: number;
+  officerEmail: string;
+  status: string;
+  comment: string | null;
+  createdAt: string;
+}
+
+export type AdminResource =
+  | 'users'
+  | 'crops'
+  | 'crop-requirements'
+  | 'soil-compatibility'
+  | 'suitability-config'
+  | 'recommendations'
+  | 'validations';

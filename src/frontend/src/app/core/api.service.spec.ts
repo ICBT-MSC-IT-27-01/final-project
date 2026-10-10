@@ -62,6 +62,48 @@ describe('ApiService', () => {
     request.flush({ id: 1, recommendationId: 42, officerUserId: 7, status: 'Validated', comment: 'Looks consistent.', createdAt: '2026-10-10T00:00:00Z' });
     http.verify();
   });
+
+  it('requests registered history without a user id ownership parameter', () => {
+    const { service, http } = setup();
+
+    service.listRecommendationHistory(2, 10).subscribe();
+
+    const request = http.expectOne('/api/recommendations/history?page=2&pageSize=10');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.params.has('userId')).toBe(false);
+    request.flush({ items: [], page: 2, pageSize: 10, totalCount: 0 });
+    http.verify();
+  });
+
+  it('requests registered history detail by route id only', () => {
+    const { service, http } = setup();
+
+    service.getRecommendationHistoryDetail(77).subscribe();
+
+    const request = http.expectOne('/api/recommendations/77');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.body).toBeNull();
+    request.flush(sampleHistoryDetail());
+    http.verify();
+  });
+
+  it('uses verified administrator contracts for role and active-status changes', () => {
+    const { service, http } = setup();
+
+    service.updateAdminUserRole(5, 'Agricultural Officer').subscribe();
+    service.setAdminResourceActiveStatus('crops', 8, false).subscribe();
+
+    const roleRequest = http.expectOne('/api/admin/users/5/role');
+    expect(roleRequest.request.method).toBe('PUT');
+    expect(roleRequest.request.body).toEqual({ role: 'Agricultural Officer' });
+    roleRequest.flush({});
+
+    const statusRequest = http.expectOne('/api/admin/crops/8/active-status');
+    expect(statusRequest.request.method).toBe('PATCH');
+    expect(statusRequest.request.body).toEqual({ isActive: false });
+    statusRequest.flush({ id: 8, name: 'Paddy', isActive: false });
+    http.verify();
+  });
 });
 
 function sampleRecommendation() {
@@ -81,5 +123,18 @@ function sampleRecommendation() {
       days: [],
     },
     crops: [],
+  };
+}
+
+function sampleHistoryDetail() {
+  return {
+    recommendationId: 77,
+    forecastRunId: '33333333-3333-3333-3333-333333333333',
+    soilType: null,
+    createdAt: '2026-10-10T00:00:00Z',
+    forecast: null,
+    crops: [],
+    provenance: ['Stored recommendation history'],
+    limitations: ['Stored forecast evidence is unavailable.'],
   };
 }

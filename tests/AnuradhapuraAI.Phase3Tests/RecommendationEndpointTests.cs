@@ -238,14 +238,14 @@ public sealed class RecommendationEndpointTests(Phase3WebApplicationFactory fact
     }
 
     [Fact]
-    public async Task RecommendationHistoryRoute_IsNotExposedInPhase8B3()
+    public async Task RecommendationHistoryRoute_AnonymousRequest_IsRejected()
     {
         using var testFactory = CreateFactory(new FakeRecommendationPersistenceService());
         var client = testFactory.CreateClient();
 
         var response = await client.GetAsync("/api/recommendations/history");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     private Phase3WebApplicationFactory CreateFactory(FakeRecommendationPersistenceService fakeService) =>
