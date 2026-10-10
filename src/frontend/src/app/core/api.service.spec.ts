@@ -87,6 +87,18 @@ describe('ApiService', () => {
     http.verify();
   });
 
+  it('requests the public latest forecast without authentication or request body', () => {
+    const { service, http } = setup();
+
+    service.getLatestForecast().subscribe();
+
+    const request = http.expectOne('/api/forecasts/latest');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.body).toBeNull();
+    request.flush(sampleLatestForecast());
+    http.verify();
+  });
+
   it('uses verified administrator contracts for role and active-status changes', () => {
     const { service, http } = setup();
 
@@ -136,5 +148,25 @@ function sampleHistoryDetail() {
     crops: [],
     provenance: ['Stored recommendation history'],
     limitations: ['Stored forecast evidence is unavailable.'],
+  };
+}
+
+function sampleLatestForecast() {
+  return {
+    forecastRunId: '44444444-4444-4444-4444-444444444444',
+    modelVersion: 'v1',
+    forecastDate: '2026-10-10',
+    createdAt: '2026-10-10T00:00:00Z',
+    forecastPeriodStart: '2026-10-11',
+    forecastPeriodEnd: '2026-10-17',
+    district: 'Anuradhapura',
+    freshnessStatus: 'Unknown',
+    limitations: ['Forecast values are AI-predicted weather forecasts, not measured observations.'],
+    dailyForecasts: Array.from({ length: 7 }, (_, index) => ({
+      targetDate: `2026-10-${11 + index}`,
+      rainfallMm: index + 1,
+      temperatureC: 28 + index,
+      humidityPercent: 70 + index,
+    })),
   };
 }

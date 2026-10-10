@@ -7,6 +7,7 @@ import {
   AdminResource,
   CreateRecommendationRequest,
   CurrentUserResponse,
+  LatestForecastResponse,
   LoginRequest,
   LoginResponse,
   PagedResponse,
@@ -76,6 +77,10 @@ export class ApiService {
     return this.http
       .get<RecommendationHistoryDetailResponse>(`${this.baseUrl}/recommendations/${recommendationId}`)
       .pipe(catchError(toApiError));
+  }
+
+  getLatestForecast(): Observable<LatestForecastResponse> {
+    return this.http.get<LatestForecastResponse>(`${this.baseUrl}/forecasts/latest`).pipe(catchError(toApiError));
   }
 
   listAdminResources<T>(resource: AdminResource, page = 1, pageSize = 20): Observable<PagedResponse<T>> {

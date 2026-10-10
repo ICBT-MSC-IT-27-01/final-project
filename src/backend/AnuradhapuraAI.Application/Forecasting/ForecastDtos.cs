@@ -22,6 +22,24 @@ public sealed record ForecastResponse(
     DateOnly ForecastDate,
     IReadOnlyList<ForecastDayResponse> Forecasts);
 
+public sealed record LatestForecastDayResponse(
+    DateOnly TargetDate,
+    decimal RainfallMm,
+    decimal TemperatureC,
+    decimal HumidityPercent);
+
+public sealed record LatestForecastResponse(
+    Guid ForecastRunId,
+    string? ModelVersion,
+    DateOnly ForecastDate,
+    DateTimeOffset CreatedAt,
+    DateOnly ForecastPeriodStart,
+    DateOnly ForecastPeriodEnd,
+    string District,
+    IReadOnlyList<LatestForecastDayResponse> DailyForecasts,
+    string FreshnessStatus,
+    IReadOnlyList<string> Limitations);
+
 public sealed record ForecastingServiceOptions
 {
     public const string SectionName = "ForecastingService";

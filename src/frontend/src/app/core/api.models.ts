@@ -228,6 +228,26 @@ export interface RecommendationHistoryFactorResponse {
   explanation: string;
 }
 
+export interface LatestForecastResponse {
+  forecastRunId: string;
+  modelVersion: string | null;
+  forecastDate: string;
+  createdAt: string;
+  forecastPeriodStart: string;
+  forecastPeriodEnd: string;
+  district: string;
+  dailyForecasts: LatestForecastDayResponse[];
+  freshnessStatus: string;
+  limitations: string[];
+}
+
+export interface LatestForecastDayResponse {
+  targetDate: string;
+  rainfallMm: number;
+  temperatureC: number;
+  humidityPercent: number;
+}
+
 export interface CropResponse {
   id: number;
   name: string;

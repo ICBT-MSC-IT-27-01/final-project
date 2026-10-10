@@ -7,4 +7,7 @@ public static class ForecastErrorCodes
     public const string ServiceUnavailable = "Forecast.ServiceUnavailable";
     public const string DownstreamError = "Forecast.DownstreamError";
     public const string PersistenceFailed = "Forecast.PersistenceFailed";
+    public const string ForecastUnavailable = "Forecast.ForecastUnavailable";
+    public const string DatabaseReadFailed = "Forecast.DatabaseReadFailed";
+    public const string UnexpectedFailure = "Forecast.UnexpectedFailure";
 }
