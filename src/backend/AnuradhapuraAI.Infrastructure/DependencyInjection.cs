@@ -3,6 +3,7 @@ using AnuradhapuraAI.Application.Admin;
 using AnuradhapuraAI.Application.Forecasting;
 using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
+using AnuradhapuraAI.Application.Validations;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Admin;
 using AnuradhapuraAI.Infrastructure.Authentication;
@@ -10,6 +11,7 @@ using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using AnuradhapuraAI.Infrastructure.Recommendations;
 using AnuradhapuraAI.Infrastructure.Suitability;
+using AnuradhapuraAI.Infrastructure.Validations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<IRecommendationOrchestrationService, RecommendationOrchestrationService>();
         services.AddScoped<IRecommendationRankingService, RecommendationRankingService>();
         services.AddScoped<IRecommendationPersistenceService, RecommendationPersistenceService>();
+        services.AddScoped<IRecommendationValidationService, RecommendationValidationService>();
         services.AddScoped<ICropSuitabilityEngine, CropSuitabilityEngine>();
         services.AddScoped<ISuitabilityConfigurationProvider, SuitabilityConfigurationProvider>();
         services.Configure<ForecastingServiceOptions>(
