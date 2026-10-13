@@ -315,6 +315,59 @@ Phase 16 verification commands:
 - `npm run e2e` from `src/frontend` -> 14 passed, 0 failed, real Chrome browser executed.
 - `npm audit --audit-level=high` from `src/frontend` -> 0 vulnerabilities.
 
+## 9D. Phase 17 Dissertation Evidence Status
+
+Phase 17 completed dissertation evidence consolidation and supervisor review preparation.
+
+Implemented:
+
+- Consolidated evidence register.
+- Dissertation consistency audit.
+- Draft Chapter 5 Development material.
+- Draft Chapter 6 Testing material.
+- Draft Chapter 7 Evaluation material.
+- Draft Chapter 8 Conclusion material.
+- Results tables with verified model-improvement calculations.
+- Figure and screenshot register.
+- References audit.
+- Supervisor review brief and likely questions/answers.
+- Outstanding research actions register.
+- Phase 17 final verification report.
+
+Phase 17 documentation:
+
+- `docs/PHASE17_FINAL_VERIFICATION_REPORT.md`
+- `docs/dissertation/phase17/EVIDENCE_REGISTER.md`
+- `docs/dissertation/phase17/CONSISTENCY_AUDIT.md`
+- `docs/dissertation/phase17/CHAPTER5_DEVELOPMENT_DRAFT.md`
+- `docs/dissertation/phase17/CHAPTER6_TESTING_DRAFT.md`
+- `docs/dissertation/phase17/CHAPTER7_EVALUATION_DRAFT.md`
+- `docs/dissertation/phase17/CHAPTER8_CONCLUSION_DRAFT.md`
+- `docs/dissertation/phase17/RESULTS_TABLES.md`
+- `docs/dissertation/phase17/FIGURE_REGISTER.md`
+- `docs/dissertation/phase17/REFERENCES_AUDIT.md`
+- `docs/dissertation/phase17/SUPERVISOR_REVIEW_BRIEF.md`
+- `docs/dissertation/phase17/SUPERVISOR_QUESTIONS_AND_ANSWERS.md`
+- `docs/dissertation/phase17/OUTSTANDING_RESEARCH_ACTIONS.md`
+
+Phase 17 verification commands:
+
+- `dotnet build .\src\backend\AnuradhapuraAI.Api\AnuradhapuraAI.Api.csproj --no-restore` -> PASS, 0 warnings, 0 errors.
+- `dotnet test .\tests\AnuradhapuraAI.Phase3Tests\AnuradhapuraAI.Phase3Tests.csproj --no-restore --logger "console;verbosity=minimal"` -> PASS, 281 passed, 0 failed, 0 skipped.
+- `python -m pytest` from `src/forecasting-service` -> PASS, 22 passed, 0 failed, 1 upstream Starlette/httpx deprecation warning.
+- `npm test -- --watch=false` from `src/frontend` -> PASS, 9 files, 39 tests passed.
+- `npm run build` from `src/frontend` -> PASS.
+- `npm run e2e` from `src/frontend` -> PASS, 14 passed, 0 failed, real Chrome browser executed.
+
+Phase 17 status:
+
+- Dissertation approval: PENDING.
+- Real participant UAT: NOT PERFORMED.
+- Agricultural Officer expert validation: NOT PERFORMED.
+- Ethics approval: PENDING.
+- Scientific agronomic validation: PARTIAL.
+- Production readiness: NOT CLAIMED.
+
 ## 10. Authentication / RBAC Implementation
 
 Implemented authentication foundation:
@@ -612,7 +665,7 @@ These require explicit project-owner approval.
 
 ## 21. Next Development Task
 
-Phase 13 is technically complete for development integration after the final Git closure step. Do not start Phase 14 without explicit project-owner instruction.
+Phase 17 is complete after Git closure. Do not start Phase 18 without explicit project-owner instruction.
 
 ## Startup Prompt for a New Codex Session
 
