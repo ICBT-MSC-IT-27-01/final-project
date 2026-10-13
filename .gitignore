@@ -3,6 +3,8 @@ bin/
 obj/
 dist/
 coverage/
+playwright-report/
+test-results/
 node_modules/
 .angular/cache/
 __pycache__/

@@ -1,0 +1,34 @@
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  timeout: 30_000,
+  expect: {
+    timeout: 5_000,
+  },
+  fullyParallel: false,
+  reporter: [['list']],
+  use: {
+    baseURL: 'http://127.0.0.1:4300',
+    trace: 'off',
+    screenshot: 'off',
+    video: 'off',
+    channel: 'chrome',
+  },
+  projects: [
+    {
+      name: 'desktop-chrome',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+  ],
+  webServer: {
+    command: 'npm start -- --host 127.0.0.1 --port 4300',
+    url: 'http://127.0.0.1:4300',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
+});

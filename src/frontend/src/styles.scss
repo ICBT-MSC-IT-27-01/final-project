@@ -43,6 +43,15 @@ textarea {
   font: inherit;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 3px;
+}
+
 .shell-header {
   display: grid;
   grid-template-columns: 1fr auto auto;
