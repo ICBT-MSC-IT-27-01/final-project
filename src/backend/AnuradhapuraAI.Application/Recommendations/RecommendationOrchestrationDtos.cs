@@ -117,6 +117,13 @@ public sealed record RecommendationResponse(
     RecommendationForecastResponse Forecast,
     IReadOnlyList<RecommendationCropResponse> Crops);
 
+public sealed record RecommendationEvaluationApiResponse(
+    Guid ForecastRunId,
+    string? SoilType,
+    RecommendationForecastResponse Forecast,
+    IReadOnlyList<RecommendationCropResponse> Crops,
+    IReadOnlyList<string> Limitations);
+
 public sealed record RecommendationForecastResponse(
     Guid ForecastRunId,
     DateOnly ForecastDate,
@@ -159,6 +166,7 @@ public sealed record RecommendationFactorResponse(
 
 public static class RecommendationOrchestrationErrorCodes
 {
+    public const string FeatureDisabled = "FeatureDisabled";
     public const string ForecastUnavailable = "ForecastUnavailable";
     public const string InvalidForecastData = "InvalidForecastData";
     public const string InvalidConfiguration = "InvalidConfiguration";

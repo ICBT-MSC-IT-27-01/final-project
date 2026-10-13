@@ -1,4 +1,5 @@
 using System.Text.Json;
+using AnuradhapuraAI.Application.Forecasting;
 using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Common;
@@ -6,6 +7,7 @@ using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using AnuradhapuraAI.Infrastructure.Recommendations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AnuradhapuraAI.Phase3Tests;
 
@@ -199,7 +201,8 @@ public sealed class Phase8B2SqlServerServiceIntegrationTests
             new StubRecommendationOrchestrationService(
                 RecommendationOrchestrationResult<RecommendationEvaluationResponse>.Success(evaluation)),
             rankingService ?? new RecommendationRankingService(),
-            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-09T00:00:00Z")));
+            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-09T00:00:00Z")),
+            Options.Create(new WeatherModelFeatureOptions { EnableRecommendationHistory = true }));
 
     private static async Task<User> AddSyntheticUserAsync(
         AnuradhapuraAiDbContext context,

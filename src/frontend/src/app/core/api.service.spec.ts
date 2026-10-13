@@ -32,6 +32,28 @@ describe('ApiService', () => {
     http.verify();
   });
 
+  it('posts read-only recommendation evaluations without creating history', () => {
+    const { service, http } = setup();
+
+    service.evaluateRecommendation({ district: 'Anuradhapura District', soilType: 'Reddish Brown Earth' }).subscribe();
+
+    const request = http.expectOne('/api/recommendations/evaluate');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      district: 'Anuradhapura District',
+      soilType: 'Reddish Brown Earth',
+    });
+    expect(request.request.body.userId).toBeUndefined();
+    request.flush({
+      forecastRunId: '22222222-2222-2222-2222-222222222222',
+      soilType: 'Reddish Brown Earth',
+      forecast: sampleRecommendation().forecast,
+      crops: sampleRecommendation().crops,
+      limitations: ['Read-only technical evaluation.'],
+    });
+    http.verify();
+  });
+
   it('maps forecast-unavailable responses to safe frontend errors', async () => {
     const { service, http } = setup();
     const errorPromise = new Promise<FrontendApiError>(resolve => {

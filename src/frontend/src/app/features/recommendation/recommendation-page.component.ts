@@ -3,7 +3,7 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../../core/api.service';
-import { RecommendationResponse, supportedCrops } from '../../core/api.models';
+import { RecommendationEvaluationResponse, supportedCrops } from '../../core/api.models';
 
 @Component({
   selector: 'app-recommendation-page',
@@ -12,7 +12,7 @@ import { RecommendationResponse, supportedCrops } from '../../core/api.models';
     <section class="page-title">
       <p class="eyebrow">Public and registered workflow</p>
       <h1>Crop Recommendation</h1>
-      <p>Backend-generated rankings, evidence coverage and forecast provenance are shown as returned.</p>
+      <p>Read-only suitability evaluation using the latest eligible operational forecast.</p>
     </section>
 
     <form class="panel form-panel" (ngSubmit)="submit()">
@@ -44,8 +44,8 @@ import { RecommendationResponse, supportedCrops } from '../../core/api.models';
     @if (recommendation(); as result) {
       <section class="forecast-strip" aria-label="Forecast provenance">
         <div>
-          <span>Recommendation</span>
-          <strong>#{{ result.recommendationId }}</strong>
+          <span>Evaluation</span>
+          <strong>Read-only</strong>
         </div>
         <div>
           <span>Forecast run</span>
@@ -60,6 +60,18 @@ import { RecommendationResponse, supportedCrops } from '../../core/api.models';
           <strong>{{ result.forecast.modelVersion || 'Not provided' }}</strong>
         </div>
       </section>
+
+      @if (!soilType.trim()) {
+        <div class="notice warning">Soil information was not supplied. Soil compatibility is marked unavailable and remaining evaluable factor weights are re-normalized.</div>
+      }
+
+      @if (result.limitations.length) {
+        <section class="notice warning" aria-label="Recommendation limitations">
+          @for (limitation of result.limitations; track limitation) {
+            <p>{{ limitation }}</p>
+          }
+        </section>
+      }
 
       <section class="forecast-days" aria-label="Seven day forecast">
         @for (day of result.forecast.days; track day.targetDate) {
@@ -117,7 +129,7 @@ import { RecommendationResponse, supportedCrops } from '../../core/api.models';
 })
 export class RecommendationPageComponent {
   readonly expectedCropCount = supportedCrops.length;
-  readonly recommendation = signal<RecommendationResponse | null>(null);
+  readonly recommendation = signal<RecommendationEvaluationResponse | null>(null);
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
   district = 'Anuradhapura District';
@@ -130,7 +142,7 @@ export class RecommendationPageComponent {
     this.error.set(null);
     this.recommendation.set(null);
     this.api
-      .createRecommendation({
+      .evaluateRecommendation({
         district: this.district,
         soilType: this.soilType.trim() || null,
       })

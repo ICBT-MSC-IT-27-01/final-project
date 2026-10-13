@@ -10,9 +10,53 @@ namespace AnuradhapuraAI.Api.Controllers;
 [Route("api/recommendations")]
 public sealed class RecommendationsController(
     IRecommendationPersistenceService recommendationService,
-    IRecommendationHistoryService historyService) : ControllerBase
+    IRecommendationHistoryService historyService,
+    IRecommendationOrchestrationService orchestrationService,
+    IRecommendationRankingService rankingService) : ControllerBase
 {
     private const int MaximumSoilTypeLength = 100;
+
+    [AllowAnonymous]
+    [HttpPost("evaluate")]
+    public async Task<IActionResult> EvaluateRecommendation(
+        CreateRecommendationRequest? request,
+        CancellationToken cancellationToken)
+    {
+        if (request is null)
+        {
+            return BadRequest(new { message = "Recommendation request body is required." });
+        }
+
+        var validationError = ValidateRequest(request);
+        if (validationError is not null)
+        {
+            return BadRequest(new { message = validationError });
+        }
+
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (!string.Equals(role, ApprovedRoleNames.RegisteredUser, StringComparison.Ordinal) &&
+                !string.Equals(role, ApprovedRoleNames.AgriculturalOfficer, StringComparison.Ordinal) &&
+                !string.Equals(role, ApprovedRoleNames.Administrator, StringComparison.Ordinal))
+            {
+                return Forbid();
+            }
+        }
+
+        var soilType = NormalizeSoilType(request.SoilType);
+        var result = await orchestrationService.EvaluateLatestForecastAsync(
+            new RecommendationEvaluationRequest(soilType),
+            cancellationToken);
+
+        if (!result.Succeeded || result.Value is null)
+        {
+            return ToFailureResult(result.ErrorCode, result.Message);
+        }
+
+        var ranked = rankingService.Rank(result.Value);
+        return Ok(ToEvaluationResponse(ranked, soilType));
+    }
 
     [AllowAnonymous]
     [HttpPost]
@@ -39,9 +83,7 @@ public sealed class RecommendationsController(
                 : Unauthorized(new { message = "Authenticated recommendation requests require a valid user identity." });
         }
 
-        var soilType = string.IsNullOrWhiteSpace(request.SoilType)
-            ? null
-            : request.SoilType.Trim();
+        var soilType = NormalizeSoilType(request.SoilType);
         var result = await recommendationService.CreateRecommendationAsync(
             new CreateRecommendationPersistenceRequest(soilType, registeredUserIdResult.UserId),
             cancellationToken);
@@ -117,6 +159,11 @@ public sealed class RecommendationsController(
         return null;
     }
 
+    private static string? NormalizeSoilType(string? soilType) =>
+        string.IsNullOrWhiteSpace(soilType)
+            ? null
+            : soilType.Trim();
+
     private TrustedUserResult GetTrustedRegisteredUserId()
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -141,6 +188,20 @@ public sealed class RecommendationsController(
         (string.Equals(district.Trim(), "Anuradhapura", StringComparison.OrdinalIgnoreCase) ||
          string.Equals(district.Trim(), "Anuradhapura District", StringComparison.OrdinalIgnoreCase));
 
+    private static RecommendationEvaluationApiResponse ToEvaluationResponse(
+        RankedRecommendationEvaluationResponse response,
+        string? soilType) =>
+        new(
+            response.Forecast.ForecastRunId,
+            soilType,
+            ToForecastResponse(response.Forecast),
+            response.Crops.Select(ToCropResponse).ToList(),
+            [
+                "This is a technical suitability evaluation, not a guarantee of crop success, yield, or profitability.",
+                "Missing factors are reported explicitly and are not replaced with fabricated scores.",
+                "Scientific/agronomic validation remains separate from technical system validation."
+            ]);
+
     private static RecommendationResponse ToResponse(PersistedRecommendationResponse response) =>
         new(
             response.RecommendationId,
@@ -148,21 +209,24 @@ public sealed class RecommendationsController(
             response.UserId,
             response.SoilType,
             response.CreatedAt,
-            new RecommendationForecastResponse(
-                response.Forecast.ForecastRunId,
-                response.Forecast.ForecastDate,
-                response.Forecast.TargetStartDate,
-                response.Forecast.TargetEndDate,
-                response.Forecast.ModelVersion,
-                response.Forecast.CreatedAt,
-                response.Forecast.ForecastDays
-                    .Select(day => new RecommendationForecastDayResponse(
-                        day.TargetDate,
-                        day.Rainfall,
-                        day.Temperature,
-                        day.Humidity))
-                    .ToList()),
+            ToForecastResponse(response.Forecast),
             response.Crops.Select(ToCropResponse).ToList());
+
+    private static RecommendationForecastResponse ToForecastResponse(SelectedForecastRun forecast) =>
+        new(
+            forecast.ForecastRunId,
+            forecast.ForecastDate,
+            forecast.TargetStartDate,
+            forecast.TargetEndDate,
+            forecast.ModelVersion,
+            forecast.CreatedAt,
+            forecast.ForecastDays
+                .Select(day => new RecommendationForecastDayResponse(
+                    day.TargetDate,
+                    day.Rainfall,
+                    day.Temperature,
+                    day.Humidity))
+                .ToList());
 
     private static RecommendationCropResponse ToCropResponse(RankedCropRecommendationEvaluation crop) =>
         new(
@@ -191,6 +255,9 @@ public sealed class RecommendationsController(
 
     private IActionResult ToFailureResult(string? errorCode, string? message) => errorCode switch
     {
+        RecommendationOrchestrationErrorCodes.FeatureDisabled => StatusCode(
+            StatusCodes.Status503ServiceUnavailable,
+            new { message = message ?? "Recommendation history is disabled." }),
         RecommendationOrchestrationErrorCodes.ForecastUnavailable => StatusCode(
             StatusCodes.Status503ServiceUnavailable,
             new { message = message ?? "No complete forecast is available." }),

@@ -14,6 +14,7 @@ import {
   RecommendationHistoryDetailResponse,
   RecommendationHistorySummaryResponse,
   OperationalForecastGenerationResponse,
+  RecommendationEvaluationResponse,
   RecommendationResponse,
   RecommendationReviewResponse,
   RecommendationReviewSummaryResponse,
@@ -43,6 +44,12 @@ export class ApiService {
 
   createRecommendation(request: CreateRecommendationRequest): Observable<RecommendationResponse> {
     return this.http.post<RecommendationResponse>(`${this.baseUrl}/recommendations`, request).pipe(catchError(toApiError));
+  }
+
+  evaluateRecommendation(request: CreateRecommendationRequest): Observable<RecommendationEvaluationResponse> {
+    return this.http
+      .post<RecommendationEvaluationResponse>(`${this.baseUrl}/recommendations/evaluate`, request)
+      .pipe(catchError(toApiError));
   }
 
   listPendingValidations(): Observable<RecommendationReviewSummaryResponse[]> {

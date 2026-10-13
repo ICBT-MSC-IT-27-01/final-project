@@ -57,6 +57,14 @@ export interface RecommendationResponse {
   crops: RecommendationCropResponse[];
 }
 
+export interface RecommendationEvaluationResponse {
+  forecastRunId: string;
+  soilType: string | null;
+  forecast: RecommendationForecastResponse;
+  crops: RecommendationCropResponse[];
+  limitations: string[];
+}
+
 export interface RecommendationForecastResponse {
   forecastRunId: string;
   forecastDate: string;

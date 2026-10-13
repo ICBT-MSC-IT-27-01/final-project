@@ -13,6 +13,56 @@ namespace AnuradhapuraAI.Phase3Tests;
 public sealed class RecommendationEndpointTests(Phase3WebApplicationFactory factory) : IClassFixture<Phase3WebApplicationFactory>
 {
     [Fact]
+    public async Task EvaluateRecommendation_PublicRequest_ReturnsReadOnlyRecommendationWithoutPersistence()
+    {
+        var fakePersistence = new FakeRecommendationPersistenceService();
+        var fakeEvaluation = new FakeRecommendationOrchestrationService();
+        using var testFactory = CreateFactory(fakePersistence, fakeEvaluation);
+        var client = testFactory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/recommendations/evaluate",
+            new CreateRecommendationRequest { District = "Anuradhapura", SoilType = " Synthetic loam " });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<RecommendationEvaluationApiResponse>();
+        Assert.NotNull(body);
+        Assert.Equal("Synthetic loam", fakeEvaluation.LastRequest!.SoilType);
+        Assert.Null(fakePersistence.LastRequest);
+        Assert.Equal(fakeEvaluation.ForecastRunId, body!.ForecastRunId);
+        Assert.Equal(7, body.Forecast.Days.Count);
+        Assert.Equal(6, body.Crops.Count);
+        Assert.NotEmpty(body.Limitations);
+        Assert.Equal([1, 2, 3, 4], body.Crops
+            .Where(crop => crop.Rank.HasValue)
+            .Select(crop => crop.Rank!.Value)
+            .Order()
+            .ToArray());
+    }
+
+    [Theory]
+    [InlineData(ApprovedRoleNames.AgriculturalOfficer)]
+    [InlineData(ApprovedRoleNames.Administrator)]
+    public async Task EvaluateRecommendation_PrivilegedAuthenticatedUsers_CanReadWithoutPersistence(string roleName)
+    {
+        var fakePersistence = new FakeRecommendationPersistenceService();
+        var fakeEvaluation = new FakeRecommendationOrchestrationService();
+        using var testFactory = CreateFactory(fakePersistence, fakeEvaluation);
+        var client = testFactory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.UserIdHeader, "2");
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.EmailHeader, "privileged@example.test");
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.RoleHeader, roleName);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/recommendations/evaluate",
+            new CreateRecommendationRequest { District = "Anuradhapura" });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(fakeEvaluation.LastRequest);
+        Assert.Null(fakePersistence.LastRequest);
+    }
+
+    [Fact]
     public async Task CreateRecommendation_PublicRequest_ReturnsRecommendationWithoutUserAssociation()
     {
         var fakeService = new FakeRecommendationPersistenceService();
@@ -238,6 +288,23 @@ public sealed class RecommendationEndpointTests(Phase3WebApplicationFactory fact
     }
 
     [Fact]
+    public async Task CreateRecommendation_HistoryFeatureDisabled_ReturnsServiceUnavailable()
+    {
+        var fakeService = new FakeRecommendationPersistenceService(
+            RecommendationOrchestrationResult<PersistedRecommendationResponse>.Failure(
+                RecommendationOrchestrationErrorCodes.FeatureDisabled,
+                "Recommendation history persistence is disabled."));
+        using var testFactory = CreateFactory(fakeService);
+        var client = testFactory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/recommendations",
+            new CreateRecommendationRequest { District = "Anuradhapura" });
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Fact]
     public async Task RecommendationHistoryRoute_AnonymousRequest_IsRejected()
     {
         using var testFactory = CreateFactory(new FakeRecommendationPersistenceService());
@@ -248,12 +315,121 @@ public sealed class RecommendationEndpointTests(Phase3WebApplicationFactory fact
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    private Phase3WebApplicationFactory CreateFactory(FakeRecommendationPersistenceService fakeService) =>
+    private Phase3WebApplicationFactory CreateFactory(
+        FakeRecommendationPersistenceService fakeService,
+        FakeRecommendationOrchestrationService? fakeEvaluation = null) =>
         factory.CreateIsolated(services =>
         {
             services.RemoveAll<IRecommendationPersistenceService>();
+            services.RemoveAll<IRecommendationOrchestrationService>();
+            services.RemoveAll<IRecommendationRankingService>();
             services.AddSingleton<IRecommendationPersistenceService>(fakeService);
+            services.AddSingleton<IRecommendationOrchestrationService>(fakeEvaluation ?? new FakeRecommendationOrchestrationService());
+            services.AddSingleton<IRecommendationRankingService, RecommendationRankingService>();
         });
+
+    private sealed class FakeRecommendationOrchestrationService : IRecommendationOrchestrationService
+    {
+        private readonly RecommendationOrchestrationResult<RecommendationEvaluationResponse> result;
+
+        public Guid ForecastRunId { get; } = Guid.Parse("00000000-0000-0000-0000-000000008901");
+
+        public FakeRecommendationOrchestrationService()
+            : this(RecommendationOrchestrationResult<RecommendationEvaluationResponse>.Success(CreateResponse()))
+        {
+        }
+
+        public FakeRecommendationOrchestrationService(RecommendationOrchestrationResult<RecommendationEvaluationResponse> result)
+        {
+            this.result = result;
+        }
+
+        public RecommendationEvaluationRequest? LastRequest { get; private set; }
+
+        public Task<RecommendationOrchestrationResult<RecommendationEvaluationResponse>> EvaluateLatestForecastAsync(
+            RecommendationEvaluationRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            LastRequest = request;
+            return Task.FromResult(result);
+        }
+
+        private static RecommendationEvaluationResponse CreateResponse()
+        {
+            var forecastRunId = Guid.Parse("00000000-0000-0000-0000-000000008901");
+            return new RecommendationEvaluationResponse(
+                new SelectedForecastRun(
+                    forecastRunId,
+                    new DateOnly(2026, 1, 1),
+                    new DateOnly(2026, 1, 2),
+                    new DateOnly(2026, 1, 8),
+                    "v1-api-test",
+                    DateTimeOffset.Parse("2026-10-09T00:00:00Z"),
+                    Enumerable.Range(1, 7)
+                        .Select(day => new SuitabilityForecastDay(
+                            new DateOnly(2026, 1, 1).AddDays(day),
+                            Rainfall: day,
+                            Temperature: 26m,
+                            Humidity: 70m))
+                        .ToList()),
+                CreateCrops());
+        }
+
+        private static IReadOnlyList<CropRecommendationEvaluation> CreateCrops() =>
+            ApprovedCropNames.All
+                .Select((cropName, index) => CreateCrop(
+                    cropName,
+                    index switch
+                    {
+                        0 => 92m,
+                        1 => 85m,
+                        2 => null,
+                        3 => 72m,
+                        4 => 61m,
+                        _ => null
+                    },
+                    index is 2 or 5
+                        ? ApprovedRecommendationEvaluationStatuses.InsufficientEvidence
+                        : ApprovedRecommendationEvaluationStatuses.Partial))
+                .ToList();
+
+        private static CropRecommendationEvaluation CreateCrop(
+            string cropName,
+            decimal? overallScore,
+            string evaluationStatus)
+        {
+            var factors = SuitabilityFactors.All.Select(factor =>
+            {
+                var isEvaluable = overallScore.HasValue && factor == SuitabilityFactors.Temperature;
+                return new SuitabilityFactorResult(
+                    factor,
+                    isEvaluable,
+                    isEvaluable ? overallScore : null,
+                    isEvaluable ? 26m : null,
+                    ConfiguredWeight: 25m,
+                    EffectiveWeight: isEvaluable ? 1m : null,
+                    Explanation: isEvaluable
+                        ? "Synthetic API endpoint factor was evaluated."
+                        : "Synthetic API endpoint factor was unavailable.");
+            }).ToList();
+
+            return new CropRecommendationEvaluation(
+                cropName,
+                evaluationStatus,
+                RainfallScore: null,
+                TemperatureScore: overallScore,
+                HumidityScore: null,
+                SoilScore: null,
+                OverallScore: overallScore,
+                SuitabilityCategory: overallScore.HasValue ? ApprovedSuitabilityCategories.Suitable : null,
+                UnavailableFactors: [SuitabilityFactors.Rainfall, SuitabilityFactors.Humidity, SuitabilityFactors.Soil],
+                Factors: factors,
+                ClimateRisks: [],
+                Explanation: $"{cropName} synthetic API endpoint recommendation.",
+                new EvidenceCoverage(overallScore.HasValue ? 1 : 0, SuitabilityFactors.All.Length, overallScore.HasValue ? 25m : 0m));
+        }
+    }
 
     private sealed class FakeRecommendationPersistenceService : IRecommendationPersistenceService
     {

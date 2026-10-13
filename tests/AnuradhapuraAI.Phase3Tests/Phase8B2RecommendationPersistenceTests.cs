@@ -406,7 +406,8 @@ public sealed class Phase8B2RecommendationPersistenceTests
             new StubRecommendationOrchestrationService(
                 RecommendationOrchestrationResult<RecommendationEvaluationResponse>.Success(evaluation)),
             new RecommendationRankingService(),
-            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-09T00:00:00Z")));
+            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-09T00:00:00Z")),
+            Options.Create(new WeatherModelFeatureOptions { EnableRecommendationHistory = true }));
 
     private static RecommendationPersistenceService CreateRealPersistenceService(AnuradhapuraAiDbContext dbContext) =>
         new(
@@ -417,7 +418,8 @@ public sealed class Phase8B2RecommendationPersistenceTests
                 new CropSuitabilityEngine(),
                 Options.Create(new WeatherModelFeatureOptions())),
             new RecommendationRankingService(),
-            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-09T00:00:00Z")));
+            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-09T00:00:00Z")),
+            Options.Create(new WeatherModelFeatureOptions { EnableRecommendationHistory = true }));
 
     private static RecommendationEvaluationResponse CreateAllInsufficientEvaluation() =>
         CreateEvaluationResponse(ApprovedCropNames.All

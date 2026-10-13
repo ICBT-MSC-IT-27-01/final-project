@@ -194,7 +194,40 @@ Frozen database decisions:
 - Phase 7A - Agricultural Evidence and Suitability Scoring Definition: APPROVED / FROZEN
 - Phase 7B - Crop Suitability Engine Implementation: IMPLEMENTED WITH RUNTIME CONFIGURATION MAPPING / PENDING PROJECT-OWNER REVIEW
 
-Later phases through Phase 13 have now been implemented in this repository. The historical phase list above remains useful context, but `docs/PHASE13_FINAL_VERIFICATION_REPORT.md` is the current source of truth for operational forecast integration status.
+Later phases through Phase 14 have now been implemented in this repository. The historical phase list above remains useful context, but `docs/PHASE13_FINAL_VERIFICATION_REPORT.md` is the current source of truth for operational forecast integration status and `docs/PHASE14_FINAL_VERIFICATION_REPORT.md` is the current source of truth for crop recommendation workflow status.
+
+## 9A. Phase 14 Recommendation Status
+
+Phase 14 completed the technical crop recommendation workflow while preserving scientific caution.
+
+Implemented:
+
+- Public read-only recommendation evaluation endpoint: `POST /api/recommendations/evaluate`.
+- Recommendation history endpoint remains separate: `POST /api/recommendations`.
+- Recommendation history persistence is fail-closed unless `FeatureFlags:EnableRecommendationHistory` is enabled.
+- Angular recommendation page uses the read-only endpoint and displays forecast evidence, seven forecast days, crop rankings where evaluable, missing factor notices, and limitations.
+- Agricultural Officer validation remains a review-only workflow and does not grant configuration, forecast, or model privileges.
+
+Scientific status:
+
+- Crop recommendation configuration architecture is ready.
+- No new crop requirement thresholds were seeded in Phase 14 because the reviewed sources were not sufficient to create defensible 7-day scoring thresholds for all six crops.
+- Scientific/agronomic validation remains LIMITED.
+- LSTM predictive accuracy remains NOT VERIFIED.
+
+Phase 14 documentation:
+
+- `docs/PHASE14_FINAL_VERIFICATION_REPORT.md`
+- `docs/PHASE14_CROP_REQUIREMENTS.md`
+- `docs/PHASE14_RECOMMENDATION_VALIDATION.md`
+
+Phase 14 verification commands:
+
+- `dotnet build .\src\backend\AnuradhapuraAI.Api\AnuradhapuraAI.Api.csproj --no-restore` -> PASS, 0 warnings, 0 errors.
+- `dotnet test .\tests\AnuradhapuraAI.Phase3Tests\AnuradhapuraAI.Phase3Tests.csproj --no-restore --logger "console;verbosity=minimal"` -> 272 passed, 0 failed, 0 skipped.
+- `npm test -- --watch=false` from `src/frontend` -> 39 passed, 0 failed.
+- `npm run build` from `src/frontend` -> PASS.
+- `python -m pytest` from `src/forecasting-service` -> 22 passed, 0 failed, 1 upstream deprecation warning.
 
 ## 10. Authentication / RBAC Implementation
 

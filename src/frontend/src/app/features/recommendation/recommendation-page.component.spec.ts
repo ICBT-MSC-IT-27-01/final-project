@@ -2,12 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiService, FrontendApiError } from '../../core/api.service';
-import { RecommendationResponse } from '../../core/api.models';
+import { RecommendationEvaluationResponse } from '../../core/api.models';
 import { RecommendationPageComponent } from './recommendation-page.component';
 
 describe('RecommendationPageComponent', () => {
   const api = {
-    createRecommendation: vi.fn(),
+    evaluateRecommendation: vi.fn(),
   };
   let fixture: ComponentFixture<RecommendationPageComponent>;
   let component: RecommendationPageComponent;
@@ -24,12 +24,12 @@ describe('RecommendationPageComponent', () => {
   });
 
   it('submits the backend recommendation contract without user id spoofing', () => {
-    api.createRecommendation.mockReturnValue(of(sampleRecommendation()));
+    api.evaluateRecommendation.mockReturnValue(of(sampleRecommendation()));
     component.soilType = '  Reddish Brown Earth  ';
 
     component.submit();
 
-    expect(api.createRecommendation).toHaveBeenCalledWith({
+    expect(api.evaluateRecommendation).toHaveBeenCalledWith({
       district: 'Anuradhapura District',
       soilType: 'Reddish Brown Earth',
     });
@@ -50,7 +50,7 @@ describe('RecommendationPageComponent', () => {
   });
 
   it('shows safe forecast-unavailable errors', () => {
-    api.createRecommendation.mockReturnValue(throwError(() => new FrontendApiError('No complete forecast is available.', 503)));
+    api.evaluateRecommendation.mockReturnValue(throwError(() => new FrontendApiError('No complete forecast is available.', 503)));
 
     component.submit();
 
@@ -59,7 +59,7 @@ describe('RecommendationPageComponent', () => {
   });
 });
 
-function sampleRecommendation(): RecommendationResponse {
+function sampleRecommendation(): RecommendationEvaluationResponse {
   const crops = ['Paddy', 'Maize', 'Green Gram', 'Cowpea', 'Groundnut', 'Chilli'].map((cropName, index) => ({
     cropName,
     evaluationStatus: index === 5 ? 'InsufficientEvidence' : 'PartiallyEvaluated',
@@ -92,11 +92,8 @@ function sampleRecommendation(): RecommendationResponse {
   }));
 
   return {
-    recommendationId: 99,
     forecastRunId: '22222222-2222-2222-2222-222222222222',
-    userId: null,
     soilType: null,
-    createdAt: '2026-10-10T00:00:00Z',
     forecast: {
       forecastRunId: '22222222-2222-2222-2222-222222222222',
       forecastDate: '2026-10-10',
@@ -109,5 +106,8 @@ function sampleRecommendation(): RecommendationResponse {
       ],
     },
     crops,
+    limitations: [
+      'Crop requirement values are configuration-dependent and should be interpreted with agronomic review.',
+    ],
   };
 }

@@ -1,5 +1,6 @@
 using System.Data.Common;
 using System.Text.Json;
+using AnuradhapuraAI.Application.Forecasting;
 using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Common;
@@ -14,7 +15,8 @@ public sealed class RecommendationPersistenceService(
     AnuradhapuraAiDbContext dbContext,
     IRecommendationOrchestrationService orchestrationService,
     IRecommendationRankingService rankingService,
-    TimeProvider timeProvider) : IRecommendationPersistenceService
+    TimeProvider timeProvider,
+    Microsoft.Extensions.Options.IOptions<WeatherModelFeatureOptions> featureOptions) : IRecommendationPersistenceService
 {
     private const string EvidenceSchemaVersion = "phase8b2-evidence-v1";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -23,6 +25,13 @@ public sealed class RecommendationPersistenceService(
         CreateRecommendationPersistenceRequest request,
         CancellationToken cancellationToken = default)
     {
+        if (!featureOptions.Value.EnableRecommendationHistory)
+        {
+            return RecommendationOrchestrationResult<PersistedRecommendationResponse>.Failure(
+                RecommendationOrchestrationErrorCodes.FeatureDisabled,
+                "Recommendation history persistence is disabled.");
+        }
+
         var evaluationResult = await orchestrationService.EvaluateLatestForecastAsync(
             new RecommendationEvaluationRequest(request.SoilType),
             cancellationToken);
