@@ -229,6 +229,45 @@ Phase 14 verification commands:
 - `npm run build` from `src/frontend` -> PASS.
 - `python -m pytest` from `src/forecasting-service` -> 22 passed, 0 failed, 1 upstream deprecation warning.
 
+## 9B. Phase 15 Scientific Evaluation Status
+
+Phase 15 completed dissertation-facing scientific and system evaluation work without fabricating agronomic thresholds.
+
+Implemented/verified:
+
+- Additional suitability reference-calculation tests.
+- Annual rainfall context remains unscored for seven-day recommendations.
+- Public read-only recommendation endpoint failure handling.
+- Deterministic repeated scoring.
+- Lightweight prototype scoring performance check.
+- Forecast model artifact audit.
+- Agricultural Officer expert-validation protocol.
+
+Scientific status:
+
+- Scientific validation: PARTIAL.
+- Agronomic live recommendation validation: NOT VERIFIED.
+- Agricultural Officer expert validation: NOT PERFORMED.
+- Browser E2E: NOT EXECUTED.
+- Predictive accuracy for operational recommendations: NOT VERIFIED.
+
+Phase 15 documentation:
+
+- `docs/PHASE15_FINAL_VERIFICATION_REPORT.md`
+- `docs/PHASE15_SCIENTIFIC_CROP_REQUIREMENTS.md`
+- `docs/PHASE15_TEMPORAL_COMPATIBILITY.md`
+- `docs/PHASE15_RECOMMENDATION_EVALUATION.md`
+- `docs/PHASE15_FORECAST_MODEL_EVALUATION.md`
+- `docs/PHASE15_AGRICULTURAL_OFFICER_PROTOCOL.md`
+
+Phase 15 verification commands:
+
+- `dotnet build .\src\backend\AnuradhapuraAI.Api\AnuradhapuraAI.Api.csproj --no-restore` -> PASS, 0 warnings, 0 errors.
+- `dotnet test .\tests\AnuradhapuraAI.Phase3Tests\AnuradhapuraAI.Phase3Tests.csproj --no-restore --logger "console;verbosity=minimal"` -> 281 passed, 0 failed, 0 skipped.
+- `python -m pytest` from `src/forecasting-service` -> 22 passed, 0 failed, 1 upstream deprecation warning.
+- `npm test -- --watch=false` from `src/frontend` -> 39 passed, 0 failed.
+- `npm run build` from `src/frontend` -> PASS.
+
 ## 10. Authentication / RBAC Implementation
 
 Implemented authentication foundation:

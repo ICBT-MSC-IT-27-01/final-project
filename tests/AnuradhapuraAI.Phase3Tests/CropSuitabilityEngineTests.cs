@@ -168,6 +168,94 @@ public sealed class CropSuitabilityEngineTests
         Assert.Equal(20m / 90m, paddy.Soil.EffectiveWeight);
     }
 
+    [Fact]
+    public void Evaluate_Phase15ReferenceExample_MatchesIndependentWeightedCalculation()
+    {
+        var request = DefaultRequest(
+            soilScore: 60m,
+            temperatureRequirement: new SuitabilityRangeRequirement(24m, 28m, 20m, 32m, "deg C", "synthetic 7-day mean", true),
+            humidityRequirement: new SuitabilityRangeRequirement(65m, 75m, 50m, 90m, "%", "synthetic 7-day mean", true),
+            weights: new SuitabilityFactorWeights(Rainfall: 40m, Temperature: 30m, Humidity: 20m, Soil: 10m));
+
+        var result = _engine.Evaluate(request);
+
+        var paddy = AssertSuccess(result).Crops.Single(crop => crop.CropName == ApprovedCropNames.Paddy);
+        var expectedRainfall = 100m; // 7-day total is 7 mm inside the synthetic optimal 5-8 mm range.
+        var expectedTemperature = 100m; // 7-day mean is 26 deg C inside the synthetic optimal 24-28 deg C range.
+        var expectedHumidity = 100m; // 7-day mean is 70% inside the synthetic optimal 65-75% range.
+        var expectedSoil = 60m;
+        var expectedOverall = (expectedRainfall * 0.4m) +
+            (expectedTemperature * 0.3m) +
+            (expectedHumidity * 0.2m) +
+            (expectedSoil * 0.1m);
+
+        Assert.Equal(expectedOverall, paddy.OverallScore);
+        Assert.Equal(96m, paddy.OverallScore);
+        Assert.Equal(ApprovedSuitabilityCategories.HighlySuitable, paddy.SuitabilityCategory);
+        Assert.Equal(4, paddy.EvaluatedFactorCount);
+    }
+
+    [Fact]
+    public void Evaluate_AnnualScientificContextValuesRemainUnscoredForSevenDayForecast()
+    {
+        var annualRainfallContext = new SuitabilityRangeRequirement(
+            OptimalMinimum: 600m,
+            OptimalMaximum: 1200m,
+            AcceptableMinimum: 400m,
+            AcceptableMaximum: 1800m,
+            Unit: "mm/year",
+            TimeBasis: ApprovedTimeBases.Annual,
+            IsCompatibleWithSevenDayForecast: false);
+
+        var result = _engine.Evaluate(DefaultRequest(
+            profiles: DefaultProfiles(
+                rainfallRequirement: annualRainfallContext,
+                temperatureRequirement: null,
+                humidityRequirement: null,
+                soilCompatibilities: [],
+                keepNullRequirements: true),
+            soilType: null,
+            allowInsufficientEvidenceResults: true));
+
+        var response = AssertSuccess(result);
+        Assert.All(response.Crops, crop =>
+        {
+            Assert.Null(crop.OverallScore);
+            Assert.Null(crop.SuitabilityCategory);
+            Assert.Equal(0, crop.EvaluatedFactorCount);
+            Assert.False(crop.Rainfall.IsEvaluable);
+            Assert.Contains("annual", crop.Rainfall.Explanation, StringComparison.OrdinalIgnoreCase);
+        });
+    }
+
+    [Fact]
+    public void Evaluate_RepeatedScientificFixtureRunsAreDeterministic()
+    {
+        var request = DefaultRequest();
+
+        var first = AssertSuccess(_engine.Evaluate(request));
+        var second = AssertSuccess(_engine.Evaluate(request));
+
+        Assert.Equal(
+            first.Crops.Select(crop => (crop.CropName, crop.OverallScore, crop.SuitabilityCategory, crop.Explanation)).ToArray(),
+            second.Crops.Select(crop => (crop.CropName, crop.OverallScore, crop.SuitabilityCategory, crop.Explanation)).ToArray());
+    }
+
+    [Fact]
+    public void Evaluate_ControlledRecommendationBatchCompletesWithinPrototypeBudget()
+    {
+        var request = DefaultRequest();
+        var startedAt = DateTimeOffset.UtcNow;
+
+        for (var index = 0; index < 100; index++)
+        {
+            AssertSuccess(_engine.Evaluate(request));
+        }
+
+        var elapsed = DateTimeOffset.UtcNow - startedAt;
+        Assert.True(elapsed < TimeSpan.FromSeconds(2), $"Suitability scoring took {elapsed.TotalMilliseconds:0.##} ms for 100 runs.");
+    }
+
     [Theory]
     [InlineData(80, "Highly Suitable")]
     [InlineData(79.99, "Suitable")]
@@ -341,6 +429,7 @@ public sealed class CropSuitabilityEngineTests
         SuitabilityCategoryThresholds? thresholds = null,
         bool enableClimateRisks = true,
         ClimateRiskThresholds? climateRiskThresholds = null,
+        bool allowInsufficientEvidenceResults = false,
         IReadOnlyList<CropSuitabilityProfile>? profiles = null)
     {
         temperatureRequirement = omitTemperatureRequirement
@@ -363,7 +452,8 @@ public sealed class CropSuitabilityEngineTests
             Weights: weights ?? new SuitabilityFactorWeights(),
             CategoryThresholds: thresholds ?? new SuitabilityCategoryThresholds(),
             EnableClimateRiskIndicators: enableClimateRisks,
-            ClimateRiskThresholds: climateRiskThresholds);
+            ClimateRiskThresholds: climateRiskThresholds,
+            AllowInsufficientEvidenceResults: allowInsufficientEvidenceResults);
     }
 
     private static IReadOnlyList<SuitabilityForecastDay> DefaultForecast()

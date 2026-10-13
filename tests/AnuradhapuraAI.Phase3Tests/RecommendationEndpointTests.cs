@@ -62,6 +62,53 @@ public sealed class RecommendationEndpointTests(Phase3WebApplicationFactory fact
         Assert.Null(fakePersistence.LastRequest);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("Colombo")]
+    public async Task EvaluateRecommendation_InvalidDistrict_ReturnsBadRequestWithoutPersistence(string district)
+    {
+        var fakePersistence = new FakeRecommendationPersistenceService();
+        var fakeEvaluation = new FakeRecommendationOrchestrationService();
+        using var testFactory = CreateFactory(fakePersistence, fakeEvaluation);
+        var client = testFactory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/recommendations/evaluate",
+            new CreateRecommendationRequest { District = district });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Null(fakeEvaluation.LastRequest);
+        Assert.Null(fakePersistence.LastRequest);
+    }
+
+    [Theory]
+    [InlineData(RecommendationOrchestrationErrorCodes.ForecastUnavailable, HttpStatusCode.ServiceUnavailable)]
+    [InlineData(RecommendationOrchestrationErrorCodes.InvalidConfiguration, HttpStatusCode.InternalServerError)]
+    [InlineData(RecommendationOrchestrationErrorCodes.DatabaseReadFailed, HttpStatusCode.ServiceUnavailable)]
+    public async Task EvaluateRecommendation_ControlledFailures_MapToSafeStatusCodesWithoutPersistence(
+        string errorCode,
+        HttpStatusCode expectedStatusCode)
+    {
+        var fakePersistence = new FakeRecommendationPersistenceService();
+        var fakeEvaluation = new FakeRecommendationOrchestrationService(
+            RecommendationOrchestrationResult<RecommendationEvaluationResponse>.Failure(
+                errorCode,
+                "Synthetic failure detail that should not expose internals."));
+        using var testFactory = CreateFactory(fakePersistence, fakeEvaluation);
+        var client = testFactory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/recommendations/evaluate",
+            new CreateRecommendationRequest { District = "Anuradhapura District" });
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(expectedStatusCode, response.StatusCode);
+        Assert.Null(fakePersistence.LastRequest);
+        Assert.DoesNotContain("ConnectionStrings", body, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("UserSecretsId", body, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Server=", body, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public async Task CreateRecommendation_PublicRequest_ReturnsRecommendationWithoutUserAssociation()
     {
