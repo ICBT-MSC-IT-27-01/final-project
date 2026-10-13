@@ -431,6 +431,57 @@ Phase 18 status:
 - Scientific agronomic validation: PARTIAL.
 - Production readiness: NOT CLAIMED.
 
+## 9F. Phase 19 Integrated Dissertation Review Draft Status
+
+Phase 19 completed full dissertation integration and review-package preparation after the owner supplied the original Chapters 1-4 Word document.
+
+Primary source:
+
+- `docs/dissertation/phase19/input/Chapters_1_to_4_Piyumi_Paramee_Darshika.docx`
+- SHA256 before and after processing: `FD463F65C9FF713D9A24974F16E795C49ECC8B094BD90265CBC82603BB76B6F2`
+- Original preservation: PASS.
+
+Local-only DOCX outputs:
+
+- `docs/dissertation/phase19/FULL_DISSERTATION_INTEGRATED_DRAFT.docx`
+- `docs/dissertation/phase19/CHAPTERS_1_TO_4_CORRECTED_DRAFT.docx`
+- `docs/dissertation/phase19/CHAPTERS_5_TO_8_INTEGRATED_DRAFT.docx`
+
+These DOCX files are intentionally ignored and not pushed because they contain authored dissertation content and may include personal academic details.
+
+Tracked Phase 19 documentation:
+
+- `docs/PHASE19_FINAL_VERIFICATION_REPORT.md`
+- `docs/dissertation/phase19/SOURCE_DOCUMENT_INVENTORY.md`
+- `docs/dissertation/phase19/CHAPTERS_1_TO_4_CHANGE_LOG.md`
+- `docs/dissertation/phase19/CROSS_CHAPTER_CONSISTENCY_AUDIT.md`
+- `docs/dissertation/phase19/RESEARCH_TRACEABILITY_MATRIX.md`
+- `docs/dissertation/phase19/EVIDENCE_REGISTER.md`
+- `docs/dissertation/phase19/REFERENCES_AUDIT.md`
+- `docs/dissertation/phase19/FIGURE_AND_TABLE_REGISTER.md`
+- `docs/dissertation/phase19/FORMATTING_AND_DOCX_QA.md`
+- `docs/dissertation/phase19/SCIENTIFIC_AND_ETHICS_LIMITATIONS.md`
+- `docs/dissertation/phase19/SUPERVISOR_REVIEW_SUMMARY.md`
+- `docs/dissertation/phase19/SUPERVISOR_QUESTIONS_AND_ANSWERS.md`
+- `docs/dissertation/phase19/OUTSTANDING_ACTIONS_AND_SUBMISSION_CHECKLIST.md`
+- `docs/dissertation/phase19/README.md`
+
+Phase 19 status:
+
+- Integrated Chapters 1-8 DOCX review draft: GENERATED LOCALLY.
+- Source Chapters 1-4 preservation: PASS.
+- Generated DOCX parser validation: PASS.
+- Review PDF: NOT GENERATED; no reliable renderer confirmed.
+- Substantive consistency issues found: 8.
+- Substantive consistency issues resolved in review package: 7.
+- Open supervisor item: final diagram/asset handling and whether inline tracked changes are required.
+- Real participant UAT: NOT PERFORMED.
+- Agricultural Officer expert validation: NOT PERFORMED.
+- Ethics approval: PENDING.
+- Scientific agronomic validation: PARTIAL.
+- Supervisor approval: PENDING.
+- University submission readiness: NOT READY until supervisor/template/reference/ethics decisions are completed.
+
 ## 10. Authentication / RBAC Implementation
 
 Implemented authentication foundation:
@@ -728,7 +779,7 @@ These require explicit project-owner approval.
 
 ## 21. Next Development Task
 
-Phase 18 is complete after Git closure. Do not start Phase 19 without explicit project-owner instruction.
+Phase 19 is complete after Git closure. Do not start Phase 20 without explicit project-owner instruction.
 
 ## Startup Prompt for a New Codex Session
 

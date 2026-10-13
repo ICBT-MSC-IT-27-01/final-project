@@ -39,6 +39,10 @@ secrets.json
 # Local Codex/session recovery
 docs/CODEX_SESSION.md
 docs/AgentSessions/
+docs/dissertation/phase19/input/
+docs/dissertation/phase19/*.docx
+docs/dissertation/phase19/*.pdf
+docs/dissertation/phase19/phase19_generate.py
 
 # Editor/system files
 .vs/
