@@ -58,4 +58,8 @@ public sealed record WeatherModelFeatureOptions
     public bool EnableClimateRiskIndicators { get; set; }
 
     public bool EnableWeatherModelIntegration { get; set; }
+
+    public string OperationalWeatherSource { get; set; } = string.Empty;
+
+    public bool AcceptOperationalWeatherSource { get; set; }
 }

@@ -1,6 +1,8 @@
 using AnuradhapuraAI.Application.Forecasting;
+using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Persistence;
+using AnuradhapuraAI.Infrastructure.Forecasting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -65,6 +67,29 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
     }
 
     [Fact]
+    public async Task GetLatestForecast_ExcludesLegacyUnknownAndHistoricalEvaluationRuns()
+    {
+        using var testFactory = factory.CreateIsolated();
+        await SeedForecastRunAsync(
+            testFactory,
+            Guid.NewGuid(),
+            new DateOnly(2026, 1, 1),
+            DateTimeOffset.Parse("2026-01-01T00:00:00Z"),
+            runPurpose: ApprovedForecastRunPurposes.LegacyUnknown);
+        await SeedForecastRunAsync(
+            testFactory,
+            Guid.NewGuid(),
+            new DateOnly(2026, 1, 8),
+            DateTimeOffset.Parse("2026-01-02T00:00:00Z"),
+            runPurpose: ApprovedForecastRunPurposes.HistoricalEvaluation);
+        var client = testFactory.CreateClient();
+
+        var response = await client.GetAsync("/api/forecasts/latest");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task GetLatestForecast_SkipsInvalidNewestRunAndReturnsOlderValidRun()
     {
         using var testFactory = factory.CreateIsolated();
@@ -116,7 +141,7 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
     }
 
     [Fact]
-    public async Task GetLatestForecast_AllowsCreatedAtVariationsAndUsesLatestRunTimestamp()
+    public async Task GetLatestForecast_AllowsChildCreatedAtVariationsAndUsesParentRunTimestamp()
     {
         using var testFactory = factory.CreateIsolated();
         var runId = Guid.Parse("00000000-0000-0000-0000-000000000404");
@@ -129,7 +154,7 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<LatestForecastResponse>();
         Assert.Equal(runId, body!.ForecastRunId);
-        Assert.Equal(createdAt.AddMinutes(6), body.CreatedAt);
+        Assert.Equal(createdAt, body.CreatedAt);
     }
 
     [Fact]
@@ -230,10 +255,25 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
 
         using var scope = testFactory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AnuradhapuraAiDbContext>();
+        var forecastRun = Assert.Single(dbContext.ForecastRuns);
         Assert.Equal(7, dbContext.ForecastRecords.Count());
         var forecastRunIds = dbContext.ForecastRecords.Select(record => record.ForecastRunId).Distinct().ToList();
         Assert.Single(forecastRunIds);
         Assert.NotEqual(Guid.Empty, forecastRunIds[0]);
+        Assert.Equal(forecastRunIds[0], forecastRun.ForecastRunId);
+        Assert.Equal(ApprovedForecastRunPurposes.LegacyUnknown, forecastRun.RunPurpose);
+        Assert.Equal(new DateOnly(2025, 1, 30), forecastRun.ForecastOriginDate);
+        Assert.Equal(new DateOnly(2025, 1, 31), forecastRun.TargetStartDate);
+        Assert.Equal(new DateOnly(2025, 2, 6), forecastRun.TargetEndDate);
+        Assert.Equal("v1", forecastRun.ModelVersion);
+        Assert.Null(forecastRun.SourceProvider);
+        Assert.Null(forecastRun.SourceProduct);
+        Assert.Null(forecastRun.RequestedLatitude);
+        Assert.Null(forecastRun.RequestedLongitude);
+        Assert.Null(forecastRun.Timezone);
+        Assert.Null(forecastRun.ObservationStartDate);
+        Assert.Null(forecastRun.ObservationEndDate);
+        Assert.Null(forecastRun.SourceRetrievedAt);
         Assert.Empty(dbContext.Recommendations);
     }
 
@@ -262,6 +302,9 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
             .ToList();
         Assert.Equal(2, forecastRunIds.Count);
         Assert.DoesNotContain(Guid.Empty, forecastRunIds);
+        Assert.Equal(2, dbContext.ForecastRuns.Count());
+        Assert.All(dbContext.ForecastRuns, run => Assert.Equal(ApprovedForecastRunPurposes.LegacyUnknown, run.RunPurpose));
+        Assert.All(dbContext.ForecastRuns, run => Assert.Equal(7, dbContext.ForecastRecords.Count(record => record.ForecastRunId == run.ForecastRunId)));
     }
 
     [Fact]
@@ -339,6 +382,10 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
         var response = await client.PostAsJsonAsync("/api/forecasts", SampleRequest());
 
         Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        using var scope = testFactory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AnuradhapuraAiDbContext>();
+        Assert.Empty(dbContext.ForecastRuns);
+        Assert.Empty(dbContext.ForecastRecords);
     }
 
     [Fact]
@@ -402,10 +449,31 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
         bool inconsistentModelVersion = false,
         bool inconsistentForecastDate = false,
         bool createdAtVariation = false,
-        string? invalidField = null)
+        string? invalidField = null,
+        string runPurpose = ApprovedForecastRunPurposes.Operational)
     {
         using var scope = testFactory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AnuradhapuraAiDbContext>();
+        dbContext.ForecastRuns.Add(new ForecastRun
+        {
+            ForecastRunId = runId,
+            RunPurpose = runPurpose,
+            CreatedAt = createdAt,
+            ForecastOriginDate = forecastDate,
+            TargetStartDate = forecastDate.AddDays(1),
+            TargetEndDate = forecastDate.AddDays(count),
+            ModelVersion = "v1",
+            SourceProvider = "Open-Meteo",
+            SourceProduct = OpenMeteoForecastPastDaysWeatherSource.ApprovedProduct,
+            RequestedLatitude = 8.312229m,
+            RequestedLongitude = 80.413055m,
+            Timezone = "Asia/Colombo",
+            ObservationStartDate = forecastDate.AddDays(-29),
+            ObservationEndDate = forecastDate,
+            SourceRetrievedAt = createdAt,
+            DataQualityStatus = "Accepted"
+        });
+
         for (var index = 0; index < count; index++)
         {
             var targetOffset = targetDateGap && index == 6 ? 8 : index + 1;

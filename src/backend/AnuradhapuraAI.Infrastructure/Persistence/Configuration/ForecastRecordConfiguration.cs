@@ -48,5 +48,11 @@ public sealed class ForecastRecordConfiguration : IEntityTypeConfiguration<Forec
 
         builder.HasIndex(forecast => new { forecast.ForecastRunId, forecast.TargetDate })
             .IsUnique();
+
+        builder.HasOne(forecast => forecast.ForecastRun)
+            .WithMany(run => run.ForecastRecords)
+            .HasForeignKey(forecast => forecast.ForecastRunId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
     }
 }

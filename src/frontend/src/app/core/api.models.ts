@@ -248,6 +248,35 @@ export interface LatestForecastDayResponse {
   humidityPercent: number;
 }
 
+export interface OperationalForecastGenerationResponse {
+  forecastRunId: string;
+  runPurpose: string;
+  providerName: string;
+  providerProduct: string;
+  requestedLatitude: number;
+  requestedLongitude: number;
+  returnedLatitude: number | null;
+  returnedLongitude: number | null;
+  timezone: string;
+  observationWindowStart: string;
+  observationWindowEnd: string;
+  forecastOriginDate: string;
+  targetStartDate: string;
+  targetEndDate: string;
+  modelVersion: string;
+  createdAt: string;
+  forecasts: ForecastDayResponse[];
+}
+
+export interface ForecastDayResponse {
+  forecastDate: string;
+  targetDate: string;
+  temperature: number;
+  rainfall: number;
+  humidity: number;
+  modelVersion: string;
+}
+
 export interface CropResponse {
   id: number;
   name: string;

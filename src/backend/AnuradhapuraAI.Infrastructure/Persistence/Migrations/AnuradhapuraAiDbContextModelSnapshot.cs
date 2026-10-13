@@ -199,6 +199,76 @@ namespace AnuradhapuraAI.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AnuradhapuraAI.Domain.Entities.ForecastRun", b =>
+                {
+                    b.Property<Guid>("ForecastRunId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DataQualityStatus")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateOnly?>("ForecastOriginDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ModelVersion")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateOnly?>("ObservationEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("ObservationStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("RequestedLatitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
+
+                    b.Property<decimal?>("RequestedLongitude")
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
+
+                    b.Property<string>("RunPurpose")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SourceProduct")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SourceProvider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset?>("SourceRetrievedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly?>("TargetEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("TargetStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Timezone")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ForecastRunId");
+
+                    b.ToTable("ForecastRun", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ForecastRun_ForecastRunId_NotEmpty", "[ForecastRunId] <> '00000000-0000-0000-0000-000000000000'");
+
+                            t.HasCheckConstraint("CK_ForecastRun_RunPurpose", "[RunPurpose] IN (N'Operational', N'HistoricalEvaluation', N'LegacyUnknown')");
+                        });
+                });
+
             modelBuilder.Entity("AnuradhapuraAI.Domain.Entities.Recommendation", b =>
                 {
                     b.Property<int>("Id")
@@ -524,6 +594,17 @@ namespace AnuradhapuraAI.Infrastructure.Persistence.Migrations
                     b.Navigation("Crop");
                 });
 
+            modelBuilder.Entity("AnuradhapuraAI.Domain.Entities.ForecastRecord", b =>
+                {
+                    b.HasOne("AnuradhapuraAI.Domain.Entities.ForecastRun", "ForecastRun")
+                        .WithMany("ForecastRecords")
+                        .HasForeignKey("ForecastRunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ForecastRun");
+                });
+
             modelBuilder.Entity("AnuradhapuraAI.Domain.Entities.Recommendation", b =>
                 {
                     b.HasOne("AnuradhapuraAI.Domain.Entities.User", "User")
@@ -611,6 +692,11 @@ namespace AnuradhapuraAI.Infrastructure.Persistence.Migrations
                     b.Navigation("RecommendationCrops");
 
                     b.Navigation("SoilCompatibilities");
+                });
+
+            modelBuilder.Entity("AnuradhapuraAI.Domain.Entities.ForecastRun", b =>
+                {
+                    b.Navigation("ForecastRecords");
                 });
 
             modelBuilder.Entity("AnuradhapuraAI.Domain.Entities.Recommendation", b =>

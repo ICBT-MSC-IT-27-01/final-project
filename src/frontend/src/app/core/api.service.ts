@@ -13,6 +13,7 @@ import {
   PagedResponse,
   RecommendationHistoryDetailResponse,
   RecommendationHistorySummaryResponse,
+  OperationalForecastGenerationResponse,
   RecommendationResponse,
   RecommendationReviewResponse,
   RecommendationReviewSummaryResponse,
@@ -109,6 +110,12 @@ export class ApiService {
 
   updateAdminUserRole(userId: number, role: string): Observable<unknown> {
     return this.http.put(`${this.baseUrl}/admin/users/${userId}/role`, { role }).pipe(catchError(toApiError));
+  }
+
+  generateOperationalForecast(): Observable<OperationalForecastGenerationResponse> {
+    return this.http
+      .post<OperationalForecastGenerationResponse>(`${this.baseUrl}/admin/forecasts/operational`, {})
+      .pipe(catchError(toApiError));
   }
 }
 

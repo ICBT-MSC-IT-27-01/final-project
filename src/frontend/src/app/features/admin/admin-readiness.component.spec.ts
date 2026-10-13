@@ -11,6 +11,7 @@ describe('AdminReadinessComponent', () => {
     updateAdminResource: vi.fn(),
     setAdminResourceActiveStatus: vi.fn(),
     updateAdminUserRole: vi.fn(),
+    generateOperationalForecast: vi.fn(),
   };
   let fixture: ComponentFixture<AdminReadinessComponent>;
   let component: AdminReadinessComponent;
@@ -18,6 +19,11 @@ describe('AdminReadinessComponent', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     api.listAdminResources.mockReturnValue(of({ items: [], page: 1, pageSize: 20, totalCount: 0 }));
+    api.generateOperationalForecast.mockReturnValue(of({
+      forecastRunId: '00000000-0000-0000-0000-000000000001',
+      targetStartDate: '2026-10-10',
+      targetEndDate: '2026-10-16',
+    }));
     await TestBed.configureTestingModule({
       imports: [AdminReadinessComponent],
       providers: [{ provide: ApiService, useValue: api }],
@@ -65,5 +71,13 @@ describe('AdminReadinessComponent', () => {
     component.updateUserRole(9, 'Administrator');
 
     expect(component.error()).toBe('Role is invalid.');
+  });
+
+  it('triggers operational forecast generation through the administrator API', () => {
+    component.generateOperationalForecast();
+
+    expect(api.generateOperationalForecast).toHaveBeenCalled();
+    expect(component.success()).toBe('Operational forecast generated.');
+    expect(component.operationalForecastSummary()).toContain('00000000-0000-0000-0000-000000000001');
   });
 });

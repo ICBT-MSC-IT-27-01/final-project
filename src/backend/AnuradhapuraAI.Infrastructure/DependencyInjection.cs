@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IAdminManagementService, AdminManagementService>();
         services.AddScoped<IForecastService, ForecastService>();
+        services.AddScoped<IProviderForecastOrchestrationService, ProviderForecastOrchestrationService>();
         services.AddScoped<IRecommendationOrchestrationService, RecommendationOrchestrationService>();
         services.AddScoped<IRecommendationRankingService, RecommendationRankingService>();
         services.AddScoped<IRecommendationPersistenceService, RecommendationPersistenceService>();
@@ -59,6 +60,15 @@ public static class DependencyInjection
 
             client.Timeout = TimeSpan.FromSeconds(30);
         });
+        services.AddHttpClient<IWeatherObservationSource, OpenMeteoWeatherSource>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+        services.AddHttpClient<IFreshWeatherObservationSource, OpenMeteoForecastPastDaysWeatherSource>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => new OpenMeteoNoRedirectHttpClientHandler());
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddSingleton(TimeProvider.System);
 

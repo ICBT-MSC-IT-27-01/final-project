@@ -4,6 +4,7 @@ using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Domain.Entities;
+using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using AnuradhapuraAI.Infrastructure.Recommendations;
 using AnuradhapuraAI.Infrastructure.Suitability;
@@ -614,6 +615,25 @@ public sealed class Phase8B2RecommendationPersistenceTests
             );
             CREATE UNIQUE INDEX "IX_SuitabilityConfiguration_ConfigurationType_ConfigurationKey" ON "SuitabilityConfiguration" ("ConfigurationType", "ConfigurationKey");
 
+            CREATE TABLE "ForecastRun" (
+                "ForecastRunId" TEXT NOT NULL CONSTRAINT "PK_ForecastRun" PRIMARY KEY,
+                "RunPurpose" TEXT NOT NULL,
+                "CreatedAt" TEXT NOT NULL,
+                "ForecastOriginDate" TEXT NULL,
+                "TargetStartDate" TEXT NULL,
+                "TargetEndDate" TEXT NULL,
+                "ModelVersion" TEXT NULL,
+                "SourceProvider" TEXT NULL,
+                "SourceProduct" TEXT NULL,
+                "RequestedLatitude" REAL NULL,
+                "RequestedLongitude" REAL NULL,
+                "Timezone" TEXT NULL,
+                "ObservationStartDate" TEXT NULL,
+                "ObservationEndDate" TEXT NULL,
+                "SourceRetrievedAt" TEXT NULL,
+                "DataQualityStatus" TEXT NULL
+            );
+
             CREATE TABLE "ForecastRecord" (
                 "Id" INTEGER NOT NULL CONSTRAINT "PK_ForecastRecord" PRIMARY KEY AUTOINCREMENT,
                 "ForecastRunId" TEXT NOT NULL,
@@ -623,7 +643,8 @@ public sealed class Phase8B2RecommendationPersistenceTests
                 "Temperature" REAL NOT NULL,
                 "Humidity" REAL NOT NULL,
                 "ModelVersion" TEXT NULL,
-                "CreatedAt" TEXT NOT NULL
+                "CreatedAt" TEXT NOT NULL,
+                CONSTRAINT "FK_ForecastRecord_ForecastRun_ForecastRunId" FOREIGN KEY ("ForecastRunId") REFERENCES "ForecastRun" ("ForecastRunId") ON DELETE RESTRICT
             );
             CREATE INDEX "IX_ForecastRecord_ForecastDate_TargetDate" ON "ForecastRecord" ("ForecastDate", "TargetDate");
             CREATE UNIQUE INDEX "IX_ForecastRecord_ForecastRunId_TargetDate" ON "ForecastRecord" ("ForecastRunId", "TargetDate");
@@ -711,6 +732,26 @@ public sealed class Phase8B2RecommendationPersistenceTests
         DateOnly forecastDate,
         DateTimeOffset createdAt)
     {
+        dbContext.ForecastRuns.Add(new ForecastRun
+        {
+            ForecastRunId = runId,
+            RunPurpose = ApprovedForecastRunPurposes.Operational,
+            CreatedAt = createdAt,
+            ForecastOriginDate = forecastDate,
+            TargetStartDate = forecastDate.AddDays(1),
+            TargetEndDate = forecastDate.AddDays(7),
+            ModelVersion = "v1",
+            SourceProvider = "Open-Meteo",
+            SourceProduct = OpenMeteoForecastPastDaysWeatherSource.ApprovedProduct,
+            RequestedLatitude = 8.312229m,
+            RequestedLongitude = 80.413055m,
+            Timezone = "Asia/Colombo",
+            ObservationStartDate = forecastDate.AddDays(-29),
+            ObservationEndDate = forecastDate,
+            SourceRetrievedAt = createdAt,
+            DataQualityStatus = "Accepted"
+        });
+
         for (var index = 0; index < 7; index++)
         {
             dbContext.ForecastRecords.Add(new ForecastRecord

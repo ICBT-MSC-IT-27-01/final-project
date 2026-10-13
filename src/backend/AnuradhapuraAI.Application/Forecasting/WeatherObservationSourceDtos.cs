@@ -11,12 +11,19 @@ public sealed record WeatherObservationSourceRequest(
 public sealed record WeatherObservationSourceMetadata(
     string Provider,
     string Product,
-    decimal Latitude,
-    decimal Longitude,
+    decimal RequestedLatitude,
+    decimal RequestedLongitude,
+    decimal? ReturnedLatitude,
+    decimal? ReturnedLongitude,
     string Timezone,
     DateOnly StartDate,
     DateOnly EndDate,
-    DateTimeOffset RetrievedAt);
+    DateTimeOffset RetrievedAt)
+{
+    public decimal Latitude => RequestedLatitude;
+
+    public decimal Longitude => RequestedLongitude;
+}
 
 public sealed record WeatherObservation(
     DateOnly Date,

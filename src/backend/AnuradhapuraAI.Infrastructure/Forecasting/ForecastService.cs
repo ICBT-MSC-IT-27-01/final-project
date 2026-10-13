@@ -1,4 +1,5 @@
 using AnuradhapuraAI.Application.Forecasting;
+using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using System.Data.Common;
@@ -15,7 +16,6 @@ public sealed class ForecastService(
     TimeProvider timeProvider) : IForecastService
 {
     private const int ForecastHorizonDays = 7;
-    private const string DistrictName = "Anuradhapura";
 
     public async Task<ForecastResult<ForecastResponse>> GenerateForecastAsync(
         CreateForecastRequest request,
@@ -41,17 +41,30 @@ public sealed class ForecastService(
         }
 
         var response = forecastResult.Value;
-        if (response.Forecasts.Count != 7)
+        var runMetadata = ValidateForecastResponse(response);
+        if (runMetadata is null)
         {
             return ForecastResult<ForecastResponse>.Failure(
                 ForecastErrorCodes.DownstreamError,
-                "Forecasting service returned an invalid forecast horizon.");
+                "Forecasting service returned an invalid forecast run.");
         }
 
         try
         {
             var createdAt = timeProvider.GetUtcNow();
             var forecastRunId = Guid.NewGuid();
+
+            dbContext.ForecastRuns.Add(new ForecastRun
+            {
+                ForecastRunId = forecastRunId,
+                RunPurpose = ApprovedForecastRunPurposes.LegacyUnknown,
+                CreatedAt = createdAt,
+                ForecastOriginDate = runMetadata.ForecastOriginDate,
+                TargetStartDate = runMetadata.TargetStartDate,
+                TargetEndDate = runMetadata.TargetEndDate,
+                ModelVersion = runMetadata.ModelVersion
+            });
+
             foreach (var forecast in response.Forecasts)
             {
                 dbContext.ForecastRecords.Add(new ForecastRecord
@@ -84,14 +97,14 @@ public sealed class ForecastService(
     {
         try
         {
-            var records = await dbContext.ForecastRecords
+            var runs = await dbContext.ForecastRuns
                 .AsNoTracking()
-                .Where(record => record.ForecastRunId != Guid.Empty)
+                .Include(run => run.ForecastRecords)
+                .Where(run => run.RunPurpose == ApprovedForecastRunPurposes.Operational)
                 .ToListAsync(cancellationToken);
 
-            var selectedRun = records
-                .GroupBy(record => record.ForecastRunId)
-                .Select(ToLatestForecastOrNull)
+            var selectedRun = runs
+                .Select(OperationalForecastRunSelector.ToLatestForecastOrNull)
                 .Where(run => run is not null)
                 .OrderByDescending(run => run!.CreatedAt)
                 .ThenBy(run => run!.ForecastRunId.ToString("D"), StringComparer.Ordinal)
@@ -148,18 +161,28 @@ public sealed class ForecastService(
         return null;
     }
 
-    private static LatestForecastResponse? ToLatestForecastOrNull(IGrouping<Guid, ForecastRecord> runGroup)
+    private static ForecastRunMetadata? ValidateForecastResponse(ForecastResponse response)
     {
-        var records = runGroup
-            .OrderBy(record => record.TargetDate)
-            .ToList();
-
-        if (runGroup.Key == Guid.Empty || records.Count != ForecastHorizonDays)
+        if (response.Forecasts.Count != ForecastHorizonDays)
         {
             return null;
         }
 
-        if (records.Select(record => record.TargetDate).Distinct().Count() != ForecastHorizonDays)
+        var records = response.Forecasts
+            .OrderBy(forecast => forecast.TargetDate)
+            .ToList();
+
+        if (records.Select(forecast => forecast.ForecastDate).Distinct().Count() != 1 ||
+            records.Select(forecast => forecast.TargetDate).Distinct().Count() != ForecastHorizonDays ||
+            records.Select(forecast => forecast.ModelVersion).Distinct(StringComparer.Ordinal).Count() != 1 ||
+            !string.Equals(records[0].ModelVersion, response.ModelVersion, StringComparison.Ordinal) ||
+            records.Any(forecast =>
+                forecast.Rainfall < 0m ||
+                forecast.Humidity < 0m ||
+                forecast.Humidity > 100m ||
+                !IsFinite(forecast.Rainfall) ||
+                !IsFinite(forecast.Temperature) ||
+                !IsFinite(forecast.Humidity)))
         {
             return null;
         }
@@ -172,42 +195,11 @@ public sealed class ForecastService(
             }
         }
 
-        if (records.Select(record => record.ForecastDate).Distinct().Count() != 1 ||
-            records.Select(record => record.ModelVersion ?? string.Empty).Distinct(StringComparer.Ordinal).Count() != 1 ||
-            records.Any(record =>
-                record.Rainfall < 0m ||
-                record.Humidity < 0m ||
-                record.Humidity > 100m ||
-                !IsFinite(record.Rainfall) ||
-                !IsFinite(record.Temperature) ||
-                !IsFinite(record.Humidity)))
-        {
-            return null;
-        }
-
-        var dailyForecasts = records
-            .Select(record => new LatestForecastDayResponse(
-                record.TargetDate,
-                record.Rainfall,
-                record.Temperature,
-                record.Humidity))
-            .ToList();
-
-        return new LatestForecastResponse(
-            runGroup.Key,
-            records[0].ModelVersion,
+        return new ForecastRunMetadata(
             records[0].ForecastDate,
-            records.Max(record => record.CreatedAt),
             records[0].TargetDate,
             records[^1].TargetDate,
-            DistrictName,
-            dailyForecasts,
-            "Unknown",
-            [
-                "Forecast values are AI-predicted weather forecasts, not measured observations.",
-                "Existing stored forecast records do not include operational weather-source provenance.",
-                "Forecast freshness is unknown because no approved freshness threshold is configured."
-            ]);
+            response.ModelVersion);
     }
 
     private static bool IsFinite(decimal value) =>
@@ -216,4 +208,10 @@ public sealed class ForecastService(
     private static bool IsDatabaseReadFailure(Exception exception) =>
         exception is DbException or TimeoutException or RetryLimitExceededException ||
         exception.InnerException is not null && IsDatabaseReadFailure(exception.InnerException);
+
+    private sealed record ForecastRunMetadata(
+        DateOnly ForecastOriginDate,
+        DateOnly TargetStartDate,
+        DateOnly TargetEndDate,
+        string ModelVersion);
 }

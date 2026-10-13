@@ -4,6 +4,7 @@ using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Domain.Entities;
+using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using AnuradhapuraAI.Infrastructure.Recommendations;
 using AnuradhapuraAI.Infrastructure.Suitability;
@@ -65,6 +66,32 @@ public sealed class Phase8B1RecommendationOrchestrationTests
         Assert.False(result.Succeeded);
         Assert.Equal(RecommendationOrchestrationErrorCodes.ForecastUnavailable, result.ErrorCode);
     }
+
+    [Fact]
+    public async Task EvaluateLatestForecast_ExcludesLegacyUnknownAndHistoricalEvaluationRuns()
+    {
+        await using var dbContext = CreateDbContext();
+        await SeedApprovedCropsAsync(dbContext);
+        SeedForecastRun(
+            dbContext,
+            Guid.NewGuid(),
+            new DateOnly(2026, 1, 1),
+            DateTimeOffset.Parse("2026-01-01T00:00:00Z"),
+            runPurpose: ApprovedForecastRunPurposes.LegacyUnknown);
+        SeedForecastRun(
+            dbContext,
+            Guid.NewGuid(),
+            new DateOnly(2026, 1, 8),
+            DateTimeOffset.Parse("2026-01-02T00:00:00Z"),
+            runPurpose: ApprovedForecastRunPurposes.HistoricalEvaluation);
+        await dbContext.SaveChangesAsync();
+
+        var result = await CreateService(dbContext).EvaluateLatestForecastAsync(new RecommendationEvaluationRequest(null));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(RecommendationOrchestrationErrorCodes.ForecastUnavailable, result.ErrorCode);
+    }
+
 
     [Fact]
     public async Task EvaluateLatestForecast_SkipsInvalidWeatherAndInconsistentMetadata()
@@ -322,12 +349,11 @@ public sealed class Phase8B1RecommendationOrchestrationTests
     }
 
     [Fact]
-    public async Task EvaluateLatestForecast_SkipsInconsistentForecastDateAndCreatedAtRuns()
+    public async Task EvaluateLatestForecast_SkipsInconsistentForecastDateRuns()
     {
         await using var dbContext = CreateDbContext();
         await SeedApprovedCropsAsync(dbContext);
         SeedForecastRun(dbContext, Guid.NewGuid(), new DateOnly(2026, 1, 1), DateTimeOffset.Parse("2026-01-04T00:00:00Z"), inconsistentForecastDate: true);
-        SeedForecastRun(dbContext, Guid.NewGuid(), new DateOnly(2026, 1, 1), DateTimeOffset.Parse("2026-01-03T00:00:00Z"), inconsistentCreatedAt: true);
         var validRun = Guid.NewGuid();
         SeedForecastRun(dbContext, validRun, new DateOnly(2026, 1, 1), DateTimeOffset.Parse("2026-01-02T00:00:00Z"));
         await dbContext.SaveChangesAsync();
@@ -400,8 +426,29 @@ public sealed class Phase8B1RecommendationOrchestrationTests
         bool inconsistentModelVersion = false,
         bool inconsistentForecastDate = false,
         bool inconsistentCreatedAt = false,
-        bool negativeRainfall = false)
+        bool negativeRainfall = false,
+        string runPurpose = ApprovedForecastRunPurposes.Operational)
     {
+        dbContext.ForecastRuns.Add(new ForecastRun
+        {
+            ForecastRunId = runId,
+            RunPurpose = runPurpose,
+            CreatedAt = createdAt,
+            ForecastOriginDate = forecastDate,
+            TargetStartDate = forecastDate.AddDays(1),
+            TargetEndDate = forecastDate.AddDays(count),
+            ModelVersion = "v1",
+            SourceProvider = "Open-Meteo",
+            SourceProduct = OpenMeteoForecastPastDaysWeatherSource.ApprovedProduct,
+            RequestedLatitude = 8.312229m,
+            RequestedLongitude = 80.413055m,
+            Timezone = "Asia/Colombo",
+            ObservationStartDate = forecastDate.AddDays(-29),
+            ObservationEndDate = forecastDate,
+            SourceRetrievedAt = createdAt,
+            DataQualityStatus = "Accepted"
+        });
+
         for (var index = 0; index < count; index++)
         {
             var targetOffset = targetDateGap && index == 6 ? 8 : index + 1;

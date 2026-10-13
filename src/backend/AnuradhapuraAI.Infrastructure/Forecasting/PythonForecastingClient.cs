@@ -57,6 +57,10 @@ public sealed class PythonForecastingClient(HttpClient httpClient) : IWeatherFor
         {
             return MalformedResponse();
         }
+        catch (System.Text.Json.JsonException)
+        {
+            return MalformedResponse();
+        }
 
         if (pythonResponse is null || pythonResponse.Forecasts is null || pythonResponse.Forecasts.Count != 7)
         {
@@ -73,13 +77,32 @@ public sealed class PythonForecastingClient(HttpClient httpClient) : IWeatherFor
                 item.ModelVersion))
             .ToList();
 
-        if (forecasts.Any(item => item.ModelVersion != pythonResponse.ModelVersion))
+        if (forecasts.Any(item => item.ModelVersion != pythonResponse.ModelVersion) ||
+            forecasts.Select(item => item.TargetDate).Distinct().Count() != 7 ||
+            forecasts.Select(item => item.ForecastDate).Distinct().Count() != 1 ||
+            forecasts[0].ForecastDate != pythonResponse.ForecastDate ||
+            forecasts.Any(item =>
+                item.Rainfall < 0m ||
+                item.Humidity < 0m ||
+                item.Humidity > 100m ||
+                !IsFinite(item.Rainfall) ||
+                !IsFinite(item.Temperature) ||
+                !IsFinite(item.Humidity)))
         {
             return MalformedResponse();
         }
 
+        var orderedForecasts = forecasts.OrderBy(item => item.TargetDate).ToList();
+        for (var index = 1; index < orderedForecasts.Count; index++)
+        {
+            if (orderedForecasts[index].TargetDate != orderedForecasts[index - 1].TargetDate.AddDays(1))
+            {
+                return MalformedResponse();
+            }
+        }
+
         return ForecastResult<ForecastResponse>.Success(
-            new ForecastResponse(pythonResponse.ModelVersion, pythonResponse.ForecastDate, forecasts));
+            new ForecastResponse(pythonResponse.ModelVersion, pythonResponse.ForecastDate, orderedForecasts));
     }
 
     private static ForecastResult<ForecastResponse> MalformedResponse()
@@ -95,6 +118,9 @@ public sealed class PythonForecastingClient(HttpClient httpClient) : IWeatherFor
                 item.Rainfall!.Value,
                 item.Humidity!.Value))
             .ToList());
+
+    private static bool IsFinite(decimal value) =>
+        value != decimal.MinValue && value != decimal.MaxValue;
 
     private sealed record PythonForecastRequest(IReadOnlyList<PythonObservationRequest> Observations);
 

@@ -19,6 +19,8 @@ public sealed class AnuradhapuraAiDbContext(DbContextOptions<AnuradhapuraAiDbCon
 
     public DbSet<ForecastRecord> ForecastRecords => Set<ForecastRecord>();
 
+    public DbSet<ForecastRun> ForecastRuns => Set<ForecastRun>();
+
     public DbSet<Recommendation> Recommendations => Set<Recommendation>();
 
     public DbSet<RecommendationCrop> RecommendationCrops => Set<RecommendationCrop>();

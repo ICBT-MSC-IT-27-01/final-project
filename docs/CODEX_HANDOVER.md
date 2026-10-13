@@ -194,9 +194,7 @@ Frozen database decisions:
 - Phase 7A - Agricultural Evidence and Suitability Scoring Definition: APPROVED / FROZEN
 - Phase 7B - Crop Suitability Engine Implementation: IMPLEMENTED WITH RUNTIME CONFIGURATION MAPPING / PENDING PROJECT-OWNER REVIEW
 
-Next planned phase after Phase 7B approval: Phase 8 - Recommendation Flow
-
-Phase 8 has **not** started yet.
+Later phases through Phase 13 have now been implemented in this repository. The historical phase list above remains useful context, but `docs/PHASE13_FINAL_VERIFICATION_REPORT.md` is the current source of truth for operational forecast integration status.
 
 ## 10. Authentication / RBAC Implementation
 
@@ -355,10 +353,84 @@ Do not move or regenerate these files during handover. These generated model and
 
 Verified testing state:
 
-- Phase 5 Python tests: `python -m pytest` from `src/forecasting-service` collected 13 tests and passed 13.
-- Backend tests: `dotnet test` from `src/backend` passed 21 tests in `AnuradhapuraAI.Phase3Tests`.
+- Backend build: `dotnet build .\src\backend\AnuradhapuraAI.Api\AnuradhapuraAI.Api.csproj --no-restore` passed on 2026-10-13 with 0 warnings and 0 errors.
+- Backend tests: `dotnet test .\tests\AnuradhapuraAI.Phase3Tests\AnuradhapuraAI.Phase3Tests.csproj --no-restore --logger "console;verbosity=minimal"` passed 268 tests on 2026-10-13 with 0 failed and 0 skipped.
+- Frontend tests: `npm test -- --watch=false` from `src/frontend` passed 9 test files / 38 tests on 2026-10-13.
+- Frontend production build: `npm run build` from `src/frontend` succeeded on 2026-10-13.
+- Python tests: `python -m pytest` from `src/forecasting-service` passed 22 tests on 2026-10-13 with one Starlette/httpx deprecation warning from installed test dependencies.
 
-No additional frontend test result is recorded in this handover.
+`npm test -- --run` is not a supported Angular CLI argument in this project and fails before test execution; use `npm test`.
+
+## 16A. Phase 13 ForecastRun Operational Integration Status
+
+Phase 13 technical development and controlled live integration are complete for the MSc prototype.
+
+Final evidence:
+
+- `docs/PHASE13_FINAL_VERIFICATION_REPORT.md`
+- `C:\Users\User\AppData\Local\Temp\anuradhapura_phase13_DE_verification.json`
+
+Implemented backend behavior:
+
+- `POST /api/forecasts` remains the manual forecast endpoint and persists generated runs as `LegacyUnknown`.
+- `GET /api/forecasts/latest` now selects only eligible `Operational` `ForecastRun` parents and never combines child rows across runs.
+- Operational eligibility requires one parent run, exactly seven child `ForecastRecord` rows, seven distinct consecutive target dates, consistent run id, forecast origin date, model version, target range, provider identity, the configured fresh-source product, Asia/Colombo timezone, observation window, source retrieval timestamp, accepted data quality status, and finite plausible weather values.
+- `HistoricalEvaluation` and `LegacyUnknown` runs are excluded from operational forecast display and recommendation evaluation.
+- Recommendation orchestration now consumes only eligible operational forecast runs.
+- `IProviderForecastOrchestrationService` supports the existing historical preparation path and a new operational generation path.
+- Operational generation resolves the latest 30-day local observation window ending yesterday in Asia/Colombo, calls the configured `IWeatherObservationSource`, validates exactly 30 daily observations, calls the existing Python forecasting client, validates exactly seven forecast outputs, and persists one `Operational` `ForecastRun` plus seven child `ForecastRecord` rows atomically through EF Core save semantics.
+- `OpenMeteoWeatherSource` remains the approved Open-Meteo Historical Weather API adapter for ERA5 using the representative Anuradhapura coordinate `8.312229, 80.413055`, timezone `Asia/Colombo`, and daily variables `precipitation_sum`, `temperature_2m_mean`, and `relative_humidity_2m_mean`.
+- Option B adds `OpenMeteoForecastPastDaysWeatherSource` as the candidate recent operational input adapter. It uses Open-Meteo Forecast API `/v1/forecast` with `past_days=30`, `forecast_days=0`, timezone `Asia/Colombo`, and hourly variables `temperature_2m`, `relative_humidity_2m`, and `precipitation`.
+- The operational Open-Meteo typed `HttpClient` disables automatic redirects. HTTP 3xx responses fail closed.
+- The fresh-source adapter aggregates hourly values into local daily observations only when every day has exactly 24 hourly records. Daily rainfall is summed; temperature and relative humidity are averaged. Missing, duplicate, out-of-window, current/future, non-finite, negative-rainfall, or invalid-humidity records fail closed.
+- The operational source is explicitly selected with `FeatureFlags:OperationalWeatherSource = "OpenMeteoForecastPastDays"` and separately accepted with `FeatureFlags:AcceptOperationalWeatherSource = true`. Both remain unset/false in default appsettings, and `EnableWeatherModelIntegration` remains false by default.
+- The existing LSTM artifacts remain ERA5-trained (`v1_era5_2010_2025`). Forecast API past-days data is not labelled ERA5, and operational use remains pending real paired-data compatibility evaluation and owner approval because distribution shift has not been scientifically validated.
+- Provider response metadata now carries requested coordinates and optional returned grid coordinates in the application DTO. The currently applied database schema stores requested coordinates but has no returned-grid columns, so returned grid coordinates are surfaced in the orchestration response only.
+- `PythonForecastingClient` validates malformed JSON, forecast count, duplicate/nonconsecutive target dates, model-version consistency, and invalid weather values.
+- `POST /api/admin/forecasts/operational` is Administrator-only and feature-gated by `EnableWeatherModelIntegration`.
+- When `EnableWeatherModelIntegration` is false, the admin trigger returns disabled/unavailable without provider calls, Python inference, persistence, or run creation.
+
+Implemented Angular behavior:
+
+- The public dashboard continues to use `GET /api/forecasts/latest`; because backend selection is now operational-only, it cannot display historical or manual LegacyUnknown runs as current operational weather.
+- The Administrator screen includes a manual operational forecast trigger with loading state, success run summary, failure messages, and duplicate-click prevention while a request is pending.
+- Angular only calls backend APIs; it does not expose secrets or perform provider/Python calls directly.
+
+Applied database baseline:
+
+- Migration `20261012060858_AddForecastRunProvenance` was applied before this handover update.
+- Database evidence confirmed `dbo.ForecastRun`, primary key, check constraints, `ForecastRecord -> ForecastRun` foreign key, and migration-history entry.
+- The final migration-runner JSON had a reporting assertion inconsistency, but the database evidence confirmed the migration execution and verification. Do not rerun this migration without a new owner request.
+
+Final D/E live verification:
+
+- Development database: `AnuradhapuraAI`
+- Backup/recovery: existing full backup verified with `RESTORE VERIFYONLY`
+- Administrator: one active Administrator existed; no duplicate Administrator was created during final D/E
+- Admin trigger: one authenticated `POST /api/admin/forecasts/operational`
+- ForecastRunId: `b2d45e38-72fd-4b3d-87b5-418891a485c2`
+- Open-Meteo GET count: 1
+- Python inference count: 1
+- SQL delta: `ForecastRun +1`, `ForecastRecord +7`, `Recommendation +0`
+- `GET /api/forecasts/latest`: PASS and returned the new Operational run
+- Recommendation integration: PASS by existing non-persisting orchestration tests and live read-only checks; the live DB has no configured crop requirements/soil/threshold rows, so live recommendations would be insufficient-evidence until administrators configure agronomic data
+- Angular verification: PASS at component/service test level; browser E2E was not executed
+- Temporary process-local runtime overrides were removed after execution
+
+No User Secrets, production configuration, deployment settings, or database migrations were changed during final D/E.
+
+Remaining scientific / policy items:
+
+- Open-Meteo API data attribution is required and commercial/high-volume use terms must be reviewed before production use; do not claim production clearance without owner/legal review.
+- ERA5 is gridded historical/reanalysis data for a representative point and must not be described as measured district-average observations.
+- Forecast API past-days gridded model data must not be described as measured district-average observations.
+- The project still lacks full paired-data statistical compatibility evidence between the ERA5-trained LSTM inputs and the Forecast API past-days source.
+- Predictive accuracy of the operational forecasts is not verified.
+- Persisting returned grid coordinates would require a future explicit schema decision and migration; no such migration was created in Phase 13.
+
+Git closure note:
+
+- `src/backend/AnuradhapuraAI.Api/AnuradhapuraAI.Api.csproj` is protected by owner instruction and must not be staged, committed, reverted, reset, normalized, or pushed as part of Phase 13 closure.
 
 ## 17. Features Explicitly Outside Current Scope
 
@@ -421,11 +493,7 @@ These require explicit project-owner approval.
 
 ## 21. Next Development Task
 
-Next planned development phase:
-
-- Phase 8 - Recommendation Flow, after Phase 7B project-owner approval
-
-Do not start Phase 8 without project-owner approval.
+Phase 13 is technically complete for development integration after the final Git closure step. Do not start Phase 14 without explicit project-owner instruction.
 
 ## Startup Prompt for a New Codex Session
 

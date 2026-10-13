@@ -20,7 +20,7 @@ public sealed class OpenMeteoWeatherSource(HttpClient httpClient, TimeProvider t
         WeatherObservationSourceRequest request,
         CancellationToken cancellationToken = default)
     {
-        var currentDate = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
+        var currentDate = GetCurrentDate();
         var requestError = ValidateRequest(request, currentDate);
         if (requestError is not null)
         {
@@ -218,6 +218,8 @@ public sealed class OpenMeteoWeatherSource(HttpClient httpClient, TimeProvider t
             ApprovedProduct,
             request.Latitude,
             request.Longitude,
+            payload.Latitude,
+            payload.Longitude,
             request.Timezone,
             request.StartDate,
             request.EndDate,
@@ -265,7 +267,16 @@ public sealed class OpenMeteoWeatherSource(HttpClient httpClient, TimeProvider t
     private static string FormatDecimal(decimal value) =>
         value.ToString("0.######", CultureInfo.InvariantCulture);
 
+    private DateOnly GetCurrentDate()
+    {
+        var timezone = TimeZoneInfo.FindSystemTimeZoneById(ApprovedTimezone);
+        var localNow = TimeZoneInfo.ConvertTime(timeProvider.GetUtcNow(), timezone);
+        return DateOnly.FromDateTime(localNow.DateTime);
+    }
+
     private sealed record OpenMeteoArchiveResponse(
+        [property: JsonPropertyName("latitude")] decimal? Latitude,
+        [property: JsonPropertyName("longitude")] decimal? Longitude,
         [property: JsonPropertyName("daily")] OpenMeteoDailyResponse? Daily);
 
     private sealed record OpenMeteoDailyResponse(

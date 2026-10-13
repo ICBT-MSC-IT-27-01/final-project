@@ -42,6 +42,36 @@ public sealed class Phase4AdminAuthorizationTests : IClassFixture<Phase3WebAppli
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    [Theory]
+    [InlineData("Registered User")]
+    [InlineData("Agricultural Officer")]
+    public async Task OperationalForecastTrigger_NonAdministrator_IsForbidden(string role)
+    {
+        using var testFactory = factory.CreateIsolated();
+        var client = testFactory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.UserIdHeader, "1");
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.EmailHeader, "user@example.com");
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.RoleHeader, role);
+
+        var response = await client.PostAsync("/api/admin/forecasts/operational", content: null);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task OperationalForecastTrigger_AdministratorReceivesFeatureDisabledResponse_WhenIntegrationFlagOff()
+    {
+        using var testFactory = factory.CreateIsolated();
+        var client = testFactory.CreateClient();
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.UserIdHeader, "1");
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.EmailHeader, "admin@example.com");
+        client.DefaultRequestHeaders.Add(TestAuthenticationHandler.RoleHeader, ApprovedRoleNames.Administrator);
+
+        var response = await client.PostAsync("/api/admin/forecasts/operational", content: null);
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
     [Fact]
     public void AdminController_RequiresAdministratorOnlyPolicy()
     {

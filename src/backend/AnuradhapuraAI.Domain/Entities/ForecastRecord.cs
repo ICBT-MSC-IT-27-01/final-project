@@ -19,4 +19,6 @@ public sealed class ForecastRecord
     public string? ModelVersion { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
+
+    public ForecastRun? ForecastRun { get; set; }
 }

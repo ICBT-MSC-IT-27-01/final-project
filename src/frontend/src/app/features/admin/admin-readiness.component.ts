@@ -60,6 +60,16 @@ export class AdminSimpleTableComponent {
       <div class="notice success" role="status">{{ message }}</div>
     }
 
+    <section class="panel form-panel">
+      <h2>Operational forecast</h2>
+      <button type="button" class="button primary" [disabled]="isGeneratingForecast()" (click)="generateOperationalForecast()">
+        {{ isGeneratingForecast() ? 'Generating forecast...' : 'Generate operational forecast' }}
+      </button>
+      @if (operationalForecastSummary(); as summary) {
+        <p class="muted">{{ summary }}</p>
+      }
+    </section>
+
     <nav class="tab-row" aria-label="Administrator sections">
       @for (tab of tabs; track tab.key) {
         <button type="button" class="button secondary" [class.active-tab]="activeTab() === tab.key" (click)="selectTab(tab.key)">
@@ -247,8 +257,10 @@ export class AdminReadinessComponent {
   ];
   readonly activeTab = signal<AdminTab>('users');
   readonly isLoading = signal(false);
+  readonly isGeneratingForecast = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
+  readonly operationalForecastSummary = signal<string | null>(null);
   readonly users = signal<AdminUserResponse[]>([]);
   readonly crops = signal<CropResponse[]>([]);
   readonly requirements = signal<CropRequirementResponse[]>([]);
@@ -351,6 +363,24 @@ export class AdminReadinessComponent {
 
   updateUserRole(userId: number, role: string): void {
     this.save(this.api.updateAdminUserRole(userId, role), 'User role updated.');
+  }
+
+  generateOperationalForecast(): void {
+    this.error.set(null);
+    this.success.set(null);
+    this.operationalForecastSummary.set(null);
+    this.isGeneratingForecast.set(true);
+
+    this.api
+      .generateOperationalForecast()
+      .pipe(finalize(() => this.isGeneratingForecast.set(false)))
+      .subscribe({
+        next: response => {
+          this.success.set('Operational forecast generated.');
+          this.operationalForecastSummary.set(`Run ${response.forecastRunId} covers ${response.targetStartDate} to ${response.targetEndDate}.`);
+        },
+        error: (error: FrontendApiError) => this.error.set(error.message),
+      });
   }
 
   requirementEdit(item: CropRequirementResponse): Partial<CropRequirementResponse> {

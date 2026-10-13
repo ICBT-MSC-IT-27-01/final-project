@@ -116,6 +116,24 @@ describe('ApiService', () => {
     statusRequest.flush({ id: 8, name: 'Paddy', isActive: false });
     http.verify();
   });
+
+  it('uses the administrator operational forecast trigger contract', () => {
+    const { service, http } = setup();
+
+    service.generateOperationalForecast().subscribe();
+
+    const request = http.expectOne('/api/admin/forecasts/operational');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({});
+    request.flush({
+      forecastRunId: '55555555-5555-5555-5555-555555555555',
+      runPurpose: 'Operational',
+      targetStartDate: '2026-10-10',
+      targetEndDate: '2026-10-16',
+      forecasts: [],
+    });
+    http.verify();
+  });
 });
 
 function sampleRecommendation() {

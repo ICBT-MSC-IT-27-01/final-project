@@ -1,5 +1,8 @@
 using AnuradhapuraAI.Application.Forecasting;
+using AnuradhapuraAI.Domain.Common;
+using AnuradhapuraAI.Infrastructure.Persistence;
 using AnuradhapuraAI.Infrastructure.Forecasting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace AnuradhapuraAI.Phase3Tests;
@@ -183,19 +186,150 @@ public sealed class ProviderForecastOrchestrationServiceTests
     }
 
     [Fact]
-    public async Task PrepareHistoricalForecast_HasNoInferencePersistenceEndpointOrRecommendationDependencies()
+    public async Task GenerateOperationalForecast_PersistsOperationalRunAndSevenChildren_WhenPipelineIsValid()
+    {
+        await using var dbContext = CreateDbContext();
+        var observationEnd = new DateOnly(2026, 10, 9);
+        var source = new FakeWeatherObservationSource(ValidObservations(new DateOnly(2026, 9, 10)));
+        var forecastingClient = new FakeForecastingClient(SampleForecastResponse(observationEnd));
+        var service = CreateService(source, forecastingClient: forecastingClient, dbContext: dbContext);
+
+        var result = await service.GenerateOperationalForecastAsync();
+
+        Assert.True(result.Succeeded, result.Message);
+        Assert.Equal(1, source.CallCount);
+        Assert.Equal(1, forecastingClient.CallCount);
+        Assert.NotNull(source.LastRequest);
+        Assert.Equal(OpenMeteoForecastPastDaysWeatherSource.ApprovedProduct, source.LastRequest!.Product);
+        Assert.Equal("Asia/Colombo", source.LastRequest.Timezone);
+        Assert.Equal(ApprovedForecastRunPurposes.Operational, result.Value!.RunPurpose);
+        Assert.Equal(new DateOnly(2026, 9, 10), result.Value.ObservationWindowStart);
+        Assert.Equal(observationEnd, result.Value.ObservationWindowEnd);
+        Assert.Equal(new DateOnly(2026, 10, 10), result.Value.TargetStartDate);
+        Assert.Equal(new DateOnly(2026, 10, 16), result.Value.TargetEndDate);
+
+        var run = Assert.Single(dbContext.ForecastRuns.Include(item => item.ForecastRecords));
+        Assert.Equal(ApprovedForecastRunPurposes.Operational, run.RunPurpose);
+        Assert.Equal("Open-Meteo", run.SourceProvider);
+        Assert.Equal(OpenMeteoForecastPastDaysWeatherSource.ApprovedProduct, run.SourceProduct);
+        Assert.Equal("Asia/Colombo", run.Timezone);
+        Assert.Equal("Accepted", run.DataQualityStatus);
+        Assert.Equal(7, run.ForecastRecords.Count);
+        Assert.All(run.ForecastRecords, record => Assert.Equal(run.ForecastRunId, record.ForecastRunId));
+    }
+
+    [Fact]
+    public async Task GenerateOperationalForecast_DoesNotCallProviderOrPython_WhenFeatureFlagOff()
+    {
+        await using var dbContext = CreateDbContext();
+        var source = new FakeWeatherObservationSource(ValidObservations(new DateOnly(2026, 9, 10)));
+        var forecastingClient = new FakeForecastingClient(SampleForecastResponse(new DateOnly(2026, 10, 9)));
+        var service = CreateService(source, enabled: false, forecastingClient: forecastingClient, dbContext: dbContext);
+
+        var result = await service.GenerateOperationalForecastAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(ProviderForecastPreparationErrorCodes.FeatureDisabled, result.ErrorCode);
+        Assert.Equal(0, source.CallCount);
+        Assert.Equal(0, forecastingClient.CallCount);
+        Assert.Empty(dbContext.ForecastRuns);
+        Assert.Empty(dbContext.ForecastRecords);
+    }
+
+    [Fact]
+    public async Task GenerateOperationalForecast_DoesNotCallProviderOrPython_WhenSourceNotAccepted()
+    {
+        await using var dbContext = CreateDbContext();
+        var source = new FakeWeatherObservationSource(ValidObservations(new DateOnly(2026, 9, 10)));
+        var forecastingClient = new FakeForecastingClient(SampleForecastResponse(new DateOnly(2026, 10, 9)));
+        var service = CreateService(
+            source,
+            forecastingClient: forecastingClient,
+            dbContext: dbContext,
+            acceptOperationalSource: false);
+
+        var result = await service.GenerateOperationalForecastAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(ProviderForecastPreparationErrorCodes.OperationalSourceNotAccepted, result.ErrorCode);
+        Assert.Equal(0, source.CallCount);
+        Assert.Equal(0, forecastingClient.CallCount);
+        Assert.Empty(dbContext.ForecastRuns);
+        Assert.Empty(dbContext.ForecastRecords);
+    }
+
+    [Fact]
+    public async Task GenerateOperationalForecast_DoesNotFallbackToHistoricalSource_WhenOperationalSourceIsUnknown()
+    {
+        await using var dbContext = CreateDbContext();
+        var source = new FakeWeatherObservationSource(ValidObservations(new DateOnly(2026, 9, 10)));
+        var forecastingClient = new FakeForecastingClient(SampleForecastResponse(new DateOnly(2026, 10, 9)));
+        var service = CreateService(
+            source,
+            forecastingClient: forecastingClient,
+            dbContext: dbContext,
+            operationalSource: "era5");
+
+        var result = await service.GenerateOperationalForecastAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(ProviderForecastPreparationErrorCodes.UnsupportedOperationalSource, result.ErrorCode);
+        Assert.Equal(0, source.CallCount);
+        Assert.Equal(0, forecastingClient.CallCount);
+        Assert.Empty(dbContext.ForecastRuns);
+        Assert.Empty(dbContext.ForecastRecords);
+    }
+
+    [Fact]
+    public async Task GenerateOperationalForecast_DoesNotPersistPartialRun_WhenForecastingServiceFails()
+    {
+        await using var dbContext = CreateDbContext();
+        var source = new FakeWeatherObservationSource(ValidObservations(new DateOnly(2026, 9, 10)));
+        var forecastingClient = FakeForecastingClient.Failure(ForecastErrorCodes.ServiceUnavailable);
+        var service = CreateService(source, forecastingClient: forecastingClient, dbContext: dbContext);
+
+        var result = await service.GenerateOperationalForecastAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(ProviderForecastPreparationErrorCodes.ForecastingServiceUnavailable, result.ErrorCode);
+        Assert.Equal(1, source.CallCount);
+        Assert.Equal(1, forecastingClient.CallCount);
+        Assert.Empty(dbContext.ForecastRuns);
+        Assert.Empty(dbContext.ForecastRecords);
+    }
+
+    [Fact]
+    public async Task GenerateOperationalForecast_DoesNotCallPythonOrPersist_WhenOperationalSourceReturnsRedirectFailure()
+    {
+        await using var dbContext = CreateDbContext();
+        var source = FakeWeatherObservationSource.Failure(WeatherObservationSourceErrorCodes.ProviderUnavailable);
+        var forecastingClient = new FakeForecastingClient(SampleForecastResponse(new DateOnly(2026, 10, 9)));
+        var service = CreateService(source, forecastingClient: forecastingClient, dbContext: dbContext);
+
+        var result = await service.GenerateOperationalForecastAsync();
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(ProviderForecastPreparationErrorCodes.ProviderUnavailable, result.ErrorCode);
+        Assert.Equal(1, source.CallCount);
+        Assert.Equal(0, forecastingClient.CallCount);
+        Assert.Empty(dbContext.ForecastRuns);
+        Assert.Empty(dbContext.ForecastRecords);
+    }
+
+    [Fact]
+    public async Task PrepareHistoricalForecast_KeepsControllerOutOfProviderOrchestration()
     {
         var constructors = typeof(ProviderForecastOrchestrationService).GetConstructors();
         var parameterTypes = constructors.Single().GetParameters().Select(parameter => parameter.ParameterType.Name).ToList();
 
         Assert.Contains(nameof(IWeatherObservationSource), parameterTypes);
+        Assert.Contains(nameof(IWeatherForecastingClient), parameterTypes);
+        Assert.Contains("AnuradhapuraAiDbContext", parameterTypes);
         Assert.Contains(constructors.Single().GetParameters(), parameter =>
             parameter.ParameterType.IsGenericType &&
             parameter.ParameterType.GetGenericTypeDefinition() == typeof(IOptions<>));
         Assert.Contains(nameof(TimeProvider), parameterTypes);
         Assert.DoesNotContain(nameof(IForecastService), parameterTypes);
-        Assert.DoesNotContain(nameof(IWeatherForecastingClient), parameterTypes);
-        Assert.DoesNotContain("AnuradhapuraAiDbContext", parameterTypes);
         Assert.DoesNotContain("Controller", typeof(ProviderForecastOrchestrationService).Name);
     }
 
@@ -217,25 +351,65 @@ public sealed class ProviderForecastOrchestrationServiceTests
 
     private static ProviderForecastOrchestrationService CreateService(
         FakeWeatherObservationSource source,
-        bool enabled = true) =>
+        bool enabled = true,
+        IWeatherForecastingClient? forecastingClient = null,
+        AnuradhapuraAiDbContext? dbContext = null,
+        string operationalSource = "OpenMeteoForecastPastDays",
+        bool acceptOperationalSource = true) =>
         new(
             source,
-            Options.Create(new WeatherModelFeatureOptions { EnableWeatherModelIntegration = enabled }),
+            source,
+            forecastingClient ?? new FakeForecastingClient(SampleForecastResponse(EndDate)),
+            dbContext ?? CreateDbContext(),
+            Options.Create(new WeatherModelFeatureOptions
+            {
+                EnableWeatherModelIntegration = enabled,
+                OperationalWeatherSource = operationalSource,
+                AcceptOperationalWeatherSource = acceptOperationalSource
+            }),
             new FixedTimeProvider(FixedNow));
+
+    private static AnuradhapuraAiDbContext CreateDbContext()
+    {
+        var options = new DbContextOptionsBuilder<AnuradhapuraAiDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString("N"))
+            .Options;
+
+        return new AnuradhapuraAiDbContext(options);
+    }
+
+    private static ForecastResponse SampleForecastResponse(DateOnly forecastOriginDate)
+    {
+        var forecasts = Enumerable.Range(1, 7)
+            .Select(index => new ForecastDayResponse(
+                forecastOriginDate,
+                forecastOriginDate.AddDays(index),
+                Temperature: 27m + index,
+                Rainfall: index,
+                Humidity: 70m + index,
+                ModelVersion: "v1"))
+            .ToList();
+
+        return new ForecastResponse("v1", forecastOriginDate, forecasts);
+    }
 
     private static ProviderForecastPreparationRequest ApprovedRequest() =>
         new(StartDate, EndDate);
 
-    private static IReadOnlyList<WeatherObservation> ValidObservations() =>
+    private static IReadOnlyList<WeatherObservation> ValidObservations(DateOnly? startDate = null)
+    {
+        var start = startDate ?? StartDate;
+        return
         Enumerable.Range(0, 30)
             .Select(index => new WeatherObservation(
-                StartDate.AddDays(index),
+                start.AddDays(index),
                 Rainfall: index,
                 Temperature: 25m + index / 10m,
                 Humidity: 70m + index % 10))
             .ToList();
+    }
 
-    private sealed class FakeWeatherObservationSource : IWeatherObservationSource
+    private sealed class FakeWeatherObservationSource : IFreshWeatherObservationSource
     {
         private readonly IReadOnlyList<WeatherObservation> observations;
         private readonly WeatherObservationSourceResult? failureResult;
@@ -280,6 +454,8 @@ public sealed class ProviderForecastOrchestrationServiceTests
                 "era5",
                 8.312229m,
                 80.413055m,
+                8.25m,
+                80.5m,
                 "Asia/Colombo",
                 request.StartDate,
                 request.EndDate,
@@ -292,5 +468,34 @@ public sealed class ProviderForecastOrchestrationServiceTests
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider
     {
         public override DateTimeOffset GetUtcNow() => utcNow;
+    }
+
+    private sealed class FakeForecastingClient : IWeatherForecastingClient
+    {
+        private readonly ForecastResult<ForecastResponse> result;
+
+        public FakeForecastingClient(ForecastResponse response)
+            : this(ForecastResult<ForecastResponse>.Success(response))
+        {
+        }
+
+        private FakeForecastingClient(ForecastResult<ForecastResponse> result)
+        {
+            this.result = result;
+        }
+
+        public int CallCount { get; private set; }
+
+        public static FakeForecastingClient Failure(string errorCode) =>
+            new(ForecastResult<ForecastResponse>.Failure(errorCode, "Unsafe forecasting details should not be surfaced."));
+
+        public Task<ForecastResult<ForecastResponse>> GenerateForecastAsync(
+            CreateForecastRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            CallCount++;
+            return Task.FromResult(result);
+        }
     }
 }

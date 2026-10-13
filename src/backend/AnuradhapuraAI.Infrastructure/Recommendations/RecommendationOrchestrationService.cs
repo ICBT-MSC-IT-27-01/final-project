@@ -4,6 +4,7 @@ using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Domain.Entities;
+using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -17,7 +18,6 @@ public sealed class RecommendationOrchestrationService(
     ICropSuitabilityEngine suitabilityEngine,
     IOptions<WeatherModelFeatureOptions> featureOptions) : IRecommendationOrchestrationService
 {
-    private const int ForecastHorizonDays = 7;
     private static readonly StringComparer NameComparer = StringComparer.OrdinalIgnoreCase;
 
     public async Task<RecommendationOrchestrationResult<RecommendationEvaluationResponse>> EvaluateLatestForecastAsync(
@@ -95,78 +95,18 @@ public sealed class RecommendationOrchestrationService(
 
     private async Task<SelectedForecastRun?> SelectLatestValidForecastRunAsync(CancellationToken cancellationToken)
     {
-        var records = await dbContext.ForecastRecords
+        var runs = await dbContext.ForecastRuns
             .AsNoTracking()
-            .Where(record => record.ForecastRunId != Guid.Empty)
+            .Include(run => run.ForecastRecords)
+            .Where(run => run.RunPurpose == ApprovedForecastRunPurposes.Operational)
             .ToListAsync(cancellationToken);
 
-        return records
-            .GroupBy(record => record.ForecastRunId)
-            .Select(ToValidForecastRunOrNull)
+        return runs
+            .Select(OperationalForecastRunSelector.ToSelectedForecastRunOrNull)
             .Where(run => run is not null)
             .OrderByDescending(run => run!.CreatedAt)
             .ThenBy(run => run!.ForecastRunId.ToString("D"), StringComparer.Ordinal)
             .FirstOrDefault();
-    }
-
-    private static SelectedForecastRun? ToValidForecastRunOrNull(IGrouping<Guid, ForecastRecord> runGroup)
-    {
-        var records = runGroup
-            .OrderBy(record => record.TargetDate)
-            .ToList();
-
-        if (runGroup.Key == Guid.Empty || records.Count != ForecastHorizonDays)
-        {
-            return null;
-        }
-
-        if (records.Select(record => record.TargetDate).Distinct().Count() != ForecastHorizonDays)
-        {
-            return null;
-        }
-
-        for (var i = 1; i < records.Count; i++)
-        {
-            if (records[i].TargetDate != records[i - 1].TargetDate.AddDays(1))
-            {
-                return null;
-            }
-        }
-
-        if (records.Select(record => record.ForecastDate).Distinct().Count() != 1 ||
-            records.Select(record => record.ModelVersion ?? string.Empty).Distinct(StringComparer.Ordinal).Count() != 1 ||
-            records.Select(record => record.CreatedAt).Distinct().Count() != 1)
-        {
-            return null;
-        }
-
-        if (records.Any(record =>
-            record.Rainfall < 0m ||
-            record.Humidity < 0m ||
-            record.Humidity > 100m ||
-            !IsFinite(record.Rainfall) ||
-            !IsFinite(record.Temperature) ||
-            !IsFinite(record.Humidity)))
-        {
-            return null;
-        }
-
-        var forecastDays = records
-            .Select(record => new SuitabilityForecastDay(
-                record.TargetDate,
-                record.Rainfall,
-                record.Temperature,
-                record.Humidity))
-            .ToList();
-
-        return new SelectedForecastRun(
-            runGroup.Key,
-            records[0].ForecastDate,
-            records[0].TargetDate,
-            records[^1].TargetDate,
-            records[0].ModelVersion,
-            records[0].CreatedAt,
-            forecastDays);
     }
 
     private static CropRecommendationEvaluation ToRecommendationEvaluation(CropSuitabilityResult crop)
@@ -260,9 +200,6 @@ public sealed class RecommendationOrchestrationService(
             ? null
             : "The active crop catalog must match the approved MSc crop scope exactly.";
     }
-
-    private static bool IsFinite(decimal value) =>
-        value != decimal.MinValue && value != decimal.MaxValue;
 
     private static bool IsDatabaseReadFailure(Exception exception) =>
         exception is DbException or TimeoutException or RetryLimitExceededException ||

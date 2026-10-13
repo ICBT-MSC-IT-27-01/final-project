@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AnuradhapuraAI.Application.Admin;
+using AnuradhapuraAI.Application.Forecasting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,9 @@ namespace AnuradhapuraAI.Api.Controllers;
 [ApiController]
 [Authorize(Policy = "AdministratorOnly")]
 [Route("api/admin")]
-public sealed class AdminController(IAdminManagementService adminService) : ControllerBase
+public sealed class AdminController(
+    IAdminManagementService adminService,
+    IProviderForecastOrchestrationService providerForecastOrchestrationService) : ControllerBase
 {
     [HttpGet("crops")]
     public Task<PagedResponse<CropResponse>> ListCrops([FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
@@ -100,6 +103,31 @@ public sealed class AdminController(IAdminManagementService adminService) : Cont
 
     [HttpGet("validations/{id:int}")]
     public async Task<IActionResult> GetValidation(int id, CancellationToken cancellationToken) => ToActionResult(await adminService.GetValidationAsync(id, cancellationToken));
+
+    [HttpPost("forecasts/operational")]
+    public async Task<IActionResult> GenerateOperationalForecast(CancellationToken cancellationToken)
+    {
+        var result = await providerForecastOrchestrationService.GenerateOperationalForecastAsync(cancellationToken);
+        if (result.Succeeded)
+        {
+            return Ok(result.Value);
+        }
+
+        return result.ErrorCode switch
+        {
+            ProviderForecastPreparationErrorCodes.FeatureDisabled => StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.UnsupportedOperationalSource => Conflict(new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.OperationalSourceNotAccepted => Conflict(new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.ProviderUnavailable => StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.RateLimited => StatusCode(StatusCodes.Status429TooManyRequests, new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.ForecastingServiceUnavailable => StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.InvalidForecastOutput => StatusCode(StatusCodes.Status502BadGateway, new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.PersistenceFailed => StatusCode(StatusCodes.Status500InternalServerError, new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.InvalidObservationWindow => Conflict(new { message = result.Message }),
+            ProviderForecastPreparationErrorCodes.InvalidProviderData => BadRequest(new { message = result.Message }),
+            _ => BadRequest(new { message = "Operational forecast generation failed." })
+        };
+    }
 
     private int GetUserId()
     {
