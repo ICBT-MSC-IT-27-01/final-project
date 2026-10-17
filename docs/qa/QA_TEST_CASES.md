@@ -21,7 +21,7 @@ Updated: 2026-10-17. Browser cases used visible headed Google Chrome against the
 | QA-025 | responsive | Public | Tablet 768×1024 rendered. | PASS | `qa-evidence/RSP-01-tablet.png` |
 | QA-026 | responsive | Public | Mobile 390×844 rendered. | PASS | `qa-evidence/RSP-02-mobile.png` |
 | QA-027 | WF-04 | Registered User | A normal QA user registered and logged in through the live API. `/api/auth/me` returned `Registered User`; administrator and officer routes returned `403`; history returned the expected `503` while its approved feature flag remains disabled. | PASS (technical) | 2026-10-17 live registration/login/API audit |
-| QA-028 | WF-05 | Agricultural Officer | One active Agricultural Officer account exists, but no authorized credential was supplied for a live validation-session test. | BLOCKED | current database role audit |
+| QA-028 | WF-05 | Agricultural Officer | Local-development Officer validation is enabled. Backend authorization/integration tests verify anonymous rejection and authenticated active-officer validation behavior, but no authorized Officer credential or safe pending recommendation was supplied for a live validation session. | BLOCKED | 2026-10-17 backend regression; current database role audit |
 | QA-029 | WF-06 | Administrator | Existing authorized Administrator logged in, reached the administration screen, and loaded the authorized user-management contract. | PASS (technical) | `qa-evidence/AUTH-01-admin-operational-forecast.png`; `authenticated-operational-workflow.json` |
 | QA-030 | WF-07 / WF-08 | Public | Existing persisted operational forecast carried model `v1`, seven daily values, and was consumed by the visible recommendation workflow. | PASS (technical) | `qa-evidence/visible-browser-observations.json` |
 | QA-031 | WF-07 | System | Existing Python LSTM service loaded model `v1` and returned seven dated forecasts from an existing 30-day ERA5 input; no retraining or SQL write occurred. | PASS (technical) | 2026-10-17 local inference command output |
@@ -35,6 +35,7 @@ Notes:
 - QA-001 remains `PARTIAL`: temperature-only indicators are useful and traceable but not complete scientifically validated suitability recommendations.
 - Seasonal outputs are conditional calendar candidates, not exact planting prescriptions or long-range LSTM forecasts.
 - Existing active accounts now include Administrator, Agricultural Officer and Registered User roles. The Registered User flow was tested through approved public registration; Agricultural Officer credentials are still required for its live workflow test.
-- Final regression on 2026-10-17: backend 289/289 tests passed; forecasting service 22/22 tests passed (one upstream FastAPI/Starlette deprecation warning); Angular 39/39 tests passed.
+- Final regression on 2026-10-17: dependency vulnerability scan found no vulnerable packages; backend 289/289 tests passed; forecasting service 22/22 tests passed (one upstream FastAPI/Starlette deprecation warning); Angular 39/39 tests passed.
+- `EnableOfficerValidation` is enabled only in local development for the pending live Officer QA. No production setting, user credential or recommendation record was changed.
 - Expected HTTP 400 responses in negative seasonal tests appear as Chrome console resource errors; they are validated negative outcomes, not unhandled application failures.
 - The local development weather-integration configuration was preserved during this verification. No production configuration, model artifact, database schema or protected API project file was changed.
