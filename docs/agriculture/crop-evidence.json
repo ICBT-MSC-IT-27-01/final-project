@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "stage2-crop-evidence-v1",
+  "extractedOn": "2026-10-17",
+  "scope": "Anuradhapura District, Sri Lanka; six approved crops only",
+  "calendarMonthEvidence": {
+    "dataset": "docs/English calendar images/evidance json/DOA_SIX_CROP_CALENDAR_MONTH_EXTRACTION_REVIEW.json",
+    "sourcePdf": "docs/English calendar images/Crop_Calandar_Book_Sinhala_compressed.pdf",
+    "status": "MONTH_LEVEL_CALENDAR_EXTRACTION_NOT_AGRONOMIST_VALIDATED",
+    "usage": "Seasonal Planning calendar-supported candidate windows only; never full suitability scoring."
+  },
+  "crops": [
+    {
+      "cropName": "Paddy",
+      "assessmentBasis": "Seven-day mean air-temperature compatibility indicator only",
+      "supportsFullSuitabilityAssessment": false,
+      "calendarEvidence": { "title": "Paddy Crop Calendar - Dry & Intermediate Zone (Irrigated)", "sourceUrl": "https://drive.google.com/file/d/1yjqSoFI9T87uaEh_TbD-cN_wv2j4N4AR/view?usp=sharing", "publicationDetails": "Department of Agriculture, Sri Lanka / AFACI, 2015", "location": "Dry & Intermediate Zone; irrigated", "evidenceStatus": "OFFICIAL_CONDITIONALLY_APPLICABLE" },
+      "requirements": [
+        { "factor": "Temperature", "optimalMinimum": 20, "optimalMaximum": 30, "acceptableMinimum": 10, "acceptableMaximum": 36, "unit": "deg C", "timeBasis": "crop ecological temperature range", "aggregationMethod": "7-day mean of daily air-temperature forecasts; short-horizon indicator only", "isCompatibleWithSevenDayForecast": true, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED", "source": { "title": "FAO ECOCROP: Oryza sativa", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1574", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED" } },
+        { "factor": "Rainfall", "optimalMinimum": 1500, "optimalMaximum": 2000, "acceptableMinimum": 1000, "acceptableMaximum": 4000, "unit": "mm", "timeBasis": "annual rainfall", "aggregationMethod": "Not evaluable against a seven-day forecast", "isCompatibleWithSevenDayForecast": false, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE", "source": { "title": "FAO ECOCROP: Oryza sativa", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1574", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE" } }
+      ]
+    },
+    {
+      "cropName": "Maize",
+      "assessmentBasis": "Seven-day mean air-temperature compatibility indicator only",
+      "supportsFullSuitabilityAssessment": false,
+      "calendarEvidence": { "title": "Maize - Zea mays, Dry Zone crop calendar", "sourceUrl": "https://drive.google.com/file/d/1_jT8vdyT5DSZzhV_19eLZlNnbIY32HHf/view", "publicationDetails": "Department of Agriculture, Sri Lanka / AFACI, 2013", "location": "Dry Zone; includes Anuradhapura District", "evidenceStatus": "OFFICIAL_APPLICABLE_CALENDAR" },
+      "requirements": [
+        { "factor": "Temperature", "optimalMinimum": 18, "optimalMaximum": 33, "acceptableMinimum": 10, "acceptableMaximum": 47, "unit": "deg C", "timeBasis": "crop ecological temperature range", "aggregationMethod": "7-day mean of daily air-temperature forecasts; short-horizon indicator only", "isCompatibleWithSevenDayForecast": true, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED", "source": { "title": "FAO ECOCROP: Zea mays ssp. mays", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=238663", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED" } },
+        { "factor": "Rainfall", "optimalMinimum": 600, "optimalMaximum": 1200, "acceptableMinimum": 400, "acceptableMaximum": 1800, "unit": "mm", "timeBasis": "annual rainfall", "aggregationMethod": "Not evaluable against a seven-day forecast", "isCompatibleWithSevenDayForecast": false, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE", "source": { "title": "FAO ECOCROP: Zea mays ssp. mays", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=238663", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE" } }
+      ]
+    },
+    {
+      "cropName": "Green Gram",
+      "assessmentBasis": "Seven-day mean air-temperature compatibility indicator only",
+      "supportsFullSuitabilityAssessment": false,
+      "calendarEvidence": { "title": "Green Gram - Vigna radiata, Dry Zone crop calendar", "sourceUrl": "https://drive.google.com/file/d/1U6x48RpUDpnhk_eJt-J-XJVWV0BJM3qU/view", "publicationDetails": "Department of Agriculture, Sri Lanka / AFACI, 2013", "location": "Dry Zone; includes Anuradhapura District", "evidenceStatus": "OFFICIAL_APPLICABLE_CALENDAR" },
+      "requirements": [
+        { "factor": "Temperature", "optimalMinimum": 21, "optimalMaximum": 36, "acceptableMinimum": 8, "acceptableMaximum": 40, "unit": "deg C", "timeBasis": "crop ecological temperature range", "aggregationMethod": "7-day mean of daily air-temperature forecasts; short-horizon indicator only", "isCompatibleWithSevenDayForecast": true, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED", "source": { "title": "FAO ECOCROP: Vigna radiata", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2150", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED" } },
+        { "factor": "Rainfall", "optimalMinimum": 650, "optimalMaximum": 900, "acceptableMinimum": 500, "acceptableMaximum": 1250, "unit": "mm", "timeBasis": "annual rainfall", "aggregationMethod": "Not evaluable against a seven-day forecast", "isCompatibleWithSevenDayForecast": false, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE", "source": { "title": "FAO ECOCROP: Vigna radiata", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2150", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE" } }
+      ]
+    },
+    {
+      "cropName": "Cowpea",
+      "assessmentBasis": "Seven-day mean air-temperature compatibility indicator only",
+      "supportsFullSuitabilityAssessment": false,
+      "calendarEvidence": { "title": "Cowpea - Vigna unguiculata, Dry Zone crop calendar", "sourceUrl": "https://drive.google.com/file/d/1nn4gxg5JHNhfEdlpsDpgpTvoBcqW6PSe/view", "publicationDetails": "Department of Agriculture, Sri Lanka / AFACI, 2013", "location": "Dry Zone; includes Anuradhapura District", "evidenceStatus": "OFFICIAL_APPLICABLE_CALENDAR" },
+      "requirements": [
+        { "factor": "Temperature", "optimalMinimum": 20, "optimalMaximum": 35, "acceptableMinimum": 10, "acceptableMaximum": 40, "unit": "deg C", "timeBasis": "crop ecological temperature range", "aggregationMethod": "7-day mean of daily air-temperature forecasts; short-horizon indicator only", "isCompatibleWithSevenDayForecast": true, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED", "source": { "title": "FAO ECOCROP: Vigna unguiculata ssp. unguiculata", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=10835", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED" } },
+        { "factor": "Rainfall", "optimalMinimum": 600, "optimalMaximum": 1500, "acceptableMinimum": 400, "acceptableMaximum": 4100, "unit": "mm", "timeBasis": "annual rainfall", "aggregationMethod": "Not evaluable against a seven-day forecast", "isCompatibleWithSevenDayForecast": false, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE", "source": { "title": "FAO ECOCROP: Vigna unguiculata ssp. unguiculata", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=10835", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE" } }
+      ]
+    },
+    {
+      "cropName": "Groundnut",
+      "assessmentBasis": "Seven-day mean air-temperature compatibility indicator only",
+      "supportsFullSuitabilityAssessment": false,
+      "calendarEvidence": { "title": "Groundnut - Arachis hypogaea, Intermediate & Dry Zones crop calendar", "sourceUrl": "https://drive.google.com/file/d/1SOOJatHEThuFU2__H98PPb4omCm3vCTZ/view", "publicationDetails": "Department of Agriculture, Sri Lanka / AFACI, 2013", "location": "Intermediate & Dry Zones; includes Anuradhapura DL-1d", "evidenceStatus": "OFFICIAL_APPLICABLE_CALENDAR" },
+      "requirements": [
+        { "factor": "Temperature", "optimalMinimum": 22, "optimalMaximum": 32, "acceptableMinimum": 10, "acceptableMaximum": 45, "unit": "deg C", "timeBasis": "crop ecological temperature range", "aggregationMethod": "7-day mean of daily air-temperature forecasts; short-horizon indicator only", "isCompatibleWithSevenDayForecast": true, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED", "source": { "title": "FAO ECOCROP: Arachis hypogaea", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2199", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED" } },
+        { "factor": "Rainfall", "optimalMinimum": 600, "optimalMaximum": 1500, "acceptableMinimum": 400, "acceptableMaximum": 4000, "unit": "mm", "timeBasis": "annual rainfall", "aggregationMethod": "Not evaluable against a seven-day forecast", "isCompatibleWithSevenDayForecast": false, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE", "source": { "title": "FAO ECOCROP: Arachis hypogaea", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2199", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE" } }
+      ]
+    },
+    {
+      "cropName": "Chilli",
+      "assessmentBasis": "Seven-day mean air-temperature compatibility indicator only",
+      "supportsFullSuitabilityAssessment": false,
+      "calendarEvidence": { "title": "Chilli - Capsicum annuum, Dry Zone crop calendar", "sourceUrl": "https://drive.google.com/file/d/1AAEmT-y4nvl-m3kz84fzcO29mVSEczEd/view", "publicationDetails": "Department of Agriculture, Sri Lanka / AFACI, 2013", "location": "Dry Zone; includes Anuradhapura District", "evidenceStatus": "OFFICIAL_APPLICABLE_CALENDAR" },
+      "requirements": [
+        { "factor": "Temperature", "optimalMinimum": 17, "optimalMaximum": 30, "acceptableMinimum": 8, "acceptableMaximum": 35, "unit": "deg C", "timeBasis": "crop ecological temperature range", "aggregationMethod": "7-day mean of daily air-temperature forecasts; short-horizon indicator only", "isCompatibleWithSevenDayForecast": true, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED", "source": { "title": "FAO ECOCROP: Capsicum annuum", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=618", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATED" } },
+        { "factor": "Rainfall", "optimalMinimum": 600, "optimalMaximum": 1250, "acceptableMinimum": 500, "acceptableMaximum": 1700, "unit": "mm", "timeBasis": "annual rainfall", "aggregationMethod": "Not evaluable against a seven-day forecast", "isCompatibleWithSevenDayForecast": false, "supportsFullSuitabilityAssessment": false, "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE", "source": { "title": "FAO ECOCROP: Capsicum annuum", "sourceUrl": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=618", "publicationDetails": "FAO ECOCROP global crop ecology database", "location": "Global; not Anuradhapura-specific", "evidenceStatus": "INCOMPATIBLE_TEMPORAL_SCALE" } }
+      ]
+    }
+  ]
+}

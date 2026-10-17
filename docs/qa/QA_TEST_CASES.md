@@ -36,6 +36,8 @@ Notes:
 - Seasonal outputs are conditional calendar candidates, not exact planting prescriptions or long-range LSTM forecasts.
 - Existing active accounts now include Administrator, Agricultural Officer and Registered User roles. The Registered User flow was tested through approved public registration; Agricultural Officer credentials are still required for its live workflow test.
 - Final regression on 2026-10-17: dependency vulnerability scan found no vulnerable packages; backend 289/289 tests passed; forecasting service 22/22 tests passed (one upstream FastAPI/Starlette deprecation warning); Angular 39/39 tests passed.
+- Final approved-scope audit regression on 2026-10-17 repeated the same passing suites: backend 289/289, forecasting service 22/22 and Angular 39/39. No feature flag, database record, model artifact or production configuration was changed during that audit.
 - `EnableOfficerValidation` is enabled only in local development for the pending live Officer QA. No production setting, user credential or recommendation record was changed.
+- Approved-scope audit: recommendation history, Officer validation, climate-risk logic and Administrator controls are implemented. Their remaining statuses are governed by approved feature flags, authorized test access and scientific configuration; multilingual UI is outside the approved scope.
 - Expected HTTP 400 responses in negative seasonal tests appear as Chrome console resource errors; they are validated negative outcomes, not unhandled application failures.
 - The local development weather-integration configuration was preserved during this verification. No production configuration, model artifact, database schema or protected API project file was changed.

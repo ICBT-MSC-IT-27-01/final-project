@@ -1,0 +1,509 @@
+{
+  "schemaVersion": "calendar-month-extraction-review-v1",
+  "createdOn": "2026-10-17",
+  "scope": "Anuradhapura District; six crops; DoA/AFACI calendars",
+  "interpretationWarning": "Approximate MONTH-LEVEL activity windows visually inferred from calendar artwork, NOT validated exact sowing dates, site-specific recommendations, rainfall sufficiency, or scientific crop suitability. Do not turn them into unconditional planting advice.",
+  "dataUsage": {
+    "allowed": [
+      "Show candidate crop establishment months with source/conditions",
+      "Generate crop-to-period calendar candidates marked conditional",
+      "Filter date-range-to-crop calendar candidates only with provenance"
+    ],
+    "prohibited": [
+      "Claim 7-day rainfall or humidity suitability",
+      "Assign numerical agronomic suitability scores from calendar alone",
+      "Assume all district soil and water conditions match",
+      "Claim agronomist approval",
+      "Infer exact weeks from approximate chart"
+    ]
+  },
+  "crops": [
+    {
+      "cropName": "Paddy",
+      "publisher": "Sri Lanka Department of Agriculture / AFACI",
+      "publicationYear": 2015,
+      "sourceFile": "Crop_Calandar_Book_Sinhala_compressed.pdf",
+      "sourceLanguage": "Sinhala",
+      "extractionMethod": "Manual visual inspection of original calendar charts; month-level only",
+      "precision": "MONTH_APPROXIMATE",
+      "agronomistValidated": false,
+      "productionApproved": false,
+      "sourcePages": [
+        1,
+        2
+      ],
+      "zone": "Dry and Intermediate Zones",
+      "anuradhapuraApplicability": "CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match",
+      "patterns": [
+        {
+          "id": "paddy-maha",
+          "season": "Maha",
+          "landPreparationMonths": [
+            10,
+            11
+          ],
+          "sowingOrTransplantingMonths": [
+            10,
+            11
+          ],
+          "harvestMonths": [
+            2
+          ],
+          "interpretation": "Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            1,
+            2
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        },
+        {
+          "id": "paddy-yala",
+          "season": "Yala",
+          "landPreparationMonths": [
+            4,
+            5
+          ],
+          "sowingOrTransplantingMonths": [
+            4,
+            5
+          ],
+          "harvestMonths": [
+            8
+          ],
+          "interpretation": "Approximate crop-establishment period Apr-May and harvest around Aug; depends on water availability and variety.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            1,
+            2
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        }
+      ],
+      "growingDuration": {
+        "valueOptionsMonths": [
+          2.5,
+          3,
+          3.5
+        ],
+        "basis": "Different paddy duration classes illustrated in calendar",
+        "sourcePages": [
+          1,
+          2
+        ]
+      },
+      "conditions": [
+        "Separate irrigated calendar on page 1 and rainfed calendar on page 2",
+        "Water availability and planting method affect feasibility"
+      ],
+      "notes": [
+        "The separate uploaded paddy.jpg is an integrated pest-management schedule, not the principal crop-calendar source.",
+        "The same nominal months are not a guarantee of irrigation water availability."
+      ],
+      "supportingImageFiles": [
+        "paddy.jpg"
+      ],
+      "publicationYearNote": "Paddy calendar charts indicate 2015; other crop calendar charts indicate 2013."
+    },
+    {
+      "cropName": "Maize",
+      "publisher": "Sri Lanka Department of Agriculture / AFACI",
+      "publicationYear": 2013,
+      "sourceFile": "Crop_Calandar_Book_Sinhala_compressed.pdf",
+      "sourceLanguage": "Sinhala",
+      "extractionMethod": "Manual visual inspection of original calendar charts; month-level only",
+      "precision": "MONTH_APPROXIMATE",
+      "agronomistValidated": false,
+      "productionApproved": false,
+      "sourcePages": [
+        5
+      ],
+      "zone": "Dry Zone",
+      "anuradhapuraApplicability": "Calendar includes Anuradhapura District",
+      "patterns": [
+        {
+          "id": "maize-maha",
+          "season": "Maha",
+          "landPreparationMonths": [
+            9,
+            10
+          ],
+          "sowingOrTransplantingMonths": [
+            10
+          ],
+          "harvestMonths": [
+            1,
+            2
+          ],
+          "interpretation": "Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            5
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        },
+        {
+          "id": "maize-yala",
+          "season": "Yala",
+          "landPreparationMonths": [
+            3,
+            4
+          ],
+          "sowingOrTransplantingMonths": [
+            4,
+            5
+          ],
+          "harvestMonths": [
+            7,
+            8
+          ],
+          "interpretation": "Dry Zone chart shows land preparation around Mar-Apr, seeding around Apr-May, harvest around Jul-Aug.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            5
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        }
+      ],
+      "growingDuration": null,
+      "conditions": [
+        "Rainfed and irrigated practices differ; rainfall and water access remain necessary"
+      ],
+      "notes": [
+        "Use PDF page 5 Dry Zone; maiz_inter.jpg is Intermediate Zone and should not be the default Anuradhapura rule."
+      ],
+      "supportingImageFiles": [
+        "maiz_inter.jpg"
+      ]
+    },
+    {
+      "cropName": "Green Gram",
+      "publisher": "Sri Lanka Department of Agriculture / AFACI",
+      "publicationYear": 2013,
+      "sourceFile": "Crop_Calandar_Book_Sinhala_compressed.pdf",
+      "sourceLanguage": "Sinhala",
+      "extractionMethod": "Manual visual inspection of original calendar charts; month-level only",
+      "precision": "MONTH_APPROXIMATE",
+      "agronomistValidated": false,
+      "productionApproved": false,
+      "sourcePages": [
+        8
+      ],
+      "zone": "Dry Zone",
+      "anuradhapuraApplicability": "Calendar explicitly includes Anuradhapura District",
+      "patterns": [
+        {
+          "id": "green-gram-maha",
+          "season": "Maha",
+          "landPreparationMonths": [
+            10
+          ],
+          "sowingOrTransplantingMonths": [
+            11
+          ],
+          "harvestMonths": [
+            1,
+            2
+          ],
+          "interpretation": "Main crop: land preparation around Oct, seeding around Nov, harvest around Jan-Feb.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            8
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        },
+        {
+          "id": "green-gram-yala",
+          "season": "Yala",
+          "landPreparationMonths": [
+            3
+          ],
+          "sowingOrTransplantingMonths": [
+            4
+          ],
+          "harvestMonths": [
+            6,
+            7
+          ],
+          "interpretation": "Main crop: land preparation around Mar, seeding around Apr, harvest around Jun-Jul.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            8
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        }
+      ],
+      "growingDuration": {
+        "minimumDays": 55,
+        "maximumDays": 65,
+        "basis": "Variety table in page 8; approximate across listed varieties",
+        "sourcePages": [
+          8
+        ]
+      },
+      "conditions": [
+        "Third-season cultivation is separately depicted and must not be assumed universally feasible"
+      ],
+      "notes": [
+        "Do not promote third-season planting as an unconditional window."
+      ],
+      "supportingImageFiles": [
+        "GreenGram_DRY.jpg",
+        "GreenGram_INTER.jpg"
+      ]
+    },
+    {
+      "cropName": "Cowpea",
+      "publisher": "Sri Lanka Department of Agriculture / AFACI",
+      "publicationYear": 2013,
+      "sourceFile": "Crop_Calandar_Book_Sinhala_compressed.pdf",
+      "sourceLanguage": "Sinhala",
+      "extractionMethod": "Manual visual inspection of original calendar charts; month-level only",
+      "precision": "MONTH_APPROXIMATE",
+      "agronomistValidated": false,
+      "productionApproved": false,
+      "sourcePages": [
+        19
+      ],
+      "zone": "Dry Zone",
+      "anuradhapuraApplicability": "Calendar explicitly includes Anuradhapura District",
+      "patterns": [
+        {
+          "id": "cowpea-maha",
+          "season": "Maha",
+          "landPreparationMonths": [
+            10
+          ],
+          "sowingOrTransplantingMonths": [
+            11
+          ],
+          "harvestMonths": [
+            1
+          ],
+          "interpretation": "Main crop: preparation around Oct, seeding around Nov, harvest around Jan.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            19
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        },
+        {
+          "id": "cowpea-yala",
+          "season": "Yala",
+          "landPreparationMonths": [
+            3
+          ],
+          "sowingOrTransplantingMonths": [
+            4
+          ],
+          "harvestMonths": [
+            6
+          ],
+          "interpretation": "Main crop: preparation around Mar, seeding around Apr, harvest around Jun.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            19
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        }
+      ],
+      "growingDuration": {
+        "minimumDays": 55,
+        "maximumDays": 90,
+        "basis": "Variety-dependent values in supplied Dry Zone cowpea chart and PDF page 19; not a single cultivar duration",
+        "sourcePages": [
+          19
+        ]
+      },
+      "conditions": [
+        "Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific management"
+      ],
+      "notes": [
+        "The chart has a separate third-season row; do not automatically treat it as a standard third planting window."
+      ],
+      "supportingImageFiles": [
+        "Cowpea_DRY.jpg",
+        "Cowpea_INTER.jpg"
+      ]
+    },
+    {
+      "cropName": "Groundnut",
+      "publisher": "Sri Lanka Department of Agriculture / AFACI",
+      "publicationYear": 2013,
+      "sourceFile": "Crop_Calandar_Book_Sinhala_compressed.pdf",
+      "sourceLanguage": "Sinhala",
+      "extractionMethod": "Manual visual inspection of original calendar charts; month-level only",
+      "precision": "MONTH_APPROXIMATE",
+      "agronomistValidated": false,
+      "productionApproved": false,
+      "sourcePages": [
+        7
+      ],
+      "zone": "Intermediate and Dry Zones",
+      "anuradhapuraApplicability": "Calendar includes Anuradhapura DL-1d; other subregions require mapping",
+      "patterns": [
+        {
+          "id": "groundnut-maha",
+          "season": "Maha",
+          "landPreparationMonths": [
+            10
+          ],
+          "sowingOrTransplantingMonths": [
+            10,
+            11
+          ],
+          "harvestMonths": [
+            1
+          ],
+          "interpretation": "Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            7
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        },
+        {
+          "id": "groundnut-yala",
+          "season": "Yala",
+          "landPreparationMonths": [
+            4
+          ],
+          "sowingOrTransplantingMonths": [
+            4,
+            5
+          ],
+          "harvestMonths": [
+            6
+          ],
+          "interpretation": "Preparation/seeding around Apr-May; harvest around Jun and drying around Jul.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            7
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        }
+      ],
+      "growingDuration": null,
+      "conditions": [
+        "Soil drainage and irrigation conditions need separate suitability evidence"
+      ],
+      "notes": [
+        "The calendar contains planting and harvest activities but does not provide a validated universal growing-duration number."
+      ],
+      "supportingImageFiles": [
+        "groundNut.jpg"
+      ]
+    },
+    {
+      "cropName": "Chilli",
+      "publisher": "Sri Lanka Department of Agriculture / AFACI",
+      "publicationYear": 2013,
+      "sourceFile": "Crop_Calandar_Book_Sinhala_compressed.pdf",
+      "sourceLanguage": "Sinhala",
+      "extractionMethod": "Manual visual inspection of original calendar charts; month-level only",
+      "precision": "MONTH_APPROXIMATE",
+      "agronomistValidated": false,
+      "productionApproved": false,
+      "sourcePages": [
+        15
+      ],
+      "zone": "Dry Zone",
+      "anuradhapuraApplicability": "Dry Zone chart explicitly includes Anuradhapura District",
+      "patterns": [
+        {
+          "id": "chilli-maha",
+          "season": "Maha",
+          "landPreparationMonths": [
+            9,
+            10
+          ],
+          "sowingOrTransplantingMonths": [
+            10,
+            11
+          ],
+          "harvestMonths": [
+            1,
+            2
+          ],
+          "interpretation": "Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            15
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        },
+        {
+          "id": "chilli-yala",
+          "season": "Yala",
+          "landPreparationMonths": [
+            3,
+            4
+          ],
+          "sowingOrTransplantingMonths": [
+            4,
+            5
+          ],
+          "harvestMonths": [
+            7,
+            8
+          ],
+          "interpretation": "Nursery around Mar-Apr, planting around Apr-May, green/dry chilli harvesting around Jul-Aug.",
+          "confidence": "MEDIUM",
+          "monthPrecisionOnly": true,
+          "exactWeekNotValidated": true,
+          "sourcePages": [
+            15
+          ],
+          "evidenceStatus": "CALENDAR_SUPPORTED_CANDIDATE_ONLY",
+          "requiresLocalReview": true
+        }
+      ],
+      "growingDuration": null,
+      "conditions": [
+        "Dry Zone main and Northern/Eastern alternative cropping rows may differ",
+        "Irrigation and nursery management matter"
+      ],
+      "notes": [
+        "Use Dry Zone calendar; Chili_wet.jpg is Wet Zone and is not the default Anuradhapura source.",
+        "The separate Northern/Eastern alternative schedule should not be generalized to the whole district."
+      ],
+      "supportingImageFiles": [
+        "Chilli_Dry.jpg",
+        "Chili_wet.jpg"
+      ]
+    }
+  ]
+}

@@ -779,6 +779,8 @@ These require explicit project-owner approval.
 
 ## 21. Next Development Task
 
+An explicitly requested seasonal-planning extension added a public `/seasonal-planning` workflow and read-only seasonal climate endpoints. It computes calendar-month statistics from the local ERA5 2010–2025 CSV and does not treat historical averages as forecasts. Crop-specific seasonal suitability remains insufficient-evidence until verified compatible requirements or locally applicable calendars are configured; this extension requires supervisor review.
+
 Phase 19 is complete after Git closure. Do not start Phase 20 without explicit project-owner instruction.
 
 ## Startup Prompt for a New Codex Session

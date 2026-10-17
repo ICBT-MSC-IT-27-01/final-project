@@ -39,8 +39,11 @@ Generated: 2026-10-13
 | Overall MAE | 3.583540 | 3.163312 | 11.73% |
 | Overall RMSE | 8.737924 | 6.729412 | 22.99% |
 | Rainfall MAE | 5.493005 | 4.904242 | 10.72% |
+| Rainfall RMSE | 13.915698 | 10.546710 | 24.21% |
 | Temperature MAE | 0.792985 | 0.707127 | 10.83% |
+| Temperature RMSE | 1.040472 | 0.891233 | 14.34% |
 | Humidity MAE | 4.464631 | 3.878567 | 13.13% |
+| Humidity RMSE | 5.858731 | 4.881347 | 16.68% |
 
 Formula: `(Baseline - LSTM) / Baseline * 100`. These are historical ERA5 weather metrics. They are not crop recommendation accuracy and not verified operational forecast accuracy.
 
