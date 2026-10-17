@@ -313,6 +313,7 @@ public sealed class ForecastEndpointTests(Phase3WebApplicationFactory factory) :
         var fakeClient = new FakeForecastingClient(ForecastResult<ForecastResponse>.Success(SampleForecastResponse()));
         using var testFactory = factory.CreateIsolated(services =>
         {
+            services.PostConfigure<WeatherModelFeatureOptions>(options => options.EnableWeatherModelIntegration = false);
             services.RemoveAll<IWeatherForecastingClient>();
             services.AddSingleton<IWeatherForecastingClient>(fakeClient);
         });

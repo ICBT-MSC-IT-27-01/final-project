@@ -251,7 +251,13 @@ public sealed class RecommendationsController(
                 .ToList(),
             crop.EvidenceCoverage,
             crop.ClimateRisks,
-            crop.Explanation);
+            crop.Explanation)
+        {
+            AssessmentState = crop.AssessmentState,
+            AssessmentBasis = crop.AssessmentBasis,
+            EvidenceSources = crop.EvidenceSources,
+            ScientificLimitations = crop.ScientificLimitations
+        };
 
     private IActionResult ToFailureResult(string? errorCode, string? message) => errorCode switch
     {

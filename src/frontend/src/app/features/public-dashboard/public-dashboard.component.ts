@@ -17,6 +17,7 @@ import { LatestForecastResponse } from '../../core/api.models';
         </p>
         <div class="action-row">
           <a routerLink="/recommendations" class="button primary">Generate recommendation</a>
+          <a routerLink="/seasonal-planning" class="button secondary">Seasonal crop planning</a>
           <a routerLink="/login" class="button secondary">Registered login</a>
         </div>
       </div>

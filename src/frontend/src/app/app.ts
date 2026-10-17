@@ -18,6 +18,7 @@ import { AuthService } from './core/auth.service';
       <nav class="top-nav" aria-label="Primary navigation">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
         <a routerLink="/recommendations" routerLinkActive="active">Recommendations</a>
+        <a routerLink="/seasonal-planning" routerLinkActive="active">Seasonal planning</a>
         @if (auth.hasRole('Agricultural Officer')) {
           <a routerLink="/officer" routerLinkActive="active">Officer</a>
         }

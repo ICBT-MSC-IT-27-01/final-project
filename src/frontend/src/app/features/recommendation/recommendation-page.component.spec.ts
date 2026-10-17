@@ -36,7 +36,7 @@ describe('RecommendationPageComponent', () => {
     expect(component.recommendation()?.crops).toHaveLength(6);
   });
 
-  it('renders six crops, unranked insufficient evidence and missing factors', () => {
+  it('renders six crops, not-ranked insufficient evidence and missing factors', () => {
     component.recommendation.set(sampleRecommendation());
 
     fixture.detectChanges();
@@ -44,7 +44,7 @@ describe('RecommendationPageComponent', () => {
 
     expect(text).toContain('Paddy');
     expect(text).toContain('Chilli');
-    expect(text).toContain('Unranked');
+    expect(text).toContain('Not ranked');
     expect(text).toContain('InsufficientEvidence');
     expect(text).toContain('Missing: Soil');
   });

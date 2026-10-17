@@ -4,14 +4,17 @@ using AnuradhapuraAI.Application.Forecasting;
 using AnuradhapuraAI.Application.Recommendations;
 using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Application.Validations;
+using AnuradhapuraAI.Application.Seasonal;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Admin;
+using AnuradhapuraAI.Infrastructure.Agriculture;
 using AnuradhapuraAI.Infrastructure.Authentication;
 using AnuradhapuraAI.Infrastructure.Forecasting;
 using AnuradhapuraAI.Infrastructure.Persistence;
 using AnuradhapuraAI.Infrastructure.Recommendations;
 using AnuradhapuraAI.Infrastructure.Suitability;
 using AnuradhapuraAI.Infrastructure.Validations;
+using AnuradhapuraAI.Infrastructure.Seasonal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -52,7 +55,10 @@ public static class DependencyInjection
         services.AddScoped<IRecommendationHistoryService, RecommendationHistoryService>();
         services.AddScoped<IRecommendationValidationService, RecommendationValidationService>();
         services.AddScoped<ICropSuitabilityEngine, CropSuitabilityEngine>();
+        services.AddSingleton<CropEvidenceCatalog>();
         services.AddScoped<ISuitabilityConfigurationProvider, SuitabilityConfigurationProvider>();
+        services.AddScoped<ISeasonalClimateService, SeasonalClimateService>();
+        services.AddSingleton<DoaCalendarMonthCatalog>();
         services.Configure<ForecastingServiceOptions>(
             configuration.GetSection(ForecastingServiceOptions.SectionName));
         services.Configure<WeatherModelFeatureOptions>(

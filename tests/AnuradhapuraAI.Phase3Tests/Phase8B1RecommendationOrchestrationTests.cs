@@ -267,6 +267,9 @@ public sealed class Phase8B1RecommendationOrchestrationTests
             Assert.Equal(75m, crop.SoilScore);
             Assert.Null(crop.RainfallScore);
             Assert.Null(crop.HumidityScore);
+            Assert.Null(crop.OverallScore);
+            Assert.Null(crop.SuitabilityCategory);
+            Assert.Equal(RecommendationAssessmentStates.PartiallyAssessed, crop.AssessmentState);
             Assert.Equal(2, crop.EvidenceCoverage.EvaluatedFactorCount);
             Assert.Equal(50m, crop.EvidenceCoverage.EvaluatedConfiguredWeightTotal);
             Assert.Contains(SuitabilityFactors.Rainfall, crop.UnavailableFactors);

@@ -1,0 +1,209 @@
+{
+  "login": {
+    "status": 200,
+    "url": "http://127.0.0.1:4300/login"
+  },
+  "generation": {
+    "status": 200,
+    "body": {
+      "forecastRunId": "b9d8598f-650d-451d-96b6-2f282e036b57",
+      "runPurpose": "Operational",
+      "providerName": "Open-Meteo",
+      "providerProduct": "forecast_api_past_days_auto",
+      "requestedLatitude": 8.312229,
+      "requestedLongitude": 80.413055,
+      "returnedLatitude": 8.330404,
+      "returnedLongitude": 80.42882,
+      "timezone": "Asia/Colombo",
+      "observationWindowStart": "2026-09-17",
+      "observationWindowEnd": "2026-10-16",
+      "forecastOriginDate": "2026-10-16",
+      "targetStartDate": "2026-10-17",
+      "targetEndDate": "2026-10-23",
+      "modelVersion": "v1",
+      "createdAt": "2026-10-17T15:38:02.4558755+00:00",
+      "forecasts": [
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-17",
+          "temperature": 26.4404506444931,
+          "rainfall": 12.342143258452417,
+          "humidity": 87.71247804164888,
+          "modelVersion": "v1"
+        },
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-18",
+          "temperature": 26.578327631950376,
+          "rainfall": 9.942331705242397,
+          "humidity": 87.61055731773378,
+          "modelVersion": "v1"
+        },
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-19",
+          "temperature": 26.60450229644775,
+          "rainfall": 8.956569959223271,
+          "humidity": 87.57001239061357,
+          "modelVersion": "v1"
+        },
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-20",
+          "temperature": 26.67183561325073,
+          "rainfall": 8.503402348607779,
+          "humidity": 87.10741019248964,
+          "modelVersion": "v1"
+        },
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-21",
+          "temperature": 26.72014045715332,
+          "rainfall": 8.452025317400695,
+          "humidity": 86.90052622556688,
+          "modelVersion": "v1"
+        },
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-22",
+          "temperature": 26.804631876945493,
+          "rainfall": 7.8707799315452585,
+          "humidity": 86.4664821624756,
+          "modelVersion": "v1"
+        },
+        {
+          "forecastDate": "2026-10-16",
+          "targetDate": "2026-10-23",
+          "temperature": 26.856057119369506,
+          "rainfall": 7.37707249224186,
+          "humidity": 86.08343023061754,
+          "modelVersion": "v1"
+        }
+      ]
+    },
+    "pageText": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nAdmin\nadmin@gmail.com\nLogout\n\nAdministrator\n\nAdministration\n\nManagement screens use only verified Administrator API contracts and leave backend authorization authoritative.\n\nOperational forecast generated.\nOperational forecast\nGenerate operational forecast\n\nRun b9d8598f-650d-451d-96b6-2f282e036b57 covers 2026-10-17 to 2026-10-23.\n\nUsersCropsRequirementsSoilConfigurationRecommendation recordsValidation records\nUser management\nName\tEmail\tRole\tActive\tActions\nAdmin\tadmin@gmail.com\t\nRegistered User\nAgricultural Officer\nAdministrator\n\tActive\tSet inactive"
+  },
+  "dashboard": {
+    "forecastRunId": "b9d8598f-650d-451d-96b6-2f282e036b57",
+    "modelVersion": "v1",
+    "start": "2026-10-17",
+    "end": "2026-10-23",
+    "days": [
+      {
+        "targetDate": "2026-10-17",
+        "rainfallMm": 12.34,
+        "temperatureC": 26.44,
+        "humidityPercent": 87.71
+      },
+      {
+        "targetDate": "2026-10-18",
+        "rainfallMm": 9.94,
+        "temperatureC": 26.58,
+        "humidityPercent": 87.61
+      },
+      {
+        "targetDate": "2026-10-19",
+        "rainfallMm": 8.96,
+        "temperatureC": 26.6,
+        "humidityPercent": 87.57
+      },
+      {
+        "targetDate": "2026-10-20",
+        "rainfallMm": 8.5,
+        "temperatureC": 26.67,
+        "humidityPercent": 87.11
+      },
+      {
+        "targetDate": "2026-10-21",
+        "rainfallMm": 8.45,
+        "temperatureC": 26.72,
+        "humidityPercent": 86.9
+      },
+      {
+        "targetDate": "2026-10-22",
+        "rainfallMm": 7.87,
+        "temperatureC": 26.8,
+        "humidityPercent": 86.47
+      },
+      {
+        "targetDate": "2026-10-23",
+        "rainfallMm": 7.38,
+        "temperatureC": 26.86,
+        "humidityPercent": 86.08
+      }
+    ]
+  },
+  "recommendation": {
+    "forecastRunId": "b9d8598f-650d-451d-96b6-2f282e036b57",
+    "crops": [
+      {
+        "cropName": "Paddy",
+        "assessmentState": "PARTIALLY_ASSESSED",
+        "overallScore": 100,
+        "rank": null
+      },
+      {
+        "cropName": "Maize",
+        "assessmentState": "PARTIALLY_ASSESSED",
+        "overallScore": 100,
+        "rank": null
+      },
+      {
+        "cropName": "Green Gram",
+        "assessmentState": "PARTIALLY_ASSESSED",
+        "overallScore": 100,
+        "rank": null
+      },
+      {
+        "cropName": "Cowpea",
+        "assessmentState": "PARTIALLY_ASSESSED",
+        "overallScore": 100,
+        "rank": null
+      },
+      {
+        "cropName": "Groundnut",
+        "assessmentState": "PARTIALLY_ASSESSED",
+        "overallScore": 100,
+        "rank": null
+      },
+      {
+        "cropName": "Chilli",
+        "assessmentState": "PARTIALLY_ASSESSED",
+        "overallScore": 100,
+        "rank": null
+      }
+    ]
+  },
+  "apiResponses": [
+    {
+      "url": "http://127.0.0.1:4300/api/auth/login",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:4300/api/admin/users?page=1&pageSize=20",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4300/api/admin/forecasts/operational",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:4300/api/forecasts/latest",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4300/api/forecasts/latest",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4300/api/recommendations/evaluate",
+      "status": 200,
+      "method": "POST"
+    }
+  ]
+}

@@ -32,6 +32,7 @@ import { RecommendationEvaluationResponse, supportedCrops } from '../../core/api
         />
       </label>
 
+
       <button type="submit" class="button primary" [disabled]="isLoading()">
         {{ isLoading() ? 'Generating...' : 'Generate recommendation' }}
       </button>
@@ -62,7 +63,7 @@ import { RecommendationEvaluationResponse, supportedCrops } from '../../core/api
       </section>
 
       @if (!soilType.trim()) {
-        <div class="notice warning">Soil information was not supplied. Soil compatibility is marked unavailable and remaining evaluable factor weights are re-normalized.</div>
+        <div class="notice warning">Soil information was not supplied. Soil compatibility is marked unavailable; a partial assessment is never presented as full suitability.</div>
       }
 
       @if (result.limitations.length) {
@@ -88,7 +89,7 @@ import { RecommendationEvaluationResponse, supportedCrops } from '../../core/api
         @for (crop of result.crops; track crop.cropName) {
           <article class="crop-card" [ngClass]="crop.evaluationStatus">
             <header>
-              <span class="rank">{{ crop.rank ? '#' + crop.rank : 'Unranked' }}</span>
+              <span class="rank">{{ crop.rank ? (crop.assessmentState === 'PARTIALLY_ASSESSED' ? 'Indicator #' : '#') + crop.rank : (crop.assessmentState === 'PARTIALLY_ASSESSED' ? 'No comparable rank' : 'Not ranked') }}</span>
               <h2>{{ crop.cropName }}</h2>
             </header>
             <p class="score">
@@ -98,7 +99,13 @@ import { RecommendationEvaluationResponse, supportedCrops } from '../../core/api
                 No score
               }
             </p>
-            <p>{{ crop.suitabilityCategory || crop.evaluationStatus }}</p>
+            @if (crop.assessmentState === 'PARTIALLY_ASSESSED') {
+              <p>Temperature compatibility indicator (0-100); not full suitability.</p>
+            }
+            <p>{{ crop.suitabilityCategory || crop.assessmentState || crop.evaluationStatus }}</p>
+            @if (crop.assessmentBasis) {
+              <p><strong>Assessment basis:</strong> {{ crop.assessmentBasis }}</p>
+            }
             <p>{{ crop.explanation }}</p>
 
             @if (crop.unavailableFactors.length) {
@@ -117,6 +124,22 @@ import { RecommendationEvaluationResponse, supportedCrops } from '../../core/api
             @if (crop.climateRisks.length) {
               <div class="risks">{{ crop.climateRisks.join(', ') }}</div>
             }
+
+            @if (crop.evidenceSources?.length) {
+              <div class="factor-list" aria-label="Evidence sources">
+                @for (source of crop.evidenceSources; track source.sourceUrl) {
+                  <div>
+                    <span>{{ source.evidenceStatus }}</span>
+                    <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.title }}</a>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (crop.scientificLimitations?.length) {
+              <div class="missing">Limitations: {{ (crop.scientificLimitations || []).join(' ') }}</div>
+            }
+
           </article>
         }
       </section>

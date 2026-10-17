@@ -15,7 +15,21 @@ public sealed record SuitabilityRangeRequirement(
     decimal AcceptableMaximum,
     string Unit,
     string TimeBasis,
-    bool IsCompatibleWithSevenDayForecast);
+    bool IsCompatibleWithSevenDayForecast)
+{
+    public bool SupportsFullSuitabilityAssessment { get; init; } = true;
+    public string EvidenceStatus { get; init; } = "APPROVED_CONFIGURATION";
+    public string? AggregationMethod { get; init; }
+    public IReadOnlyList<SuitabilityEvidenceSource> Sources { get; init; } = [];
+    public IReadOnlyList<string> Limitations { get; init; } = [];
+}
+
+public sealed record SuitabilityEvidenceSource(
+    string Title,
+    string SourceUrl,
+    string? PublicationDetails,
+    string? Location,
+    string EvidenceStatus);
 
 public sealed record SuitabilitySoilCompatibility(
     string SoilType,
@@ -26,7 +40,13 @@ public sealed record CropSuitabilityProfile(
     SuitabilityRangeRequirement? RainfallRequirement,
     SuitabilityRangeRequirement? TemperatureRequirement,
     SuitabilityRangeRequirement? HumidityRequirement,
-    IReadOnlyList<SuitabilitySoilCompatibility> SoilCompatibilities);
+    IReadOnlyList<SuitabilitySoilCompatibility> SoilCompatibilities)
+{
+    public bool SupportsFullSuitabilityAssessment { get; init; } = true;
+    public string AssessmentBasis { get; init; } = "Configured four-factor suitability assessment";
+    public IReadOnlyList<SuitabilityEvidenceSource> EvidenceSources { get; init; } = [];
+    public IReadOnlyList<string> ScientificLimitations { get; init; } = [];
+}
 
 public sealed record SuitabilityFactorWeights(
     decimal Rainfall = 25m,
@@ -66,6 +86,10 @@ public sealed record CropSuitabilityResult(
     string Explanation,
     int EvaluatedFactorCount)
 {
+    public bool SupportsFullSuitabilityAssessment { get; init; } = true;
+    public string AssessmentBasis { get; init; } = "Configured four-factor suitability assessment";
+    public IReadOnlyList<SuitabilityEvidenceSource> EvidenceSources { get; init; } = [];
+    public IReadOnlyList<string> ScientificLimitations { get; init; } = [];
     public SuitabilityFactorResult Rainfall =>
         Factors.Single(factor => factor.Factor == SuitabilityFactors.Rainfall);
 

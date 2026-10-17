@@ -33,7 +33,30 @@ public sealed record CropRecommendationEvaluation(
     IReadOnlyList<SuitabilityFactorResult> Factors,
     IReadOnlyList<string> ClimateRisks,
     string Explanation,
-    EvidenceCoverage EvidenceCoverage);
+    EvidenceCoverage EvidenceCoverage)
+{
+    public string AssessmentState { get; init; } = "INSUFFICIENT_AGRONOMIC_EVIDENCE";
+    public string AssessmentBasis { get; init; } = "No evaluable agronomic factor";
+    public IReadOnlyList<RecommendationEvidenceSource> EvidenceSources { get; init; } = [];
+    public IReadOnlyList<string> ScientificLimitations { get; init; } = [];
+}
+
+public sealed record RecommendationEvidenceSource(
+    string Title,
+    string SourceUrl,
+    string? PublicationDetails,
+    string? Location,
+    string EvidenceStatus);
+
+public static class RecommendationAssessmentStates
+{
+    public const string SuitabilityAssessed = "SUITABILITY_ASSESSED";
+    public const string PartiallyAssessed = "PARTIALLY_ASSESSED";
+    public const string CalendarSupportedCandidate = "CALENDAR_SUPPORTED_CANDIDATE";
+    public const string ClimateContextOnly = "CLIMATE_CONTEXT_ONLY";
+    public const string InsufficientAgronomicEvidence = "INSUFFICIENT_AGRONOMIC_EVIDENCE";
+    public const string DataUnavailable = "DATA_UNAVAILABLE";
+}
 
 public sealed record EvidenceCoverage(
     int EvaluatedFactorCount,
@@ -86,7 +109,13 @@ public sealed record RankedCropRecommendationEvaluation(
     IReadOnlyList<SuitabilityFactorResult> Factors,
     IReadOnlyList<string> ClimateRisks,
     string Explanation,
-    EvidenceCoverage EvidenceCoverage);
+    EvidenceCoverage EvidenceCoverage)
+{
+    public string AssessmentState { get; init; } = "INSUFFICIENT_AGRONOMIC_EVIDENCE";
+    public string AssessmentBasis { get; init; } = "No evaluable agronomic factor";
+    public IReadOnlyList<RecommendationEvidenceSource> EvidenceSources { get; init; } = [];
+    public IReadOnlyList<string> ScientificLimitations { get; init; } = [];
+}
 
 public sealed record CreateRecommendationPersistenceRequest(
     string? SoilType,
@@ -106,6 +135,7 @@ public sealed class CreateRecommendationRequest
     public string District { get; set; } = string.Empty;
 
     public string? SoilType { get; set; }
+
 }
 
 public sealed record RecommendationResponse(
@@ -153,7 +183,13 @@ public sealed record RecommendationCropResponse(
     IReadOnlyList<RecommendationFactorResponse> Factors,
     EvidenceCoverage EvidenceCoverage,
     IReadOnlyList<string> ClimateRisks,
-    string Explanation);
+    string Explanation)
+{
+    public string AssessmentState { get; init; } = "INSUFFICIENT_AGRONOMIC_EVIDENCE";
+    public string AssessmentBasis { get; init; } = "No evaluable agronomic factor";
+    public IReadOnlyList<RecommendationEvidenceSource> EvidenceSources { get; init; } = [];
+    public IReadOnlyList<string> ScientificLimitations { get; init; } = [];
+}
 
 public sealed record RecommendationFactorResponse(
     string Factor,

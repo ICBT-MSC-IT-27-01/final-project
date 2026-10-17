@@ -4,7 +4,7 @@ Updated: 2026-10-17. Browser cases used visible headed Google Chrome against the
 
 | Test ID | Workflow | Role | Scenario / observed result | Status | Evidence |
 |---|---|---|---|---|---|
-| QA-001 | WF-08 / crop suitability | Public | The live recommendation view exposed only source-linked seven-day temperature compatibility indicators. Rainfall, humidity and optional soil factors remained unavailable; no overall suitability score, category or comparable crop rank was shown. | PARTIAL | `qa-evidence/PUB-04-live-recommendation.png`; `visible-browser-observations.json` |
+| QA-001 | WF-08 / crop suitability | Public | The live recommendation view exposed only source-linked seven-day temperature compatibility indicators. Existing rainfall values are annual and were not converted to seven-day thresholds; crop-specific seven-day humidity and validated soil evidence remain unavailable. No overall suitability score, category or comparable crop rank was shown. | PARTIAL | [`QA001_SCIENTIFIC_VALIDATION_REPORT.md`](QA001_SCIENTIFIC_VALIDATION_REPORT.md); `qa-evidence/PUB-04-live-recommendation.png`; `visible-browser-observations.json` |
 | QA-002 | startup | Public | Angular root returned 200. | PASS | visible audit output |
 | QA-003 | WF-01 | Public | Dashboard rendered the latest eligible persisted operational forecast. | PASS (technical) | `qa-evidence/PUB-01-home-desktop.png` |
 | QA-004 | WF-08 display behaviour | Public | Read-only evaluation correctly presented source-linked temperature indicators, unavailable rainfall/humidity/soil factors, and no fabricated category or comparable rank. | PASS (technical) | `qa-evidence/PUB-04-live-recommendation.png`; `visible-browser-observations.json` |

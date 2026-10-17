@@ -413,10 +413,11 @@ public sealed class RecommendationPersistenceService(
             ApprovedRecommendationEvaluationStatuses.Partial =>
                 evaluableFactorCount > 0 &&
                 evaluableFactorCount < SuitabilityFactors.All.Length &&
-                crop.OverallScore.HasValue &&
-                crop.SuitabilityCategory is not null
+                (crop.AssessmentState == RecommendationAssessmentStates.PartiallyAssessed
+                    ? crop.OverallScore is null && crop.SuitabilityCategory is null
+                    : crop.OverallScore.HasValue && crop.SuitabilityCategory is not null)
                     ? null
-                    : $"Partial evaluation for {crop.CropName} must contain one to three evaluable factors, an overall score, and a category.",
+                    : $"Partial evaluation for {crop.CropName} must contain one to three evaluable factors and must not represent a partially assessed result as an overall suitability score or category.",
             ApprovedRecommendationEvaluationStatuses.Complete =>
                 evaluableFactorCount == SuitabilityFactors.All.Length &&
                 crop.OverallScore.HasValue &&

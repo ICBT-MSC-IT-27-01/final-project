@@ -22,6 +22,7 @@ import {
   RegisterRequest,
   RegisterResponse,
   SubmitRecommendationValidationRequest,
+  SeasonalCropResponse, SeasonalRangeResponse,
 } from './api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -89,6 +90,12 @@ export class ApiService {
 
   getLatestForecast(): Observable<LatestForecastResponse> {
     return this.http.get<LatestForecastResponse>(`${this.baseUrl}/forecasts/latest`).pipe(catchError(toApiError));
+  }
+  findRecommendedCropsByDateRange(startDate: string, endDate: string, soilType?: string | null): Observable<SeasonalRangeResponse> {
+    return this.http.post<SeasonalRangeResponse>(`${this.baseUrl}/seasonal-recommendations/by-date-range`, { startDate, endDate, soilType }).pipe(catchError(toApiError));
+  }
+  findSuitablePeriodsByCrop(cropName: string, startDate: string, endDate: string, soilType?: string | null): Observable<SeasonalCropResponse> {
+    return this.http.post<SeasonalCropResponse>(`${this.baseUrl}/seasonal-recommendations/by-crop`, { cropName, startDate, endDate, soilType }).pipe(catchError(toApiError));
   }
 
   listAdminResources<T>(resource: AdminResource, page = 1, pageSize = 20): Observable<PagedResponse<T>> {

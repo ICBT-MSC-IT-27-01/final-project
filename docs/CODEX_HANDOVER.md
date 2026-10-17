@@ -781,7 +781,33 @@ These require explicit project-owner approval.
 
 An explicitly requested seasonal-planning extension added a public `/seasonal-planning` workflow and read-only seasonal climate endpoints. It computes calendar-month statistics from the local ERA5 2010–2025 CSV and does not treat historical averages as forecasts. Crop-specific seasonal suitability remains insufficient-evidence until verified compatible requirements or locally applicable calendars are configured; this extension requires supervisor review.
 
-Phase 19 is complete after Git closure. Do not start Phase 20 without explicit project-owner instruction.
+## 22. Current Project State — 18 October 2026
+
+The project owner subsequently accepted Seasonal Planning as approved project scope. It must remain clearly described as historical climate and crop-calendar guidance, not as a long-range LSTM forecast or a full agronomic recommendation.
+
+### Crop-suitability scientific status
+
+- The six-crop evidence catalogue is at `docs/agriculture/crop-evidence.json`.
+- The supporting QA review is at `docs/qa/QA001_SCIENTIFIC_VALIDATION_REPORT.md` and `docs/qa/PHASE2_EVIDENCE_FEASIBILITY_REVIEW.md`.
+- The evidence supports only a seven-day mean temperature compatibility indicator. Annual or seasonal rainfall figures must not be divided or converted into weekly thresholds.
+- There are no validated crop-specific seven-day rainfall, relative-humidity, soil, weighting, or category-threshold values for all six crops.
+- `QA-001` remains **PARTIAL**. It must not become PASS until an authorized agricultural expert approves a traceable six-crop matrix for the current forecast horizon and factors.
+- Partial assessments preserve available factor-level evidence, but must not show an overall suitability score, suitability category, or crop rank. This safeguard is implemented in `RecommendationOrchestrationService` and enforced before recommendation persistence.
+
+### Current verification
+
+- Focused suitability/recommendation regression tests: **PASS — 38/38**.
+- Full backend test suite: **288/289 passed**.
+- Known test issue: `OperationalForecastTrigger_AdministratorReceivesFeatureDisabledResponse_WhenIntegrationFlagOff` expects HTTP 503 but currently receives HTTP 400. No feature flags were changed while recording this result.
+- Previously verified ML and frontend results remain: Python tests 22/22; Angular tests 39/39. Do not repeat LSTM training or evaluation without a genuine defect.
+
+### Git and safety status
+
+- `src/backend/AnuradhapuraAI.Api/AnuradhapuraAI.Api.csproj` remains protected and must not be staged, committed, reset, or modified.
+- `qa-evidence/` contains retained QA evidence. `qa-runtime/` is generated runtime material and is intentionally not committed unless the owner explicitly requests it.
+- Do not change production settings, database records, or working feature flags without explicit owner approval.
+
+The next substantive completion item is the agricultural expert-approved suitability matrix. Independent technical work may continue on remaining role QA, accessibility/performance evidence, and final acceptance documentation.
 
 ## Startup Prompt for a New Codex Session
 

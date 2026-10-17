@@ -9,10 +9,12 @@ import { PublicDashboardComponent } from './features/public-dashboard/public-das
 import { RegisteredHistoryDetailComponent } from './features/registered/registered-history-detail.component';
 import { RegisteredHistoryBlockedComponent } from './features/registered/registered-history-blocked.component';
 import { RecommendationPageComponent } from './features/recommendation/recommendation-page.component';
+import { SeasonalPlanningComponent } from './features/seasonal/seasonal-planning.component';
 
 export const routes: Routes = [
   { path: '', component: PublicDashboardComponent, title: 'Anuradhapura AI' },
   { path: 'recommendations', component: RecommendationPageComponent, title: 'Crop recommendation' },
+  { path: 'seasonal-planning', component: SeasonalPlanningComponent, title: 'Seasonal crop planning' },
   { path: 'login', component: LoginComponent, title: 'Login' },
   { path: 'register', component: RegisterComponent, title: 'Register' },
   {

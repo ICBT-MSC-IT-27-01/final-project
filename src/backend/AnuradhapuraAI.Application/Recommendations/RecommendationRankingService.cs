@@ -13,11 +13,8 @@ public sealed class RecommendationRankingService : IRecommendationRankingService
                     crop.EvaluationStatus,
                     ApprovedRecommendationEvaluationStatuses.InsufficientEvidence,
                     StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(crop => crop.OverallScore!.Value)
-            .ThenByDescending(crop => crop.EvidenceCoverage.EvaluatedFactorCount)
-            .ThenByDescending(crop => crop.EvidenceCoverage.EvaluatedConfiguredWeightTotal)
-            .ThenBy(crop => ApprovedCropOrder(crop.CropName))
-            .Select((crop, index) => new { crop.CropName, Rank = index + 1 })
+            .GroupBy(crop => new { crop.AssessmentState, crop.AssessmentBasis })
+            .SelectMany(RankComparableGroup)
             .ToDictionary(item => item.CropName, item => (int?)item.Rank, StringComparer.OrdinalIgnoreCase);
 
         var rankedCrops = evaluation.Crops
@@ -36,7 +33,13 @@ public sealed class RecommendationRankingService : IRecommendationRankingService
                 crop.Factors,
                 crop.ClimateRisks,
                 crop.Explanation,
-                crop.EvidenceCoverage))
+                crop.EvidenceCoverage)
+            {
+                AssessmentState = crop.AssessmentState,
+                AssessmentBasis = crop.AssessmentBasis,
+                EvidenceSources = crop.EvidenceSources,
+                ScientificLimitations = crop.ScientificLimitations
+            })
             .ToList();
 
         return new RankedRecommendationEvaluationResponse(evaluation.Forecast, rankedCrops)
@@ -48,4 +51,27 @@ public sealed class RecommendationRankingService : IRecommendationRankingService
     private static int ApprovedCropOrder(string cropName) =>
         Array.FindIndex(ApprovedCropNames.All, approvedCropName =>
             string.Equals(approvedCropName, cropName, StringComparison.OrdinalIgnoreCase));
+
+    private static IEnumerable<(string CropName, int Rank)> RankComparableGroup(
+        IEnumerable<CropRecommendationEvaluation> group)
+    {
+        var ordered = group
+            .OrderByDescending(crop => crop.OverallScore!.Value)
+            .ThenByDescending(crop => crop.EvidenceCoverage.EvaluatedFactorCount)
+            .ThenByDescending(crop => crop.EvidenceCoverage.EvaluatedConfiguredWeightTotal)
+            .ThenBy(crop => ApprovedCropOrder(crop.CropName))
+            .ToList();
+
+        if (ordered.All(crop =>
+                string.Equals(
+                    crop.AssessmentState,
+                    RecommendationAssessmentStates.PartiallyAssessed,
+                    StringComparison.OrdinalIgnoreCase)) &&
+            ordered.Select(crop => crop.OverallScore!.Value).Distinct().Count() <= 1)
+        {
+            return [];
+        }
+
+        return ordered.Select((crop, index) => (crop.CropName, index + 1));
+    }
 }

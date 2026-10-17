@@ -1,0 +1,368 @@
+{
+  "publicCases": [
+    {
+      "id": "PUB-04-live-recommendation",
+      "label": "Live seven-day forecast to crop suitability request",
+      "error": [],
+      "cropHeadings": [
+        "Paddy",
+        "Maize",
+        "Green Gram",
+        "Cowpea",
+        "Groundnut",
+        "Chilli"
+      ],
+      "cropResults": [
+        {
+          "crop": "Paddy",
+          "renderedText": "No comparable rankPaddy 100 Temperature compatibility indicator (0-100); not full suitability.PARTIALLY_ASSESSEDAssessment basis: Seven-day mean air-temperature compatibility indicator onlyPaddy: Seven-day mean air-temperature compatibility indicator only. Evaluated factor(s): Temperature. Unavailable factor(s): Rainfall, Humidity, Soil. The numeric value is a comparable short-horizon indicator for the stated factor basis only; it is not a full crop-suitability score or suitability category.Missing: Rainfall, Humidity, SoilRainfallUnavailableTemperature100HumidityUnavailableSoilUnavailableOFFICIAL_CONDITIONALLY_APPLICABLEPaddy Crop Calendar - Dry & Intermediate Zone (Irrigated)RESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATEDFAO ECOCROP: Oryza sativaLimitations: This result is a short-horizon temperature compatibility indicator, not full crop suitability. Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts. No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified. No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured. FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        },
+        {
+          "crop": "Maize",
+          "renderedText": "No comparable rankMaize 100 Temperature compatibility indicator (0-100); not full suitability.PARTIALLY_ASSESSEDAssessment basis: Seven-day mean air-temperature compatibility indicator onlyMaize: Seven-day mean air-temperature compatibility indicator only. Evaluated factor(s): Temperature. Unavailable factor(s): Rainfall, Humidity, Soil. The numeric value is a comparable short-horizon indicator for the stated factor basis only; it is not a full crop-suitability score or suitability category.Missing: Rainfall, Humidity, SoilRainfallUnavailableTemperature100HumidityUnavailableSoilUnavailableOFFICIAL_APPLICABLE_CALENDARMaize - Zea mays, Dry Zone crop calendarRESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATEDFAO ECOCROP: Zea mays ssp. maysLimitations: This result is a short-horizon temperature compatibility indicator, not full crop suitability. Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts. No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified. No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured. FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        },
+        {
+          "crop": "Green Gram",
+          "renderedText": "No comparable rankGreen Gram 100 Temperature compatibility indicator (0-100); not full suitability.PARTIALLY_ASSESSEDAssessment basis: Seven-day mean air-temperature compatibility indicator onlyGreen Gram: Seven-day mean air-temperature compatibility indicator only. Evaluated factor(s): Temperature. Unavailable factor(s): Rainfall, Humidity, Soil. The numeric value is a comparable short-horizon indicator for the stated factor basis only; it is not a full crop-suitability score or suitability category.Missing: Rainfall, Humidity, SoilRainfallUnavailableTemperature100HumidityUnavailableSoilUnavailableOFFICIAL_APPLICABLE_CALENDARGreen Gram - Vigna radiata, Dry Zone crop calendarRESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATEDFAO ECOCROP: Vigna radiataLimitations: This result is a short-horizon temperature compatibility indicator, not full crop suitability. Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts. No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified. No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured. FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        },
+        {
+          "crop": "Cowpea",
+          "renderedText": "No comparable rankCowpea 100 Temperature compatibility indicator (0-100); not full suitability.PARTIALLY_ASSESSEDAssessment basis: Seven-day mean air-temperature compatibility indicator onlyCowpea: Seven-day mean air-temperature compatibility indicator only. Evaluated factor(s): Temperature. Unavailable factor(s): Rainfall, Humidity, Soil. The numeric value is a comparable short-horizon indicator for the stated factor basis only; it is not a full crop-suitability score or suitability category.Missing: Rainfall, Humidity, SoilRainfallUnavailableTemperature100HumidityUnavailableSoilUnavailableOFFICIAL_APPLICABLE_CALENDARCowpea - Vigna unguiculata, Dry Zone crop calendarRESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATEDFAO ECOCROP: Vigna unguiculata ssp. unguiculataLimitations: This result is a short-horizon temperature compatibility indicator, not full crop suitability. Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts. No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified. No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured. FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        },
+        {
+          "crop": "Groundnut",
+          "renderedText": "No comparable rankGroundnut 100 Temperature compatibility indicator (0-100); not full suitability.PARTIALLY_ASSESSEDAssessment basis: Seven-day mean air-temperature compatibility indicator onlyGroundnut: Seven-day mean air-temperature compatibility indicator only. Evaluated factor(s): Temperature. Unavailable factor(s): Rainfall, Humidity, Soil. The numeric value is a comparable short-horizon indicator for the stated factor basis only; it is not a full crop-suitability score or suitability category.Missing: Rainfall, Humidity, SoilRainfallUnavailableTemperature100HumidityUnavailableSoilUnavailableOFFICIAL_APPLICABLE_CALENDARGroundnut - Arachis hypogaea, Intermediate & Dry Zones crop calendarRESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATEDFAO ECOCROP: Arachis hypogaeaLimitations: This result is a short-horizon temperature compatibility indicator, not full crop suitability. Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts. No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified. No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured. FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        },
+        {
+          "crop": "Chilli",
+          "renderedText": "No comparable rankChilli 100 Temperature compatibility indicator (0-100); not full suitability.PARTIALLY_ASSESSEDAssessment basis: Seven-day mean air-temperature compatibility indicator onlyChilli: Seven-day mean air-temperature compatibility indicator only. Evaluated factor(s): Temperature. Unavailable factor(s): Rainfall, Humidity, Soil. The numeric value is a comparable short-horizon indicator for the stated factor basis only; it is not a full crop-suitability score or suitability category.Missing: Rainfall, Humidity, SoilRainfallUnavailableTemperature100HumidityUnavailableSoilUnavailableOFFICIAL_APPLICABLE_CALENDARChilli - Capsicum annuum, Dry Zone crop calendarRESEARCH_SUPPORTED_NOT_LOCALLY_VALIDATEDFAO ECOCROP: Capsicum annuumLimitations: This result is a short-horizon temperature compatibility indicator, not full crop suitability. Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts. No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified. No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured. FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        }
+      ],
+      "evidence": "PUB-04-live-recommendation.png"
+    },
+    {
+      "id": "SP-01-seven-days",
+      "label": "Seven days",
+      "start": "2026-10-17",
+      "end": "2026-10-24",
+      "error": [],
+      "cards": 6,
+      "cardText": [
+        "PaddyCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 1, 2). Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone matchDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibilityMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "MaizeCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October (PDF page 5). Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.Calendar includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessaryMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "Green GramCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasibleMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "CowpeaCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific managementMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "GroundnutCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 7). Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.Calendar includes Anuradhapura DL-1d; other subregions require mappingDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidenceMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "ChilliCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 15). Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.Dry Zone chart explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matterMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office"
+      ],
+      "evidence": "SP-01-seven-days.png"
+    },
+    {
+      "id": "SP-02-thirty-days",
+      "label": "Thirty days",
+      "start": "2026-10-17",
+      "end": "2026-11-16",
+      "error": [],
+      "cards": 6,
+      "cardText": [
+        "PaddyCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 1, 2). Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone matchDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibilityMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "MaizeCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October (PDF page 5). Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.Calendar includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessaryMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "Green GramCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 8). Main crop: land preparation around Oct, seeding around Nov, harvest around Jan-Feb.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasibleMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "CowpeaCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 19). Main crop: preparation around Oct, seeding around Nov, harvest around Jan.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific managementMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "GroundnutCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 7). Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.Calendar includes Anuradhapura DL-1d; other subregions require mappingDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidenceMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "ChilliCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 15). Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.Dry Zone chart explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matterMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office"
+      ],
+      "evidence": "SP-02-thirty-days.png"
+    },
+    {
+      "id": "SP-03-three-months",
+      "label": "Three months",
+      "start": "2026-10-17",
+      "end": "2027-01-17",
+      "error": [],
+      "cards": 6,
+      "cardText": [
+        "PaddyCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 1, 2). Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone matchDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibilityMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "MaizeCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October (PDF page 5). Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.Calendar includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessaryMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "Green GramCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 8). Main crop: land preparation around Oct, seeding around Nov, harvest around Jan-Feb.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasibleMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "CowpeaCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 19). Main crop: preparation around Oct, seeding around Nov, harvest around Jan.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific managementMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "GroundnutCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 7). Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.Calendar includes Anuradhapura DL-1d; other subregions require mappingDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidenceMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "ChilliCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 15). Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.Dry Zone chart explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matterMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office"
+      ],
+      "evidence": "SP-03-three-months.png"
+    },
+    {
+      "id": "SP-04-six-months",
+      "label": "Six months",
+      "start": "2026-10-17",
+      "end": "2027-04-17",
+      "error": [],
+      "cards": 6,
+      "cardText": [
+        "PaddyCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 1, 2). Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.Yala: April, May (PDF page 1, 2). Approximate crop-establishment period Apr-May and harvest around Aug; depends on water availability and variety.CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone matchDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibilityMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "MaizeCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October (PDF page 5). Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.Yala: April, May (PDF page 5). Dry Zone chart shows land preparation around Mar-Apr, seeding around Apr-May, harvest around Jul-Aug.Calendar includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessaryMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "Green GramCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 8). Main crop: land preparation around Oct, seeding around Nov, harvest around Jan-Feb.Yala: April (PDF page 8). Main crop: land preparation around Mar, seeding around Apr, harvest around Jun-Jul.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasibleMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "CowpeaCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 19). Main crop: preparation around Oct, seeding around Nov, harvest around Jan.Yala: April (PDF page 19). Main crop: preparation around Mar, seeding around Apr, harvest around Jun.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific managementMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "GroundnutCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 7). Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.Yala: April, May (PDF page 7). Preparation/seeding around Apr-May; harvest around Jun and drying around Jul.Calendar includes Anuradhapura DL-1d; other subregions require mappingDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidenceMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "ChilliCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 15). Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.Yala: April, May (PDF page 15). Nursery around Mar-Apr, planting around Apr-May, green/dry chilli harvesting around Jul-Aug.Dry Zone chart explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matterMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office"
+      ],
+      "evidence": "SP-04-six-months.png"
+    },
+    {
+      "id": "SP-05-twelve-months",
+      "label": "Twelve months",
+      "start": "2026-10-17",
+      "end": "2027-10-17",
+      "error": [],
+      "cards": 6,
+      "cardText": [
+        "PaddyCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 1, 2). Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.Yala: April, May (PDF page 1, 2). Approximate crop-establishment period Apr-May and harvest around Aug; depends on water availability and variety.CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone matchDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibilityMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "MaizeCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October (PDF page 5). Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.Yala: April, May (PDF page 5). Dry Zone chart shows land preparation around Mar-Apr, seeding around Apr-May, harvest around Jul-Aug.Calendar includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessaryMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "Green GramCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 8). Main crop: land preparation around Oct, seeding around Nov, harvest around Jan-Feb.Yala: April (PDF page 8). Main crop: land preparation around Mar, seeding around Apr, harvest around Jun-Jul.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasibleMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "CowpeaCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: November (PDF page 19). Main crop: preparation around Oct, seeding around Nov, harvest around Jan.Yala: April (PDF page 19). Main crop: preparation around Mar, seeding around Apr, harvest around Jun.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific managementMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "GroundnutCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 7). Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.Yala: April, May (PDF page 7). Preparation/seeding around Apr-May; harvest around Jun and drying around Jul.Calendar includes Anuradhapura DL-1d; other subregions require mappingDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidenceMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "ChilliCALENDAR SUPPORTED CANDIDATEThe requested date range intersects the documented approximate Maha and Yala establishment month(s). This is a conditional calendar candidate only.Calendar-supported establishment windowsMaha: October, November (PDF page 15). Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.Yala: April, May (PDF page 15). Nursery around Mar-Apr, planting around Apr-May, green/dry chilli harvesting around Jul-Aug.Dry Zone chart explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matterMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office"
+      ],
+      "evidence": "SP-05-twelve-months.png"
+    },
+    {
+      "id": "SP-05b-custom-valid",
+      "label": "Custom valid range",
+      "start": "2026-12-03",
+      "end": "2027-02-11",
+      "error": [],
+      "cards": 6,
+      "cardText": [
+        "PaddyCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone matchDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibilityMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "MaizeCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Calendar includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessaryMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "Green GramCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasibleMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "CowpeaCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Calendar explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific managementMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "GroundnutCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Calendar includes Anuradhapura DL-1d; other subregions require mappingDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidenceMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office",
+        "ChilliCLIMATE CONTEXT ONLYThe requested date range does not intersect a verified approximate establishment month. Historical climate is shown as context only.Dry Zone chart explicitly includes Anuradhapura DistrictDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matterMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATEDDepartment of Agriculture calendar indexIndividual crop calendarDepartment of Agriculture Anuradhapura office"
+      ],
+      "evidence": "SP-05b-custom-valid.png"
+    },
+    {
+      "id": "SP-05c-past",
+      "label": "Past range",
+      "start": "2025-10-17",
+      "end": "2025-10-24",
+      "error": [
+        "Historical date ranges are not supported for forward seasonal planning."
+      ],
+      "cards": 0,
+      "cardText": [],
+      "evidence": "SP-05c-past.png"
+    },
+    {
+      "id": "SP-06-reversed",
+      "label": "Reversed range",
+      "start": "2027-04-17",
+      "end": "2026-10-17",
+      "error": [
+        "End date must be on or after start date."
+      ],
+      "cards": 0,
+      "cardText": [],
+      "evidence": "SP-06-reversed.png"
+    },
+    {
+      "id": "SP-07-over-366",
+      "label": "More than 366 days",
+      "start": "2026-10-17",
+      "end": "2027-10-19",
+      "error": [
+        "The maximum supported range is 366 days."
+      ],
+      "cards": 0,
+      "cardText": [],
+      "evidence": "SP-07-over-366.png"
+    },
+    {
+      "id": "SP-08-empty",
+      "label": "Empty required date inputs",
+      "nativeValidity": "Please fill out this field.",
+      "evidence": "SP-08-empty.png"
+    },
+    {
+      "id": "CP-PADDY",
+      "label": "Paddy to cultivation period",
+      "error": [],
+      "heading": [
+        "Explore crop evidence by date range",
+        "Explore calendar evidence for a crop",
+        "Paddy: CALENDAR SUPPORTED CANDIDATE"
+      ],
+      "body": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nLogin\nRegister\n\nAnuradhapura District only\n\nSeasonal Crop Planning\n\nExplore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.\n\nExplore crop evidence by date range\nStart date\nEnd date\nSoil type\nExplore evidence\nExplore calendar evidence for a crop\nCrop\nPaddy\nMaize\nGreen Gram\nCowpea\nGroundnut\nChilli\nStart date\nEnd date\nExplore calendar evidence\nPaddy: CALENDAR SUPPORTED CANDIDATE\n\nThe requested period intersects Maha and Yala approximate crop-establishment month(s) documented in the supplied DoA calendar PDF. This is a conditional calendar candidate, not a weather-suitability recommendation.\n\nCandidate cultivation periods\nMaha: establish approximately in October, November; harvest context February (PDF page 1, 2). Approximate crop-establishment period from Oct-Nov and harvest around Feb; duration and planting method vary by 2.5/3/3.5-month varieties; month boundaries need local validation.\nYala: establish approximately in April, May; harvest context August (PDF page 1, 2). Approximate crop-establishment period Apr-May and harvest around Aug; depends on water availability and variety.\n\nCONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match\n\nDocumented conditions: Dry and Intermediate Zones, CONDITIONAL: applicable only where irrigation/rainfed conditions and local agroecological zone match, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 1, 2, Separate irrigated calendar on page 1 and rainfed calendar on page 2, Water availability and planting method affect feasibility\n\nMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATED\n\nDepartment of Agriculture calendar index\nIndividual crop calendar\nDepartment of Agriculture Anuradhapura office\nMonth\tDays included\tMean temperature\tMean rainfall\tMean humidity\tYears\nJanuary\t31\t24.96 °C\t104.18 mm\t83.1%\t16\nFebruary\t28\t25.81 °C\t61.18 mm\t80.06%\t16\nMarch\t31\t27.65 °C\t46.67 mm\t75.99%\t16\nApril\t17\t28.57 °C\t54.76 mm\t76.54%\t16\nOctober\t15\t26.54 °C\t146.05 mm\t85.02%\t16\nNovember\t30\t25.93 °C\t295.68 mm\t87.05%\t16\nDecember\t31\t25.38 °C\t191.46 mm\t86.2%\t16\nEstablishment months are month-approximate and require local review; no exact week or sowing date is inferred.\nHistorical climate is not a forecast.\nIrrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone.",
+      "evidence": "CP-paddy.png"
+    },
+    {
+      "id": "CP-MAIZE",
+      "label": "Maize to cultivation period",
+      "error": [],
+      "heading": [
+        "Explore crop evidence by date range",
+        "Explore calendar evidence for a crop",
+        "Maize: CALENDAR SUPPORTED CANDIDATE"
+      ],
+      "body": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nLogin\nRegister\n\nAnuradhapura District only\n\nSeasonal Crop Planning\n\nExplore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.\n\nExplore crop evidence by date range\nStart date\nEnd date\nSoil type\nExplore evidence\nExplore calendar evidence for a crop\nCrop\nPaddy\nMaize\nGreen Gram\nCowpea\nGroundnut\nChilli\nStart date\nEnd date\nExplore calendar evidence\nMaize: CALENDAR SUPPORTED CANDIDATE\n\nThe requested period intersects Maha and Yala approximate crop-establishment month(s) documented in the supplied DoA calendar PDF. This is a conditional calendar candidate, not a weather-suitability recommendation.\n\nCandidate cultivation periods\nMaha: establish approximately in October; harvest context January, February (PDF page 5). Dry Zone chart shows land preparation around Sep-Oct, seeding in Oct, harvest around Jan.\nYala: establish approximately in April, May; harvest context July, August (PDF page 5). Dry Zone chart shows land preparation around Mar-Apr, seeding around Apr-May, harvest around Jul-Aug.\n\nCalendar includes Anuradhapura District\n\nDocumented conditions: Dry Zone, Calendar includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 5, Rainfed and irrigated practices differ; rainfall and water access remain necessary\n\nMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATED\n\nDepartment of Agriculture calendar index\nIndividual crop calendar\nDepartment of Agriculture Anuradhapura office\nMonth\tDays included\tMean temperature\tMean rainfall\tMean humidity\tYears\nJanuary\t31\t24.96 °C\t104.18 mm\t83.1%\t16\nFebruary\t28\t25.81 °C\t61.18 mm\t80.06%\t16\nMarch\t31\t27.65 °C\t46.67 mm\t75.99%\t16\nApril\t17\t28.57 °C\t54.76 mm\t76.54%\t16\nOctober\t15\t26.54 °C\t146.05 mm\t85.02%\t16\nNovember\t30\t25.93 °C\t295.68 mm\t87.05%\t16\nDecember\t31\t25.38 °C\t191.46 mm\t86.2%\t16\nEstablishment months are month-approximate and require local review; no exact week or sowing date is inferred.\nHistorical climate is not a forecast.\nIrrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone.",
+      "evidence": "CP-maize.png"
+    },
+    {
+      "id": "CP-GREEN-GRAM",
+      "label": "Green Gram to cultivation period",
+      "error": [],
+      "heading": [
+        "Explore crop evidence by date range",
+        "Explore calendar evidence for a crop",
+        "Green Gram: CALENDAR SUPPORTED CANDIDATE"
+      ],
+      "body": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nLogin\nRegister\n\nAnuradhapura District only\n\nSeasonal Crop Planning\n\nExplore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.\n\nExplore crop evidence by date range\nStart date\nEnd date\nSoil type\nExplore evidence\nExplore calendar evidence for a crop\nCrop\nPaddy\nMaize\nGreen Gram\nCowpea\nGroundnut\nChilli\nStart date\nEnd date\nExplore calendar evidence\nGreen Gram: CALENDAR SUPPORTED CANDIDATE\n\nThe requested period intersects Maha and Yala approximate crop-establishment month(s) documented in the supplied DoA calendar PDF. This is a conditional calendar candidate, not a weather-suitability recommendation.\n\nCandidate cultivation periods\nMaha: establish approximately in November; harvest context January, February (PDF page 8). Main crop: land preparation around Oct, seeding around Nov, harvest around Jan-Feb.\nYala: establish approximately in April; harvest context June, July (PDF page 8). Main crop: land preparation around Mar, seeding around Apr, harvest around Jun-Jul.\n\nCalendar explicitly includes Anuradhapura District\n\nDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 8, Third-season cultivation is separately depicted and must not be assumed universally feasible\n\nMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATED\n\nDepartment of Agriculture calendar index\nIndividual crop calendar\nDepartment of Agriculture Anuradhapura office\nMonth\tDays included\tMean temperature\tMean rainfall\tMean humidity\tYears\nJanuary\t31\t24.96 °C\t104.18 mm\t83.1%\t16\nFebruary\t28\t25.81 °C\t61.18 mm\t80.06%\t16\nMarch\t31\t27.65 °C\t46.67 mm\t75.99%\t16\nApril\t17\t28.57 °C\t54.76 mm\t76.54%\t16\nOctober\t15\t26.54 °C\t146.05 mm\t85.02%\t16\nNovember\t30\t25.93 °C\t295.68 mm\t87.05%\t16\nDecember\t31\t25.38 °C\t191.46 mm\t86.2%\t16\nEstablishment months are month-approximate and require local review; no exact week or sowing date is inferred.\nHistorical climate is not a forecast.\nIrrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone.",
+      "evidence": "CP-green-gram.png"
+    },
+    {
+      "id": "CP-COWPEA",
+      "label": "Cowpea to cultivation period",
+      "error": [],
+      "heading": [
+        "Explore crop evidence by date range",
+        "Explore calendar evidence for a crop",
+        "Cowpea: CALENDAR SUPPORTED CANDIDATE"
+      ],
+      "body": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nLogin\nRegister\n\nAnuradhapura District only\n\nSeasonal Crop Planning\n\nExplore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.\n\nExplore crop evidence by date range\nStart date\nEnd date\nSoil type\nExplore evidence\nExplore calendar evidence for a crop\nCrop\nPaddy\nMaize\nGreen Gram\nCowpea\nGroundnut\nChilli\nStart date\nEnd date\nExplore calendar evidence\nCowpea: CALENDAR SUPPORTED CANDIDATE\n\nThe requested period intersects Maha and Yala approximate crop-establishment month(s) documented in the supplied DoA calendar PDF. This is a conditional calendar candidate, not a weather-suitability recommendation.\n\nCandidate cultivation periods\nMaha: establish approximately in November; harvest context January (PDF page 19). Main crop: preparation around Oct, seeding around Nov, harvest around Jan.\nYala: establish approximately in April; harvest context June (PDF page 19). Main crop: preparation around Mar, seeding around Apr, harvest around Jun.\n\nCalendar explicitly includes Anuradhapura District\n\nDocumented conditions: Dry Zone, Calendar explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 19, Third-season cultivation in paddy fields is conditional on paddy-field availability and season-specific management\n\nMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATED\n\nDepartment of Agriculture calendar index\nIndividual crop calendar\nDepartment of Agriculture Anuradhapura office\nMonth\tDays included\tMean temperature\tMean rainfall\tMean humidity\tYears\nJanuary\t31\t24.96 °C\t104.18 mm\t83.1%\t16\nFebruary\t28\t25.81 °C\t61.18 mm\t80.06%\t16\nMarch\t31\t27.65 °C\t46.67 mm\t75.99%\t16\nApril\t17\t28.57 °C\t54.76 mm\t76.54%\t16\nOctober\t15\t26.54 °C\t146.05 mm\t85.02%\t16\nNovember\t30\t25.93 °C\t295.68 mm\t87.05%\t16\nDecember\t31\t25.38 °C\t191.46 mm\t86.2%\t16\nEstablishment months are month-approximate and require local review; no exact week or sowing date is inferred.\nHistorical climate is not a forecast.\nIrrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone.",
+      "evidence": "CP-cowpea.png"
+    },
+    {
+      "id": "CP-GROUNDNUT",
+      "label": "Groundnut to cultivation period",
+      "error": [],
+      "heading": [
+        "Explore crop evidence by date range",
+        "Explore calendar evidence for a crop",
+        "Groundnut: CALENDAR SUPPORTED CANDIDATE"
+      ],
+      "body": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nLogin\nRegister\n\nAnuradhapura District only\n\nSeasonal Crop Planning\n\nExplore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.\n\nExplore crop evidence by date range\nStart date\nEnd date\nSoil type\nExplore evidence\nExplore calendar evidence for a crop\nCrop\nPaddy\nMaize\nGreen Gram\nCowpea\nGroundnut\nChilli\nStart date\nEnd date\nExplore calendar evidence\nGroundnut: CALENDAR SUPPORTED CANDIDATE\n\nThe requested period intersects Maha and Yala approximate crop-establishment month(s) documented in the supplied DoA calendar PDF. This is a conditional calendar candidate, not a weather-suitability recommendation.\n\nCandidate cultivation periods\nMaha: establish approximately in October, November; harvest context January (PDF page 7). Preparation/seeding around Oct-Nov; harvesting around Jan and drying around Feb.\nYala: establish approximately in April, May; harvest context June (PDF page 7). Preparation/seeding around Apr-May; harvest around Jun and drying around Jul.\n\nCalendar includes Anuradhapura DL-1d; other subregions require mapping\n\nDocumented conditions: Intermediate and Dry Zones, Calendar includes Anuradhapura DL-1d; other subregions require mapping, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 7, Soil drainage and irrigation conditions need separate suitability evidence\n\nMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATED\n\nDepartment of Agriculture calendar index\nIndividual crop calendar\nDepartment of Agriculture Anuradhapura office\nMonth\tDays included\tMean temperature\tMean rainfall\tMean humidity\tYears\nJanuary\t31\t24.96 °C\t104.18 mm\t83.1%\t16\nFebruary\t28\t25.81 °C\t61.18 mm\t80.06%\t16\nMarch\t31\t27.65 °C\t46.67 mm\t75.99%\t16\nApril\t17\t28.57 °C\t54.76 mm\t76.54%\t16\nOctober\t15\t26.54 °C\t146.05 mm\t85.02%\t16\nNovember\t30\t25.93 °C\t295.68 mm\t87.05%\t16\nDecember\t31\t25.38 °C\t191.46 mm\t86.2%\t16\nEstablishment months are month-approximate and require local review; no exact week or sowing date is inferred.\nHistorical climate is not a forecast.\nIrrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone.",
+      "evidence": "CP-groundnut.png"
+    },
+    {
+      "id": "CP-CHILLI",
+      "label": "Chilli to cultivation period",
+      "error": [],
+      "heading": [
+        "Explore crop evidence by date range",
+        "Explore calendar evidence for a crop",
+        "Chilli: CALENDAR SUPPORTED CANDIDATE"
+      ],
+      "body": "A\nAnuradhapura AIForecasting and crop recommendation\nDashboard\nRecommendations\nSeasonal planning\nLogin\nRegister\n\nAnuradhapura District only\n\nSeasonal Crop Planning\n\nExplore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.\n\nExplore crop evidence by date range\nStart date\nEnd date\nSoil type\nExplore evidence\nExplore calendar evidence for a crop\nCrop\nPaddy\nMaize\nGreen Gram\nCowpea\nGroundnut\nChilli\nStart date\nEnd date\nExplore calendar evidence\nChilli: CALENDAR SUPPORTED CANDIDATE\n\nThe requested period intersects Maha and Yala approximate crop-establishment month(s) documented in the supplied DoA calendar PDF. This is a conditional calendar candidate, not a weather-suitability recommendation.\n\nCandidate cultivation periods\nMaha: establish approximately in October, November; harvest context January, February (PDF page 15). Nursery around Sep, land preparation/planting around Oct-Nov, green/dry chilli harvesting around Jan-Feb.\nYala: establish approximately in April, May; harvest context July, August (PDF page 15). Nursery around Mar-Apr, planting around Apr-May, green/dry chilli harvesting around Jul-Aug.\n\nDry Zone chart explicitly includes Anuradhapura District\n\nDocumented conditions: Dry Zone, Dry Zone chart explicitly includes Anuradhapura District, Source PDF: Crop_Calandar_Book_Sinhala_compressed.pdf; page(s) 15, Dry Zone main and Northern/Eastern alternative cropping rows may differ, Irrigation and nursery management matter\n\nMONTH LEVEL CALENDAR EXTRACTION NOT AGRONOMIST VALIDATED\n\nDepartment of Agriculture calendar index\nIndividual crop calendar\nDepartment of Agriculture Anuradhapura office\nMonth\tDays included\tMean temperature\tMean rainfall\tMean humidity\tYears\nJanuary\t31\t24.96 °C\t104.18 mm\t83.1%\t16\nFebruary\t28\t25.81 °C\t61.18 mm\t80.06%\t16\nMarch\t31\t27.65 °C\t46.67 mm\t75.99%\t16\nApril\t17\t28.57 °C\t54.76 mm\t76.54%\t16\nOctober\t15\t26.54 °C\t146.05 mm\t85.02%\t16\nNovember\t30\t25.93 °C\t295.68 mm\t87.05%\t16\nDecember\t31\t25.38 °C\t191.46 mm\t86.2%\t16\nEstablishment months are month-approximate and require local review; no exact week or sowing date is inferred.\nHistorical climate is not a forecast.\nIrrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone.",
+      "evidence": "CP-chilli.png"
+    }
+  ],
+  "observations": [
+    {
+      "at": "2026-10-17T16:11:51.119Z",
+      "url": "http://127.0.0.1:4300/api/forecasts/latest",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:11:56.081Z",
+      "url": "http://127.0.0.1:4300/api/recommendations/evaluate",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:00.292Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:04.517Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:08.797Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:13.011Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:17.282Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:21.535Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:25.958Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 400
+    },
+    {
+      "at": "2026-10-17T16:12:25.958Z",
+      "consoleError": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    },
+    {
+      "at": "2026-10-17T16:12:30.180Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 400
+    },
+    {
+      "at": "2026-10-17T16:12:30.180Z",
+      "consoleError": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    },
+    {
+      "at": "2026-10-17T16:12:34.448Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 400
+    },
+    {
+      "at": "2026-10-17T16:12:34.448Z",
+      "consoleError": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    },
+    {
+      "at": "2026-10-17T16:12:38.639Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-date-range",
+      "status": 400
+    },
+    {
+      "at": "2026-10-17T16:12:38.639Z",
+      "consoleError": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    },
+    {
+      "at": "2026-10-17T16:12:42.203Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-crop",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:46.873Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-crop",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:51.669Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-crop",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:12:56.333Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-crop",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:13:00.969Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-crop",
+      "status": 200
+    },
+    {
+      "at": "2026-10-17T16:13:05.747Z",
+      "url": "http://127.0.0.1:4300/api/seasonal-recommendations/by-crop",
+      "status": 200
+    }
+  ]
+}

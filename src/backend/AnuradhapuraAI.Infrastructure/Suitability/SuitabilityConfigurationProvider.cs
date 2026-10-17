@@ -2,11 +2,14 @@ using AnuradhapuraAI.Application.Suitability;
 using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Domain.Entities;
 using AnuradhapuraAI.Infrastructure.Persistence;
+using AnuradhapuraAI.Infrastructure.Agriculture;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnuradhapuraAI.Infrastructure.Suitability;
 
-public sealed class SuitabilityConfigurationProvider(AnuradhapuraAiDbContext dbContext) : ISuitabilityConfigurationProvider
+public sealed class SuitabilityConfigurationProvider(
+    AnuradhapuraAiDbContext dbContext,
+    CropEvidenceCatalog? cropEvidenceCatalog = null) : ISuitabilityConfigurationProvider
 {
     public async Task<SuitabilityConfigurationSnapshot> GetActiveConfigurationAsync(CancellationToken cancellationToken = default)
     {
@@ -25,7 +28,7 @@ public sealed class SuitabilityConfigurationProvider(AnuradhapuraAiDbContext dbC
         var profiles = ApprovedCropNames.All
             .Select(cropName => crops.SingleOrDefault(crop => crop.Name == cropName))
             .Where(crop => crop is not null)
-            .Select(crop => ToCropProfile(crop!))
+            .Select(crop => ToCropProfile(crop!, cropEvidenceCatalog))
             .ToList();
 
         return new SuitabilityConfigurationSnapshot(
@@ -34,8 +37,9 @@ public sealed class SuitabilityConfigurationProvider(AnuradhapuraAiDbContext dbC
             ToCategoryThresholds(configurations));
     }
 
-    private static CropSuitabilityProfile ToCropProfile(Crop crop) =>
-        new(
+    private static CropSuitabilityProfile ToCropProfile(Crop crop, CropEvidenceCatalog? cropEvidenceCatalog)
+    {
+        var profile = new CropSuitabilityProfile(
             crop.Name,
             ToRangeRequirement(crop.EnvironmentalRequirements.SingleOrDefault(requirement => requirement.VariableType == ApprovedVariableTypes.Rainfall)),
             ToRangeRequirement(crop.EnvironmentalRequirements.SingleOrDefault(requirement => requirement.VariableType == ApprovedVariableTypes.Temperature)),
@@ -45,6 +49,35 @@ public sealed class SuitabilityConfigurationProvider(AnuradhapuraAiDbContext dbC
                     compatibility.SoilType,
                     compatibility.CompatibilityScore))
                 .ToList());
+
+        if (profile.TemperatureRequirement is not null ||
+            cropEvidenceCatalog is null ||
+            !cropEvidenceCatalog.TryGetCrop(crop.Name, out var evidence))
+        {
+            return profile;
+        }
+
+        var temperatureRequirement = evidence.Requirements
+            .Single(requirement => requirement.Factor == ApprovedVariableTypes.Temperature)
+            .ToSuitabilityRequirement();
+
+        return profile with
+        {
+            TemperatureRequirement = temperatureRequirement,
+            SupportsFullSuitabilityAssessment = profile.RainfallRequirement is not null &&
+                                                profile.HumidityRequirement is not null &&
+                                                profile.SoilCompatibilities.Count > 0 &&
+                                                profile.SupportsFullSuitabilityAssessment &&
+                                                temperatureRequirement.SupportsFullSuitabilityAssessment,
+            AssessmentBasis = evidence.AssessmentBasis,
+            EvidenceSources =
+            [
+                evidence.CalendarEvidence.ToSuitabilitySource(),
+                .. temperatureRequirement.Sources
+            ],
+            ScientificLimitations = evidence.ScientificLimitations
+        };
+    }
 
     private static SuitabilityRangeRequirement? ToRangeRequirement(CropEnvironmentalRequirement? requirement)
     {

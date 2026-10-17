@@ -123,6 +123,21 @@ public sealed class RecommendationOrchestrationService(
             _ => ApprovedRecommendationEvaluationStatuses.Partial
         };
 
+        var assessmentState = crop.EvaluatedFactorCount switch
+        {
+            0 => RecommendationAssessmentStates.InsufficientAgronomicEvidence,
+            _ when !crop.SupportsFullSuitabilityAssessment => RecommendationAssessmentStates.PartiallyAssessed,
+            var count when count == SuitabilityFactors.All.Length => RecommendationAssessmentStates.SuitabilityAssessed,
+            _ => RecommendationAssessmentStates.PartiallyAssessed
+        };
+
+        var explanation = assessmentState == RecommendationAssessmentStates.PartiallyAssessed
+            ? BuildPartialAssessmentExplanation(crop, unavailableFactors)
+            : crop.Explanation;
+
+        var supportsOverallSuitabilityAssessment =
+            assessmentState == RecommendationAssessmentStates.SuitabilityAssessed;
+
         return new CropRecommendationEvaluation(
             crop.CropName,
             status,
@@ -130,18 +145,45 @@ public sealed class RecommendationOrchestrationService(
             crop.Temperature.Score,
             crop.Humidity.Score,
             crop.Soil.Score,
-            crop.OverallScore,
-            crop.SuitabilityCategory,
+            supportsOverallSuitabilityAssessment ? crop.OverallScore : null,
+            supportsOverallSuitabilityAssessment ? crop.SuitabilityCategory : null,
             unavailableFactors,
             crop.Factors,
             crop.ClimateRisks,
-            crop.Explanation,
+            explanation,
             new EvidenceCoverage(
                 crop.EvaluatedFactorCount,
                 SuitabilityFactors.All.Length,
                 crop.Factors
                     .Where(factor => factor.IsEvaluable)
-                    .Sum(factor => factor.ConfiguredWeight)));
+                    .Sum(factor => factor.ConfiguredWeight)))
+        {
+            AssessmentState = assessmentState,
+            AssessmentBasis = crop.AssessmentBasis,
+            EvidenceSources = crop.EvidenceSources
+                .Select(source => new RecommendationEvidenceSource(
+                    source.Title,
+                    source.SourceUrl,
+                    source.PublicationDetails,
+                    source.Location,
+                    source.EvidenceStatus))
+                .ToList(),
+            ScientificLimitations = crop.ScientificLimitations
+        };
+    }
+
+    private static string BuildPartialAssessmentExplanation(
+        CropSuitabilityResult crop,
+        IReadOnlyList<string> unavailableFactors)
+    {
+        var evaluatedFactors = crop.Factors
+            .Where(factor => factor.IsEvaluable)
+            .Select(factor => factor.Factor)
+            .ToList();
+
+        return $"{crop.CropName}: {crop.AssessmentBasis}. Evaluated factor(s): {string.Join(", ", evaluatedFactors)}. " +
+               $"Unavailable factor(s): {string.Join(", ", unavailableFactors)}. " +
+               "Factor-level numeric values are short-horizon indicators for the stated basis only; no overall crop-suitability score, category, or rank is assigned.";
     }
 
     private static AppliedRecommendationConfiguration ToAppliedConfiguration(

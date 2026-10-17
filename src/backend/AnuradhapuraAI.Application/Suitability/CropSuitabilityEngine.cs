@@ -69,7 +69,13 @@ public sealed class CropSuitabilityEngine : ICropSuitabilityEngine
                     factors,
                     ClimateRisks: [],
                     insufficientEvidenceExplanation,
-                    EvaluatedFactorCount: 0));
+                    EvaluatedFactorCount: 0)
+                {
+                    SupportsFullSuitabilityAssessment = profile.SupportsFullSuitabilityAssessment,
+                    AssessmentBasis = profile.AssessmentBasis,
+                    EvidenceSources = profile.EvidenceSources,
+                    ScientificLimitations = profile.ScientificLimitations
+                });
             }
 
             return SuitabilityResult<CropSuitabilityResult>.Failure(
@@ -107,7 +113,13 @@ public sealed class CropSuitabilityEngine : ICropSuitabilityEngine
             weightedFactors,
             risks,
             explanation,
-            evaluableFactors.Count));
+            evaluableFactors.Count)
+        {
+            SupportsFullSuitabilityAssessment = profile.SupportsFullSuitabilityAssessment,
+            AssessmentBasis = profile.AssessmentBasis,
+            EvidenceSources = profile.EvidenceSources,
+            ScientificLimitations = profile.ScientificLimitations
+        });
     }
 
     private static SuitabilityFactorResult EvaluateRainfall(
