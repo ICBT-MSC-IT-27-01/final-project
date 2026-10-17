@@ -27,6 +27,16 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? string.Empty;
+        var connectionPassword = configuration["ConnectionStrings:DefaultConnectionPassword"];
+
+        if (!string.IsNullOrWhiteSpace(connectionPassword))
+        {
+            var connectionStringBuilder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connectionString)
+            {
+                Password = connectionPassword
+            };
+            connectionString = connectionStringBuilder.ConnectionString;
+        }
 
         services.AddDbContext<AnuradhapuraAiDbContext>(options =>
             options.UseSqlServer(connectionString));
