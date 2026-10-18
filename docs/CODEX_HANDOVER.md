@@ -788,16 +788,16 @@ The project owner subsequently accepted Seasonal Planning as approved project sc
 ### Crop-suitability scientific status
 
 - The six-crop evidence catalogue is at `docs/agriculture/crop-evidence.json`.
-- The supporting QA review is at `docs/qa/QA001_SCIENTIFIC_VALIDATION_REPORT.md` and `docs/qa/PHASE2_EVIDENCE_FEASIBILITY_REVIEW.md`.
-- The evidence supports only a seven-day mean temperature compatibility indicator. Annual or seasonal rainfall figures must not be divided or converted into weekly thresholds.
-- There are no validated crop-specific seven-day rainfall, relative-humidity, soil, weighting, or category-threshold values for all six crops.
-- `QA-001` remains **PARTIAL**. It must not become PASS until an authorized agricultural expert approves a traceable six-crop matrix for the current forecast horizon and factors.
-- Partial assessments preserve available factor-level evidence, but must not show an overall suitability score, suitability category, or crop rank. This safeguard is implemented in `RecommendationOrchestrationService` and enforced before recommendation persistence.
+- The supporting QA review is at `docs/qa/QA001_SCIENTIFIC_VALIDATION_REPORT.md` and `docs/qa/PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md`.
+- The project-owner-approved strict matrix supplies crop-specific seven-day rainfall totals, mean-temperature bands, mean-relative-humidity bands, weights and category thresholds for all six crops. Annual or seasonal values remain excluded and are never converted into weekly values.
+- Soil remains optional and unscored by default. When soil is absent, the engine re-normalizes rainfall, temperature and humidity weights across their configured total.
+- `QA-001` is **PASS (technical)**: the strict matrix, persistence, authenticated Agricultural Officer review and validation-history retention were verified on 18 October 2026.
+- A missing mandatory weather factor still produces `PARTIALLY_ASSESSED` with factor-level information only; no overall score, category or rank is produced in that case.
 
 ### Current verification
 
-- Focused suitability/recommendation regression tests: **PASS — 38/38**.
-- Full backend test suite: **PASS — 289/289**. The operational-forecast feature-disabled test now explicitly overrides the flag only inside its isolated in-memory test host, so it no longer inherits local user-secret settings.
+- Focused suitability/recommendation regression tests: included in the full backend suite.
+- Full backend test suite: **PASS — 299/299**. The operational-forecast feature-disabled test explicitly overrides the flag only inside its isolated in-memory test host, so it no longer inherits local user-secret settings.
 - Frontend tests: **PASS — 39/39**; production build: **PASS**.
 - Python tests: **PASS — 22/22**, with the existing upstream FastAPI/Starlette TestClient deprecation warning.
 - Do not repeat LSTM training or evaluation without a genuine defect.
@@ -808,7 +808,7 @@ The project owner subsequently accepted Seasonal Planning as approved project sc
 - `qa-evidence/` contains retained QA evidence. `qa-runtime/` is generated runtime material and is intentionally not committed unless the owner explicitly requests it.
 - Do not change production settings, database records, or working feature flags without explicit owner approval.
 
-The next substantive completion item is the agricultural expert-approved suitability matrix. Independent technical work may continue on remaining role QA, accessibility/performance evidence, and final acceptance documentation.
+The next substantive completion item is a fresh visible-browser recommendation display run for the strict configuration, followed by final acceptance documentation. Recommendation History is implemented but requires an explicit local-development feature-flag decision before final live testing.
 
 ## Startup Prompt for a New Codex Session
 

@@ -41,4 +41,4 @@ Evidence: `qa-evidence/PUB-04-live-recommendation.png` and `qa-evidence/visible-
 
 The later project-owner-approved Phase 3 matrix supplies strict seven-day rainfall, temperature and humidity bands for all six approved crops, plus weights and category thresholds. The active configuration is recorded in [`PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md`](PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md) and [`crop-evidence.json`](../agriculture/crop-evidence.json). Soil remains optional and is not fabricated.
 
-QA-001 remains **PARTIAL** only pending the authorized Agricultural Officer's live review of a safe persisted recommendation. The temperature-only browser observation above remains historical evidence, not the current configuration result.
+QA-001 is now **PASS**. On 18 October 2026, the dedicated active Agricultural Officer account authenticated successfully, reviewed the safe persisted six-crop QA recommendation, submitted `Validated`, and the SQL validation history was retained. The temperature-only browser observation above remains historical evidence, not the current configuration result.

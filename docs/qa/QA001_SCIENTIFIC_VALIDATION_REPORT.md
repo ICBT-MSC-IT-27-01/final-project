@@ -2,7 +2,7 @@
 
 **Date:** 18 October 2026
 **Scope:** Anuradhapura District; Paddy, Maize, Green Gram, Cowpea, Groundnut and Chilli only.
-**Decision:** The project-owner-approved Phase 3 matrix supports a strict, short-horizon climatic suitability calculation. QA-001 remains **PARTIAL** until an authorized Agricultural Officer completes the live review of a safe persisted recommendation.
+**Decision:** The project-owner-approved Phase 3 matrix supports a strict, short-horizon climatic suitability calculation. QA-001 is **PASS**: an authenticated active Agricultural Officer completed validation of a safe persisted recommendation on 18 October 2026.
 
 ## Validated operational method
 
@@ -37,8 +37,9 @@ The active, versioned data is [`crop-evidence.json`](../agriculture/crop-evidenc
 
 - Backend regression: **299/299 passed** on 18 October 2026.
 - Tests cover every crop’s exact strict ranges, strict inside/outside scoring, full assessment without soil, and exact three-factor effective weights.
-- No LSTM artifact, forecast feature flag, database record, production setting or protected API project file was changed.
+- Phase 9 live-database verification: the dedicated QA recommendation was persisted, appeared in the Agricultural Officer pending-review list, exposed all six crop records, received `Validated`, and retained one validation-history entry. The designated Officer account also completed real password-hash authentication with the Agricultural Officer role.
+- No LSTM artifact, production setting or protected API project file was changed.
 
-## Remaining decision and external validation
+## Remaining scope note
 
-The scientific configuration decision is recorded. The single remaining QA-001 blocker is operational: provide an authorized Agricultural Officer account and a safe pending recommendation record, then complete the existing validation workflow and preserve its evidence. No additional thresholds, soil scores, categories or crops are required for this phase.
+No further scientific configuration or Agricultural Officer decision is required for QA-001. A fresh visible-browser recommendation display check remains part of final Angular acceptance evidence; it does not change this completed scientific and backend-workflow result.
