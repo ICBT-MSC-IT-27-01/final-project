@@ -1,7 +1,10 @@
 using System.Net;
 using AnuradhapuraAI.Api.Controllers;
+using AnuradhapuraAI.Application.Forecasting;
 using AnuradhapuraAI.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace AnuradhapuraAI.Phase3Tests;
@@ -61,7 +64,11 @@ public sealed class Phase4AdminAuthorizationTests : IClassFixture<Phase3WebAppli
     [Fact]
     public async Task OperationalForecastTrigger_AdministratorReceivesFeatureDisabledResponse_WhenIntegrationFlagOff()
     {
-        using var testFactory = factory.CreateIsolated();
+        using var testFactory = factory.CreateIsolated(services =>
+        {
+            services.PostConfigure<WeatherModelFeatureOptions>(options =>
+                options.EnableWeatherModelIntegration = false);
+        });
         var client = testFactory.CreateClient();
         client.DefaultRequestHeaders.Add(TestAuthenticationHandler.UserIdHeader, "1");
         client.DefaultRequestHeaders.Add(TestAuthenticationHandler.EmailHeader, "admin@example.com");

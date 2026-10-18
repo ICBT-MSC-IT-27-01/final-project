@@ -797,9 +797,10 @@ The project owner subsequently accepted Seasonal Planning as approved project sc
 ### Current verification
 
 - Focused suitability/recommendation regression tests: **PASS — 38/38**.
-- Full backend test suite: **288/289 passed**.
-- Known test issue: `OperationalForecastTrigger_AdministratorReceivesFeatureDisabledResponse_WhenIntegrationFlagOff` expects HTTP 503 but currently receives HTTP 400. No feature flags were changed while recording this result.
-- Previously verified ML and frontend results remain: Python tests 22/22; Angular tests 39/39. Do not repeat LSTM training or evaluation without a genuine defect.
+- Full backend test suite: **PASS — 289/289**. The operational-forecast feature-disabled test now explicitly overrides the flag only inside its isolated in-memory test host, so it no longer inherits local user-secret settings.
+- Frontend tests: **PASS — 39/39**; production build: **PASS**.
+- Python tests: **PASS — 22/22**, with the existing upstream FastAPI/Starlette TestClient deprecation warning.
+- Do not repeat LSTM training or evaluation without a genuine defect.
 
 ### Git and safety status
 
