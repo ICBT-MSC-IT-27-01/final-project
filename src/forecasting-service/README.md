@@ -106,3 +106,15 @@ The service loads the approved model and scaler from `artifacts/v1_era5_2010_202
 ## Current Runtime Weather Input Limitation
 
 The trained model requires the previous 30 days of actual/observed weather values. The final live recent-weather data provider has not been approved yet. Phase 6 therefore accepts the 30-day sequence as an integration boundary and uses controlled historical data/test fixtures for verification.
+
+## Operational forecast outcome check
+
+Save the read-only `GET /api/forecasts/latest` response as JSON **before a newer run replaces it**. After all seven target dates have passed, obtain dated daily observations for the same Anuradhapura location and timezone. The CSV must contain the forecast origin day and all seven target days with columns `Date,Rainfall,Temperature,Humidity` (rainfall in mm/day, daily mean temperature in °C, and daily mean relative humidity in %). Record the observation source and location; do not substitute another forecast and call it a measurement.
+
+```powershell
+python -m forecasting_service.evaluation.operational_validation --forecast-json forecast.json --observations station-daily.csv --source-name "Station name" --source-reference "Dataset or record ID" --source-kind station --location "Station coordinates or site"
+```
+
+The command prints JSON. It reports no MAE or RMSE until the origin day and every target day are present. It also checks the run's creation time in Sri Lanka: any target day already underway at issuance prevents a claim of a full seven-day forward forecast. A complete, timely report compares the model with a persistence baseline separately for rainfall, temperature, and humidity. One completed run is only a single-run check, not proof of general accuracy. Use `--source-kind reanalysis` only for a clearly labelled model-data comparison. Do not commit private station data or unverified metrics.
+
+Run its tests with `uv run --no-project --python 3.12 --with pytest python -m pytest tests/test_operational_validation.py` from this directory, or use an existing environment with pytest installed.

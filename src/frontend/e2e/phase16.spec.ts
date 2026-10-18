@@ -7,19 +7,22 @@ test.beforeEach(async ({ page }) => {
 
 test('public dashboard and recommendation workflow render forecast evidence and insufficient-evidence states', async ({ page }) => {
   await page.goto('/');
+  await expect(page).toHaveTitle(/CropCompass/);
+  await expect(page.getByRole('link', { name: 'CropCompass home' })).toBeVisible();
+  await expect(page.locator('footer').getByText('Weather insight for better farming in Anuradhapura')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Latest AI Weather Forecast' })).toBeVisible();
-  await expect(page.getByText('2026-10-13 to 2026-10-19')).toBeVisible();
+  await expect(page.getByText('2026-10-13 to 2026-10-19', { exact: true })).toBeVisible();
   await expect(page.getByText('Paddy')).toBeVisible();
   await expect(page.getByText('Chilli')).toBeVisible();
 
   await page.getByRole('link', { name: 'Generate recommendation' }).click();
   await expect(page.getByRole('heading', { name: 'Crop Recommendation' })).toBeVisible();
-  await page.getByRole('button', { name: 'Generate recommendation' }).click();
+  await page.getByRole('button', { name: 'Check six crops' }).click();
 
-  await expect(page.getByText('Read-only', { exact: true })).toBeVisible();
-  await expect(page.getByText('Forecast run')).toBeVisible();
-  await expect(page.getByText('Missing: Humidity, Soil').first()).toBeVisible();
-  await expect(page.getByText('InsufficientEvidence').first()).toBeVisible();
+  await expect(page.getByText('For information', { exact: true })).toBeVisible();
+  await expect(page.getByText('Seven-day AI forecast')).toBeVisible();
+  await expect(page.getByText('Not assessed: Humidity, Soil').first()).toBeVisible();
+  await expect(page.getByText('Not enough information').first()).toBeVisible();
   await expect(page.getByText('Scientific/agronomic validation remains separate')).toBeVisible();
 });
 
@@ -31,7 +34,7 @@ test('public recommendation workflow displays safe API failure messages', async 
   }));
 
   await page.goto('/recommendations');
-  await page.getByRole('button', { name: 'Generate recommendation' }).click();
+  await page.getByRole('button', { name: 'Check six crops' }).click();
 
   await expect(page.getByRole('alert')).toContainText('No complete forecast is available.');
 });
@@ -100,7 +103,7 @@ test('administrator can view admin dashboard and forecast generation fails close
 
 test('mobile viewport keeps public recommendation content reachable', async ({ page }) => {
   await page.goto('/recommendations');
-  await page.getByRole('button', { name: 'Generate recommendation' }).click();
+  await page.getByRole('button', { name: 'Check six crops' }).click();
 
   await expect(page.getByRole('heading', { name: 'Crop Recommendation' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Paddy' })).toBeVisible();

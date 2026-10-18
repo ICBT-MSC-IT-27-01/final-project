@@ -45,8 +45,61 @@ describe('RecommendationPageComponent', () => {
     expect(text).toContain('Paddy');
     expect(text).toContain('Chilli');
     expect(text).toContain('Not ranked');
-    expect(text).toContain('InsufficientEvidence');
-    expect(text).toContain('Missing: Soil');
+    expect(text).toContain('Not enough information');
+    expect(text).toContain('Not assessed: Soil');
+  });
+
+  it('warns when every crop is unsuitable and keeps internal evidence paths non-clickable', () => {
+    const result = sampleRecommendation();
+    result.crops = result.crops.map(crop => ({
+      ...crop,
+      suitabilityCategory: 'Unsuitable',
+      evidenceSources: [{ title: 'Approved suitability matrix', sourceUrl: 'docs/qa/PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md', publicationDetails: null, location: null, evidenceStatus: 'OWNER_APPROVED' }],
+    }));
+    component.recommendation.set(result);
+
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.textContent).toContain('No suitable crop was found');
+    expect(element.textContent).toContain('first crop is not a planting recommendation');
+    expect(element.querySelector('a[href^="docs/qa/"]')).toBeNull();
+    expect(element.textContent).toContain('Approved suitability matrix (project record)');
+  });
+
+  it('shows seven-day aggregates and explains strict factor bands without implying forecast confidence', () => {
+    const result = sampleRecommendation();
+    result.forecast.days = Array.from({ length: 7 }, (_, index) => ({
+      targetDate: `2026-10-${11 + index}`,
+      rainfall: 2,
+      temperature: 28,
+      humidity: 70,
+    }));
+    result.crops[0].factors = [
+      { factor: 'Rainfall', isEvaluable: true, score: 0, aggregatedValue: 14, configuredWeight: 0.4, effectiveWeight: 0.6, explanation: 'Outside the configured range.' },
+      { factor: 'Temperature', isEvaluable: true, score: 100, aggregatedValue: 28, configuredWeight: 0.15, effectiveWeight: 0.23, explanation: 'Inside the configured range.' },
+    ];
+    component.recommendation.set(result);
+
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('14 mm total');
+    expect(text).toContain('28 °C');
+    expect(text).toContain('70%');
+    expect(text).toContain('Within range');
+    expect(text).toContain('Outside range');
+    expect(text).toContain('not the probability of a successful harvest');
+  });
+
+  it('warns when a recommendation uses a forecast issued during its first target day', () => {
+    const result = sampleRecommendation();
+    result.forecast.createdAt = '2026-10-11T15:38:02Z';
+    component.recommendation.set(result);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('does not cover seven complete future days');
   });
 
   it('shows safe forecast-unavailable errors', () => {

@@ -1,0 +1,12 @@
+{
+  "source": "Sri Lanka Department of Meteorology",
+  "sourceUrl": "https://meteo.gov.lk/Non_%20Up_Date/pages/observations.htm",
+  "location": "ANURADHAPURA",
+  "retrievedAtUtc": "2026-10-18T10:08:50Z",
+  "observedAtLocal": "2026-10-18 1430",
+  "temperatureC": 33.3,
+  "relativeHumidityPercent": 63.0,
+  "rainfallField": "0.0",
+  "totalRainfallField": "0.0",
+  "interpretation": "One station observation from the official three-hourly display; not a daily mean or midnight-to-midnight rain total."
+}
