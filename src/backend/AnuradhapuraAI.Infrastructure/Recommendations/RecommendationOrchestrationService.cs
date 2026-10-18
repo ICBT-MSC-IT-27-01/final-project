@@ -116,10 +116,11 @@ public sealed class RecommendationOrchestrationService(
             .Select(factor => factor.Factor)
             .ToList();
 
+        var hasAllMandatoryWeatherFactors = HasAllMandatoryWeatherFactors(crop);
         var status = crop.EvaluatedFactorCount switch
         {
             0 => ApprovedRecommendationEvaluationStatuses.InsufficientEvidence,
-            var count when count == SuitabilityFactors.All.Length => ApprovedRecommendationEvaluationStatuses.Complete,
+            _ when hasAllMandatoryWeatherFactors => ApprovedRecommendationEvaluationStatuses.Complete,
             _ => ApprovedRecommendationEvaluationStatuses.Partial
         };
 
@@ -127,7 +128,7 @@ public sealed class RecommendationOrchestrationService(
         {
             0 => RecommendationAssessmentStates.InsufficientAgronomicEvidence,
             _ when !crop.SupportsFullSuitabilityAssessment => RecommendationAssessmentStates.PartiallyAssessed,
-            var count when count == SuitabilityFactors.All.Length => RecommendationAssessmentStates.SuitabilityAssessed,
+            _ when hasAllMandatoryWeatherFactors => RecommendationAssessmentStates.SuitabilityAssessed,
             _ => RecommendationAssessmentStates.PartiallyAssessed
         };
 
@@ -171,6 +172,11 @@ public sealed class RecommendationOrchestrationService(
             ScientificLimitations = crop.ScientificLimitations
         };
     }
+
+    private static bool HasAllMandatoryWeatherFactors(CropSuitabilityResult crop) =>
+        crop.Rainfall.IsEvaluable &&
+        crop.Temperature.IsEvaluable &&
+        crop.Humidity.IsEvaluable;
 
     private static string BuildPartialAssessmentExplanation(
         CropSuitabilityResult crop,

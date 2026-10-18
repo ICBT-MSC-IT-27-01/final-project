@@ -1,6 +1,6 @@
 # QA-001 Recommendation Fix Results
 
-Date: 2026-10-17
+Date: 2026-10-18
 
 ## Root cause
 
@@ -37,6 +37,8 @@ Evidence: `qa-evidence/PUB-04-live-recommendation.png` and `qa-evidence/visible-
 
 `docs/agriculture/SQL_QA001_READ_ONLY_CONFIGURATION_AUDIT.sql` is a credential-free, non-destructive audit for the authorized database owner. Run it in an approved development SQL session connected to the configured database, then provide the result set to identify active requirement, weight, and soil-compatibility records. It must not be used to seed unsupported rainfall, humidity, or soil thresholds.
 
-## Status
+## Status update — 18 October 2026
 
-QA-001 is **PARTIALLY RESOLVED**. The prior all-unscored failure is removed and useful evidence-backed partial results render end-to-end. Full approved scoring remains blocked by locally applicable, temporally compatible rainfall, humidity and soil evidence plus approved SQL configuration.
+The later project-owner-approved Phase 3 matrix supplies strict seven-day rainfall, temperature and humidity bands for all six approved crops, plus weights and category thresholds. The active configuration is recorded in [`PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md`](PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md) and [`crop-evidence.json`](../agriculture/crop-evidence.json). Soil remains optional and is not fabricated.
+
+QA-001 remains **PARTIAL** only pending the authorized Agricultural Officer's live review of a safe persisted recommendation. The temperature-only browser observation above remains historical evidence, not the current configuration result.

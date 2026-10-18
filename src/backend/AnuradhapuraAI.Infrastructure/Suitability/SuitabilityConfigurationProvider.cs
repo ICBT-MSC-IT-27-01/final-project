@@ -39,45 +39,71 @@ public sealed class SuitabilityConfigurationProvider(
 
     private static CropSuitabilityProfile ToCropProfile(Crop crop, CropEvidenceCatalog? cropEvidenceCatalog)
     {
-        var profile = new CropSuitabilityProfile(
-            crop.Name,
-            ToRangeRequirement(crop.EnvironmentalRequirements.SingleOrDefault(requirement => requirement.VariableType == ApprovedVariableTypes.Rainfall)),
-            ToRangeRequirement(crop.EnvironmentalRequirements.SingleOrDefault(requirement => requirement.VariableType == ApprovedVariableTypes.Temperature)),
-            ToRangeRequirement(crop.EnvironmentalRequirements.SingleOrDefault(requirement => requirement.VariableType == ApprovedVariableTypes.Humidity)),
-            crop.SoilCompatibilities
-                .Select(compatibility => new SuitabilitySoilCompatibility(
-                    compatibility.SoilType,
-                    compatibility.CompatibilityScore))
-                .ToList());
+        var databaseRequirements = crop.EnvironmentalRequirements
+            .GroupBy(requirement => requirement.VariableType)
+            .ToDictionary(group => group.Key, group => ToRangeRequirement(group.Single()));
 
-        if (profile.TemperatureRequirement is not null ||
-            cropEvidenceCatalog is null ||
+        if (cropEvidenceCatalog is null ||
             !cropEvidenceCatalog.TryGetCrop(crop.Name, out var evidence))
         {
-            return profile;
+            return CreateProfile(crop, databaseRequirements, null);
         }
 
-        var temperatureRequirement = evidence.Requirements
-            .Single(requirement => requirement.Factor == ApprovedVariableTypes.Temperature)
-            .ToSuitabilityRequirement();
+        var evidenceRequirements = evidence.Requirements
+            .ToDictionary(requirement => requirement.Factor, requirement => requirement.ToSuitabilityRequirement());
+        var profile = CreateProfile(crop, databaseRequirements, evidenceRequirements);
+        var weatherRequirements = new[]
+        {
+            profile.RainfallRequirement,
+            profile.TemperatureRequirement,
+            profile.HumidityRequirement
+        };
 
         return profile with
         {
-            TemperatureRequirement = temperatureRequirement,
-            SupportsFullSuitabilityAssessment = profile.RainfallRequirement is not null &&
-                                                profile.HumidityRequirement is not null &&
-                                                profile.SoilCompatibilities.Count > 0 &&
-                                                profile.SupportsFullSuitabilityAssessment &&
-                                                temperatureRequirement.SupportsFullSuitabilityAssessment,
+            SupportsFullSuitabilityAssessment = weatherRequirements.All(requirement =>
+                requirement is not null && requirement.SupportsFullSuitabilityAssessment),
             AssessmentBasis = evidence.AssessmentBasis,
             EvidenceSources =
             [
                 evidence.CalendarEvidence.ToSuitabilitySource(),
-                .. temperatureRequirement.Sources
+                .. evidenceRequirements.Values.SelectMany(requirement => requirement.Sources)
             ],
             ScientificLimitations = evidence.ScientificLimitations
         };
     }
+
+    private static CropSuitabilityProfile CreateProfile(
+        Crop crop,
+        IReadOnlyDictionary<string, SuitabilityRangeRequirement?> databaseRequirements,
+        IReadOnlyDictionary<string, SuitabilityRangeRequirement>? evidenceRequirements)
+    {
+        var rainfall = GetRequirement(ApprovedVariableTypes.Rainfall, databaseRequirements, evidenceRequirements);
+        var temperature = GetRequirement(ApprovedVariableTypes.Temperature, databaseRequirements, evidenceRequirements);
+        var humidity = GetRequirement(ApprovedVariableTypes.Humidity, databaseRequirements, evidenceRequirements);
+
+        return new CropSuitabilityProfile(
+            crop.Name,
+            rainfall,
+            temperature,
+            humidity,
+            crop.SoilCompatibilities
+                .Select(compatibility => new SuitabilitySoilCompatibility(
+                    compatibility.SoilType,
+                    compatibility.CompatibilityScore))
+                .ToList())
+        {
+            SupportsFullSuitabilityAssessment = new[] { rainfall, temperature, humidity }
+                .All(requirement => requirement is not null && requirement.SupportsFullSuitabilityAssessment)
+        };
+    }
+
+    private static SuitabilityRangeRequirement? GetRequirement(
+        string variableType,
+        IReadOnlyDictionary<string, SuitabilityRangeRequirement?> databaseRequirements,
+        IReadOnlyDictionary<string, SuitabilityRangeRequirement>? evidenceRequirements) =>
+        databaseRequirements.GetValueOrDefault(variableType) ??
+        evidenceRequirements?.GetValueOrDefault(variableType);
 
     private static SuitabilityRangeRequirement? ToRangeRequirement(CropEnvironmentalRequirement? requirement)
     {
@@ -105,22 +131,22 @@ public sealed class SuitabilityConfigurationProvider(
                 configurations,
                 ApprovedSuitabilityConfiguration.Types.FactorWeight,
                 ApprovedSuitabilityConfiguration.Keys.Rainfall,
-                25m),
+                40m),
             Temperature: GetConfigurationValue(
                 configurations,
                 ApprovedSuitabilityConfiguration.Types.FactorWeight,
                 ApprovedSuitabilityConfiguration.Keys.Temperature,
-                25m),
+                15m),
             Humidity: GetConfigurationValue(
                 configurations,
                 ApprovedSuitabilityConfiguration.Types.FactorWeight,
                 ApprovedSuitabilityConfiguration.Keys.Humidity,
-                25m),
+                10m),
             Soil: GetConfigurationValue(
                 configurations,
                 ApprovedSuitabilityConfiguration.Types.FactorWeight,
                 ApprovedSuitabilityConfiguration.Keys.SoilCompatibility,
-                25m));
+                35m));
 
     private static SuitabilityCategoryThresholds ToCategoryThresholds(IReadOnlyList<SuitabilityConfiguration> configurations) =>
         new(
@@ -133,12 +159,12 @@ public sealed class SuitabilityConfigurationProvider(
                 configurations,
                 ApprovedSuitabilityConfiguration.Types.CategoryThreshold,
                 ApprovedSuitabilityConfiguration.Keys.Suitable,
-                60m),
+                50m),
             ModeratelySuitableMinimum: GetConfigurationValue(
                 configurations,
                 ApprovedSuitabilityConfiguration.Types.CategoryThreshold,
                 ApprovedSuitabilityConfiguration.Keys.ModeratelySuitable,
-                40m));
+                25m));
 
     private static decimal GetConfigurationValue(
         IReadOnlyList<SuitabilityConfiguration> configurations,

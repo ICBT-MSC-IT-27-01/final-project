@@ -61,6 +61,18 @@ public sealed class CropSuitabilityEngineTests
         Assert.Equal(100m, score);
     }
 
+    [Theory]
+    [InlineData(20, 0)]
+    [InlineData(25, 100)]
+    [InlineData(30, 100)]
+    [InlineData(35, 0)]
+    public void RangeScoring_StrictBandReturnsOneHundredOnlyInsideInclusiveBand(decimal value, decimal expectedScore)
+    {
+        var score = RangeSuitabilityScorer.Score(value, 25m, 25m, 30m, 30m);
+
+        Assert.Equal(expectedScore, score);
+    }
+
     [Fact]
     public void Evaluate_UsesSevenDayTemperatureMean()
     {

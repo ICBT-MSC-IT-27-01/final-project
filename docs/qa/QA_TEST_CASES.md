@@ -1,10 +1,10 @@
 # QA Test Cases — Actual Local Verification
 
-Updated: 2026-10-17. Browser cases used visible headed Google Chrome against the local Angular and ASP.NET Core services. `PASS (technical)` means the observed application behavior met the stated technical expectation; it does not claim scientific agronomic validation.
+Updated: 2026-10-18. Browser cases used visible headed Google Chrome against the local Angular and ASP.NET Core services. `PASS (technical)` means the observed application behavior met the stated technical expectation; it does not claim scientific agronomic validation.
 
 | Test ID | Workflow | Role | Scenario / observed result | Status | Evidence |
 |---|---|---|---|---|---|
-| QA-001 | WF-08 / crop suitability | Public | The live recommendation view exposed only source-linked seven-day temperature compatibility indicators. Existing rainfall values are annual and were not converted to seven-day thresholds; crop-specific seven-day humidity and validated soil evidence remain unavailable. No overall suitability score, category or comparable crop rank was shown. | PARTIAL | [`QA001_SCIENTIFIC_VALIDATION_REPORT.md`](QA001_SCIENTIFIC_VALIDATION_REPORT.md); `qa-evidence/PUB-04-live-recommendation.png`; `visible-browser-observations.json` |
+| QA-001 | WF-08 / crop suitability | Public | The approved strict seven-day climatic matrix is implemented for all six crops. Backend regression verifies exact 0/100 bands and soil-optional weight re-normalisation. A fresh live Officer review of a safe persisted recommendation remains outstanding. | PARTIAL | [`QA001_SCIENTIFIC_VALIDATION_REPORT.md`](QA001_SCIENTIFIC_VALIDATION_REPORT.md); [`PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md`](PHASE3_SUITABILITY_CONFIGURATION_TEMPLATE.md); backend regression 299/299, 2026-10-18 |
 | QA-002 | startup | Public | Angular root returned 200. | PASS | visible audit output |
 | QA-003 | WF-01 | Public | Dashboard rendered the latest eligible persisted operational forecast. | PASS (technical) | `qa-evidence/PUB-01-home-desktop.png` |
 | QA-004 | WF-08 display behaviour | Public | Read-only evaluation correctly presented source-linked temperature indicators, unavailable rainfall/humidity/soil factors, and no fabricated category or comparable rank. | PASS (technical) | `qa-evidence/PUB-04-live-recommendation.png`; `visible-browser-observations.json` |
@@ -32,11 +32,11 @@ Totals: 33 test cases — PASS 31, PARTIAL 1, BLOCKED 1, FAIL 0.
 
 Notes:
 
-- QA-001 remains `PARTIAL`: temperature-only indicators are useful and traceable but not complete scientifically validated suitability recommendations.
+- QA-001 remains `PARTIAL`: the approved strict climatic configuration and automated regression pass, while the required authorized Agricultural Officer live review has not yet been completed.
 - Seasonal outputs are conditional calendar candidates, not exact planting prescriptions or long-range LSTM forecasts.
 - Existing active accounts now include Administrator, Agricultural Officer and Registered User roles. The Registered User flow was tested through approved public registration; Agricultural Officer credentials are still required for its live workflow test.
-- Final regression on 2026-10-17: dependency vulnerability scan found no vulnerable packages; backend 289/289 tests passed; forecasting service 22/22 tests passed (one upstream FastAPI/Starlette deprecation warning); Angular 39/39 tests passed.
-- Final approved-scope audit regression on 2026-10-17 repeated the same passing suites: backend 289/289, forecasting service 22/22 and Angular 39/39. No feature flag, database record, model artifact or production configuration was changed during that audit.
+- Phase 3 suitability regression on 2026-10-18: backend 299/299 tests passed; forecasting service 22/22 tests passed (one upstream FastAPI/Starlette deprecation warning); Angular 39/39 tests passed. The Angular runner does not support `--run`; the supported `--watch=false` invocation was used.
+- No feature flag, database record, model artifact, production configuration or protected API project file was changed during the Phase 3 work.
 - `EnableOfficerValidation` is enabled only in local development for the pending live Officer QA. No production setting, user credential or recommendation record was changed.
 - Approved-scope audit: recommendation history, Officer validation, climate-risk logic and Administrator controls are implemented. Their remaining statuses are governed by approved feature flags, authorized test access and scientific configuration; multilingual UI is outside the approved scope.
 - Expected HTTP 400 responses in negative seasonal tests appear as Chrome console resource errors; they are validated negative outcomes, not unhandled application failures.

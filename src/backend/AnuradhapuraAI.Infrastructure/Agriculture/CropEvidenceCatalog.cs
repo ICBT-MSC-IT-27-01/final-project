@@ -61,11 +61,10 @@ public sealed record CatalogCropEvidence(
 {
     public IReadOnlyList<string> ScientificLimitations =>
     [
-        "This result is a short-horizon temperature compatibility indicator, not full crop suitability.",
-        "Annual rainfall requirements are retained as evidence but are not compared with seven-day rainfall forecasts.",
-        "No crop-specific relative-humidity threshold applicable to the seven-day forecast was verified.",
-        "No Anuradhapura-wide soil property is assumed; soil remains unavailable until a validated selected-soil compatibility is configured.",
-        "FAO ECOCROP values are global ecological evidence and have not been locally agronomically validated for Anuradhapura."
+        "The approved climatic bands are strict binary bands: a factor scores 100 inside its inclusive range and 0 outside it.",
+        "The assessment uses the next-seven-day rainfall total and next-seven-day mean temperature and relative humidity only.",
+        "Soil is optional and unscored unless an Administrator configures a crop-specific selected-soil compatibility.",
+        "When soil is unavailable, the engine re-normalizes the rainfall, temperature and humidity weights across their configured total."
     ];
 }
 
@@ -97,8 +96,10 @@ public sealed record CatalogRequirement(
             EvidenceStatus = EvidenceStatus,
             AggregationMethod = AggregationMethod,
             Sources = [Source.ToSuitabilitySource()],
-            Limitations = IsCompatibleWithSevenDayForecast
-                ? ["The configured aggregation is only a short-horizon temperature compatibility indicator."]
+            Limitations = SupportsFullSuitabilityAssessment
+                ? ["This is an owner-approved strict band: the factor scores 100 inside the inclusive range and 0 outside it."]
+                : IsCompatibleWithSevenDayForecast
+                ? ["The configured aggregation is only a short-horizon compatibility indicator."]
                 : ["This requirement is not evaluated because its temporal scale is incompatible with a seven-day forecast."]
         };
 }

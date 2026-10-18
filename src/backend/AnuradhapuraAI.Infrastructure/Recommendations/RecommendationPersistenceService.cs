@@ -419,11 +419,14 @@ public sealed class RecommendationPersistenceService(
                     ? null
                     : $"Partial evaluation for {crop.CropName} must contain one to three evaluable factors and must not represent a partially assessed result as an overall suitability score or category.",
             ApprovedRecommendationEvaluationStatuses.Complete =>
-                evaluableFactorCount == SuitabilityFactors.All.Length &&
+                evaluableFactorCount is 3 or 4 &&
+                crop.RainfallScore.HasValue &&
+                crop.TemperatureScore.HasValue &&
+                crop.HumidityScore.HasValue &&
                 crop.OverallScore.HasValue &&
                 crop.SuitabilityCategory is not null
                     ? null
-                    : $"Complete evaluation for {crop.CropName} must contain all four evaluable factors, an overall score, and a category.",
+                    : $"Complete evaluation for {crop.CropName} must contain all mandatory weather factors, an overall score, and a category; soil is optional.",
             _ => $"Evaluation status is invalid for {crop.CropName}."
         };
     }

@@ -248,6 +248,38 @@ public sealed class Phase8B1RecommendationOrchestrationTests
     }
 
     [Fact]
+    public async Task EvaluateLatestForecast_AllMandatoryWeatherFactorsWithoutSoilReturnsCompleteEvaluation()
+    {
+        await using var dbContext = CreateDbContext();
+        await SeedApprovedCropsAsync(dbContext);
+        SeedForecastRun(dbContext, Guid.NewGuid(), new DateOnly(2026, 1, 1), DateTimeOffset.Parse("2026-01-01T00:00:00Z"));
+        await SeedSameTemperatureRequirementAsync(dbContext);
+        await SeedSameHumidityRequirementAsync(dbContext);
+        await SeedSameSevenDayRainfallRequirementAsync(dbContext);
+        await dbContext.SaveChangesAsync();
+
+        var result = await CreateService(dbContext).EvaluateLatestForecastAsync(new RecommendationEvaluationRequest(null));
+
+        Assert.True(result.Succeeded, result.Message);
+        Assert.All(result.Value!.Crops, crop =>
+        {
+            Assert.Equal(ApprovedRecommendationEvaluationStatuses.Complete, crop.EvaluationStatus);
+            Assert.Equal(RecommendationAssessmentStates.SuitabilityAssessed, crop.AssessmentState);
+            Assert.True(crop.RainfallScore.HasValue);
+            Assert.True(crop.TemperatureScore.HasValue);
+            Assert.True(crop.HumidityScore.HasValue);
+            Assert.Null(crop.SoilScore);
+            Assert.True(crop.OverallScore.HasValue);
+            Assert.NotNull(crop.SuitabilityCategory);
+            Assert.Equal(3, crop.EvidenceCoverage.EvaluatedFactorCount);
+            Assert.Equal(65m, crop.EvidenceCoverage.EvaluatedConfiguredWeightTotal);
+            Assert.Equal(40m / 65m, crop.Factors.Single(factor => factor.Factor == SuitabilityFactors.Rainfall).EffectiveWeight);
+            Assert.Equal(15m / 65m, crop.Factors.Single(factor => factor.Factor == SuitabilityFactors.Temperature).EffectiveWeight);
+            Assert.Equal(10m / 65m, crop.Factors.Single(factor => factor.Factor == SuitabilityFactors.Humidity).EffectiveWeight);
+        });
+    }
+
+    [Fact]
     public async Task EvaluateLatestForecast_UsesOptionalSoilTypeAndReportsPartialEvidence()
     {
         await using var dbContext = CreateDbContext();
