@@ -2,6 +2,23 @@
 
 Status meanings: **PASS** = real technical evidence; **PARTIAL** = working but incomplete acceptance; **BLOCKED** = authorization/environment/evidence unavailable. Scientific acceptance is separate where relevant.
 
+## 18 October 2026 reconciliation
+
+The matrix below is historical Phase 16 evidence. The following entries supersede its pre-configuration and pre-authorized-QA statuses:
+
+| Acceptance outcome | Current technical status | Current evidence / remaining boundary |
+|---|---|---|
+| Seven-day LSTM forecast, SQL persistence and public display | PASS (technical) | Existing operational run and fresh Open-Meteo → LSTM v1 → SQL → Angular verification are recorded in `QA_TEST_CASES.md` (QA-030 to QA-033). |
+| Six-crop strict suitability calculation | PASS (technical) | Approved strict seven-day matrix, optional-soil re-normalisation and 299 backend tests; `QA-001` is PASS (technical). Agronomic field/expert acceptance is still separate. |
+| Registered User recommendation history | PASS (technical) | Approved local development flag, safe QA record, authenticated persistence workflow, Angular unit/E2E coverage. |
+| Agricultural Officer validation | PASS (technical) | Authorized Officer authenticated; safe recommendation was reviewed, validated and retained in validation history. Officer UI shows forecast evidence and factor results. |
+| Administrator controls | PASS (technical) | Existing authorized Administrator login and authorized management contract verification completed. |
+| Public/role-restricted navigation and API access | PASS (technical) | Backend authorization regression and headed-Chrome E2E coverage. |
+| Seasonal Planning | PASS (technical, conditional guidance) | It is approved scope but remains clearly labelled historical climate/crop-calendar guidance, not a long-range LSTM forecast, planting prescription, or scientific crop ranking. |
+| Real participant UAT, independent agronomist validation and ethics approval | NOT PERFORMED / external | Require university-approved participant and expert processes; automated evidence cannot substitute for them. |
+
+The current consolidated technical QA result is **33 PASS, 0 PARTIAL, 0 BLOCKED, 0 FAIL** in `docs/qa/QA_TEST_CASES.md`.
+
 | ID | Acceptance outcome | Implementation / dependency | Evidence | Status / remaining gap |
 |---|---|---|---|---|
 | PRD-01 | Seven-day forecast displayed | Forecast API, stored `ForecastRun` | `PUB-01-home-desktop.png` | PASS technical; live inference blocked |

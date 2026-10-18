@@ -34,6 +34,18 @@ describe('OfficerDetailComponent', () => {
     expect(component.review()?.recommendationId).toBe(42);
   });
 
+  it('renders persisted forecast evidence and suitability factor results for the officer', () => {
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('2026-10-11');
+    expect(text).toContain('12.5 mm');
+    expect(text).toContain('Rainfall');
+    expect(text).toContain('80.00');
+    expect(text).toContain('Humidity');
+    expect(text).toContain('Unavailable');
+  });
+
   it('submits only approved validation metadata and trims optional comments', () => {
     api.submitRecommendationValidation.mockReturnValue(of({
       id: 5,
@@ -72,7 +84,16 @@ function sampleReview(): RecommendationReviewResponse {
     userId: null,
     soilType: null,
     createdAt: '2026-10-10T00:00:00Z',
-    evidenceSnapshotJson: '{}',
+    evidenceSnapshotJson: JSON.stringify({
+      forecast: {
+        days: [{
+          targetDate: '2026-10-11',
+          rainfall: { value: 12.5 },
+          temperature: { value: 29 },
+          humidity: { value: 68 },
+        }],
+      },
+    }),
     crops: [
       {
         cropId: 1,

@@ -147,6 +147,60 @@ textarea:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 
+.dashboard-hero-refined { min-height: 48vh; padding: clamp(2.5rem, 7vw, 5rem) 0 2.5rem; }
+.dashboard-hero-refined h1 { max-width: 760px; }
+.forecast-status-board {
+  background: linear-gradient(145deg, var(--leaf-dark), var(--leaf));
+  border: 1px solid var(--leaf-dark);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  color: white;
+  overflow: hidden;
+  padding: 1.5rem;
+  position: relative;
+}
+.forecast-status-board::after { border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; content: ''; height: 13rem; position: absolute; right: -5rem; top: -6rem; width: 13rem; }
+.forecast-status-board > * { position: relative; z-index: 1; }
+.forecast-status-board h2 { font-family: Cambria, Georgia, serif; font-size: 1.8rem; margin: 1rem 0 0.4rem; }
+.forecast-status-board p { color: #d5e8da; margin: 0 0 1.2rem; }
+.forecast-live { align-items: center; background: rgba(255, 255, 255, 0.14); border-radius: 999px; display: inline-flex; font-size: 0.76rem; font-weight: 800; gap: 0.45rem; padding: 0.38rem 0.65rem; }
+.forecast-live span { background: #f4ca66; border-radius: 50%; height: 0.5rem; width: 0.5rem; }
+.forecast-status-meta { border-top: 1px solid rgba(255, 255, 255, 0.2); display: grid; gap: 0.9rem; grid-template-columns: 1fr 1fr; padding-top: 1rem; }
+.forecast-status-meta span { color: #c9decf; display: block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+.forecast-status-meta strong { display: block; margin-top: 0.15rem; overflow-wrap: anywhere; }
+.dashboard-overview { align-items: end; display: flex; justify-content: space-between; margin: 2rem 0 0.8rem; }
+.dashboard-overview h2 { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 2rem; margin: 0.1rem 0 0.25rem; }
+.dashboard-overview p { color: var(--muted); margin: 0; }
+.dashboard-period { background: #edf2ea; border: 1px solid #c9d8c8; border-radius: 999px; color: var(--leaf-dark); font-size: 0.84rem; font-weight: 800; padding: 0.55rem 0.85rem; }
+.weather-metric-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.weather-metric { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 26px rgba(23, 63, 48, 0.06); padding: 1.1rem; }
+.weather-symbol { display: block; font-size: 1.45rem; line-height: 1; margin-bottom: 0.8rem; }
+.weather-metric strong { color: var(--leaf-dark); display: block; font-family: Cambria, Georgia, serif; font-size: 2rem; line-height: 1; }
+.weather-metric p { color: var(--muted); margin: 0.4rem 0 0; }
+.rain-metric strong, .dashboard-forecast-days .rainfall { color: var(--water); }
+.dashboard-forecast-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); margin: 1.5rem 0; overflow: hidden; }
+.dashboard-forecast-heading { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 1.1rem 1.25rem; }
+.dashboard-forecast-heading h2 { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 1.45rem; margin: 0; }
+.dashboard-forecast-heading p { color: var(--muted); margin: 0.2rem 0 0; }
+.dashboard-forecast-heading > span { color: var(--leaf); font-size: 0.85rem; font-weight: 800; }
+.dashboard-forecast-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.dashboard-forecast-days article { border-right: 1px solid var(--line); display: grid; gap: 0.35rem; min-width: 0; padding: 1rem 0.8rem; }
+.dashboard-forecast-days article:last-child { border-right: 0; }
+.dashboard-forecast-days article.today { background: #f0f5ea; }
+.dashboard-forecast-days .forecast-date { color: var(--muted); font-size: 0.75rem; font-weight: 800; overflow-wrap: anywhere; }
+.dashboard-forecast-days strong { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 1.2rem; }
+.dashboard-forecast-days .rainfall, .dashboard-forecast-days .humidity { font-size: 0.8rem; }
+.dashboard-forecast-days .humidity { color: var(--muted); }
+.dashboard-bottom-grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1.45fr) minmax(270px, 0.75fr); margin: 1.5rem 0 3rem; }
+.dashboard-next-step h2, .dashboard-context h2 { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 1.5rem; }
+.dashboard-next-step > p:not(.eyebrow), .dashboard-context > p:not(.eyebrow) { color: var(--muted); }
+.dashboard-steps { display: grid; gap: 0.75rem; }
+.dashboard-steps > div { border-top: 1px solid var(--line); display: grid; gap: 0.75rem; grid-template-columns: 2rem minmax(0, 1fr); padding-top: 0.75rem; }
+.dashboard-steps b { align-items: center; background: #e7f1e8; border-radius: 50%; color: var(--leaf-dark); display: flex; height: 1.9rem; justify-content: center; }
+.dashboard-steps p { margin: 0; }.dashboard-steps strong { display: block; }.dashboard-steps span { color: var(--muted); font-size: 0.9rem; }
+.dashboard-context { background: #faf4e5; border-color: #e4cb90; }.dashboard-context h2 { color: #67531b; }.dashboard-context small { border-top: 1px solid #e5d29f; color: #6b5a27; display: block; margin-top: 1rem; padding-top: 0.85rem; }
+.dashboard-limitations { color: var(--muted); margin: -1.5rem 0 3rem; }.dashboard-limitations summary { color: var(--leaf-dark); cursor: pointer; font-weight: 800; }.dashboard-limitations li { margin: 0.3rem 0; }
+
 h1 {
   font-family: Cambria, Georgia, serif;
   font-size: clamp(2rem, 6vw, 5rem);
@@ -251,6 +305,204 @@ h2 {
   max-width: 640px;
   margin-bottom: 1.2rem;
 }
+
+.seasonal-title { margin-bottom: 1rem; }
+.seasonal-note { color: var(--muted); margin: 0; }
+
+.seasonal-planner {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.seasonal-tabs { display: flex; border-bottom: 1px solid var(--line); }
+.seasonal-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 1rem 1.2rem 0.85rem;
+}
+.seasonal-tab[aria-selected='true'] { border-bottom-color: var(--leaf); color: var(--leaf-dark); }
+.seasonal-search {
+  align-items: end;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  padding: 1.15rem;
+}
+.crop-search { grid-template-columns: minmax(160px, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto; }
+.seasonal-results { margin-top: 1.5rem; }
+.seasonal-results-heading { align-items: baseline; display: flex; justify-content: space-between; margin-bottom: 0.8rem; }
+.seasonal-results-heading span { color: var(--muted); font-weight: 700; }
+.seasonal-results-heading strong { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 1.25rem; }
+.seasonal-card-grid, .seasonal-window-grid { display: grid; gap: 0.9rem; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.seasonal-crop-card, .seasonal-window-card, .seasonal-empty {
+  background: var(--panel);
+  border: 1px solid #b6cfbb;
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(23, 63, 48, 0.08);
+  padding: 1rem;
+}
+.seasonal-crop-card.no-match { border-color: #dfcda2; }
+.seasonal-crop-card h2, .seasonal-window-card h2 { color: var(--leaf-dark); font-size: 1.25rem; margin: 0 0 1rem; }
+.period-status { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; margin: 0 0 0.45rem; text-transform: uppercase; }
+.period-status.available { color: var(--success); }
+.period-status.unavailable { color: #876015; }
+.period-value { border-top: 1px solid var(--line); color: var(--ink); font-family: Cambria, Georgia, serif; font-size: 1.08rem; margin: 0.55rem 0 0; padding-top: 0.55rem; }
+.try-label { color: var(--muted); font-size: 0.82rem; font-weight: 800; margin: 0.9rem 0 0; text-transform: uppercase; }
+.seasonal-empty p:last-child { color: var(--muted); margin: 0; }
+
+.recommendation-search {
+  gap: 1.35rem;
+  max-width: 920px;
+  padding: 1.35rem;
+}
+
+.search-intro,
+.explorer-heading {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.search-intro h2,
+.explorer-heading h2 {
+  color: var(--leaf-dark);
+  margin: 0.15rem 0 0.35rem;
+}
+
+.search-intro p,
+.explorer-heading p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.scope-badge {
+  background: linear-gradient(135deg, #e7f6ef, #f4f0d9);
+  border: 1px solid #b8d4bb;
+  border-radius: 12px;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 0.2rem;
+  min-width: 180px;
+  padding: 0.75rem 0.9rem;
+}
+
+.scope-badge span,
+.optional {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.scope-badge strong { color: var(--leaf-dark); }
+
+.search-fields,
+.result-controls {
+  align-items: end;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.search-fields small { font-weight: 400; }
+.search-submit { min-height: 47px; }
+
+.result-explorer {
+  margin: 1.25rem 0;
+  max-width: none;
+  padding: 1.25rem;
+}
+
+.recommendation-title { margin-bottom: 1rem; }
+.recommendation-search { margin-bottom: 1.4rem; }
+.recommendation-result-header {
+  align-items: end;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin: 2rem 0 0.9rem;
+}
+.recommendation-result-header h2 { color: var(--leaf-dark); margin: 0.1rem 0 0.3rem; }
+.recommendation-result-header p { color: var(--muted); margin: 0; }
+.forecast-period {
+  background: #edf2ea;
+  border: 1px solid #c9d8c8;
+  border-radius: 999px;
+  color: var(--leaf-dark);
+  display: grid;
+  flex: 0 0 auto;
+  gap: 0.1rem;
+  padding: 0.55rem 0.85rem;
+}
+.forecast-period span { color: var(--muted); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+.recommendation-trust-bar {
+  background: #eff2ed;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+}
+.recommendation-trust-bar div { display: grid; gap: 0.15rem; min-width: 0; }
+.recommendation-trust-bar span { color: var(--muted); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+.recommendation-trust-bar strong { font-size: 0.9rem; overflow-wrap: anywhere; }
+.recommendation-list { display: grid; gap: 0.8rem; }
+.crop-card.recommendation-row {
+  align-items: center;
+  border-left: 7px solid #429663;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 48px minmax(150px, 0.9fr) minmax(200px, 1.4fr) auto;
+  padding: 1rem 1.15rem;
+}
+.crop-card.recommendation-row.needs-information { border-left-color: #b7c0b9; }
+.recommendation-rank { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 1.45rem; font-weight: 800; }
+.recommendation-row h2 { color: var(--leaf-dark); font-size: 1.25rem; margin: 0 0 0.35rem; }
+.recommendation-status {
+  background: #e3f3e8;
+  border-radius: 999px;
+  color: var(--success);
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.3rem 0.55rem;
+}
+.recommendation-status.needs-information { background: #edf0ec; color: var(--muted); }
+.recommendation-why { border-left: 1px solid var(--line); padding-left: 1rem; }
+.recommendation-why span { color: var(--muted); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+.recommendation-why p { color: var(--muted); margin: 0.2rem 0 0; }
+.crop-details { color: var(--leaf); font-size: 0.88rem; font-weight: 800; min-width: 110px; }
+.crop-details summary, .recommendation-details summary { cursor: pointer; }
+.crop-details[open] { grid-column: 2 / -1; color: var(--ink); font-weight: 400; }
+.crop-details[open] summary { color: var(--leaf); font-weight: 800; margin-bottom: 0.8rem; }
+.recommendation-details { margin: 1rem 0; }
+.forecast-details { color: var(--leaf-dark); font-weight: 800; }
+.forecast-details[open] { color: var(--ink); }
+.forecast-details summary { margin-bottom: 0.8rem; }
+
+.result-controls {
+  grid-template-columns: minmax(190px, 1.4fr) repeat(3, minmax(145px, 1fr));
+  margin-top: 1.1rem;
+}
+
+.button.secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--leaf-dark);
+}
+
+.button.secondary:hover:not(:disabled) { background: #f1f6e8; }
 
 label {
   display: grid;
@@ -414,6 +666,36 @@ code {
   .session-panel {
     justify-content: flex-start;
   }
+
+  .search-intro,
+  .explorer-heading,
+  .recommendation-result-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search-fields,
+  .result-controls { grid-template-columns: 1fr 1fr; }
+
+  .seasonal-search,
+  .crop-search { grid-template-columns: 1fr 1fr; }
+
+  .seasonal-search .button { grid-column: span 2; }
+
+  .recommendation-trust-bar { flex-wrap: wrap; }
+  .crop-card.recommendation-row { grid-template-columns: 48px minmax(150px, 1fr) auto; }
+  .recommendation-why { grid-column: 2 / -1; }
+  .crop-details { grid-column: 3; }
+  .crop-details[open] { grid-column: 2 / -1; }
+
+  .search-fields .search-submit { grid-column: span 2; }
+
+  .dashboard-overview,
+  .dashboard-forecast-heading { align-items: flex-start; flex-direction: column; gap: 0.65rem; }
+  .weather-metric-grid,
+  .dashboard-bottom-grid { grid-template-columns: 1fr; }
+  .dashboard-forecast-days { overflow-x: auto; }
+  .dashboard-forecast-days article { min-width: 135px; }
 }
 
 @media (max-width: 520px) {
@@ -433,6 +715,27 @@ code {
   .action-row .button {
     flex: 1 1 100%;
   }
+
+  .search-fields,
+  .result-controls { grid-template-columns: 1fr; }
+
+  .seasonal-search,
+  .crop-search { grid-template-columns: 1fr; }
+
+  .seasonal-search .button { grid-column: auto; }
+
+  .seasonal-tabs { overflow-x: auto; }
+  .seasonal-tab { white-space: nowrap; }
+
+  .recommendation-trust-bar { display: grid; grid-template-columns: 1fr 1fr; }
+  .crop-card.recommendation-row { grid-template-columns: 34px 1fr; }
+  .recommendation-why { border-left: 0; border-top: 1px solid var(--line); grid-column: 1 / -1; padding: 0.65rem 0 0; }
+  .crop-details, .crop-details[open] { grid-column: 1 / -1; }
+
+  .search-fields .search-submit { grid-column: auto; }
+
+  .forecast-status-meta { grid-template-columns: 1fr; }
+  .dashboard-hero-refined { min-height: auto; }
 
   h1 {
     font-size: 2rem;

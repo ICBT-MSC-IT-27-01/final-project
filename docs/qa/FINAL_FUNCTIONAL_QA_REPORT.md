@@ -1,5 +1,19 @@
 # Final Functional QA Report
 
+## 18 October 2026 status addendum
+
+This report's original verdict records the pre-approved-configuration audit on 17 October 2026. It is retained as historical evidence and is superseded for current technical status by this addendum and `QA_TEST_CASES.md`.
+
+**Current technical verdict: PASS — ready for an MSc technical demonstration, subject to the boundaries below.**
+
+- Strict seven-day rainfall, temperature and humidity bands for the six approved crops, owner-approved weights/categories, and optional-soil re-normalisation are configured and regression-tested. `QA-001` is PASS (technical), not a claim of real-world agronomic outcome validation.
+- Local development has authorized `EnableRecommendationHistory` and `EnableOfficerValidation`; a safe QA recommendation was persisted, reviewed by the authorized Officer account, validated, and retained in history.
+- Authorized Administrator, Registered User and Agricultural Officer technical workflows have been tested. Angular now persists Registered User-generated recommendations and displays saved-history confirmation; Officer review displays stored forecast evidence and all factor results.
+- Fresh full regression on 18 October 2026 passed: backend 299/299; Python 23/23 (one upstream Starlette/httpx deprecation warning); Angular 46/46; headed-Chrome E2E 14/14; Angular production build PASS.
+- The security dependency advisory recorded in the original report was remediated by the approved compatible package patch; the protected API project file was not changed.
+
+**Still external/not claimed:** real participant UAT, ethics approval where required, and independent Agricultural Officer/DoA agronomic validation. These are acceptance/research activities, not remaining application defects.
+
 **Date:** 17 October 2026  
 **Verdict:** **PARTIAL — not ready to claim complete supervisor demonstration readiness.**
 

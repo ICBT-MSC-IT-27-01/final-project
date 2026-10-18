@@ -1,16 +1,129 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, Input, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../../core/api.service';
-import { SeasonalClimateMonth, SeasonalCropResponse, SeasonalRangeResponse, supportedCrops } from '../../core/api.models';
-@Component({selector:'app-climate',imports:[DecimalPipe],template:`<table><thead><tr><th>Month</th><th>Days included</th><th>Mean temperature</th><th>Mean rainfall</th><th>Mean humidity</th><th>Years</th></tr></thead><tbody>@for(month of months;track month.month){<tr><td>{{month.monthName}}</td><td>{{month.requestedDayCount}}</td><td>{{month.meanTemperature|number:'1.0-2'}} °C</td><td>{{month.meanRainfall|number:'1.0-2'}} mm</td><td>{{month.meanHumidity|number:'1.0-2'}}%</td><td>{{month.yearCount}}</td></tr>}</tbody></table>`}) export class ClimateComponent { @Input() months: SeasonalClimateMonth[]=[]; }
-@Component({ selector: 'app-seasonal-planning', imports: [FormsModule, ClimateComponent], template: `
-<section class="page-title"><p class="eyebrow">Anuradhapura District only</p><h1>Seasonal Crop Planning</h1><p>Explore ERA5 historical monthly climate (2010–2025). This is not a long-term weather forecast.</p></section>
-<section class="grid-two"><form class="panel form-panel" (ngSubmit)="findCrops()"><h2>Explore crop evidence by date range</h2><label>Start date <input type="date" name="rangeStart" [(ngModel)]="startDate" required></label><label>End date <input type="date" name="rangeEnd" [(ngModel)]="endDate" required></label><label>Soil type <input name="rangeSoil" [(ngModel)]="soilType" placeholder="Optional"></label><button class="button primary" [disabled]="loading()">{{loading()?'Searching…':'Explore evidence'}}</button></form>
-<form class="panel form-panel" (ngSubmit)="findPeriods()"><h2>Explore calendar evidence for a crop</h2><label>Crop <select name="crop" [(ngModel)]="cropName">@for (crop of crops; track crop){<option [value]="crop">{{crop}}</option>}</select></label><label>Start date <input type="date" name="cropStart" [(ngModel)]="startDate" required></label><label>End date <input type="date" name="cropEnd" [(ngModel)]="endDate" required></label><button class="button primary" [disabled]="loading()">{{loading()?'Searching…':'Explore calendar evidence'}}</button></form></section>
-@if(error();as message){<p class="notice error" role="alert">{{message}}</p>}
-@if(rangeResult();as result){<section class="panel"><h2>Crop evidence: {{displayStatus(result.evidenceStatus)}}</h2><p>{{result.dataSource}}</p><app-climate [months]="result.climateMonths"/><div class="crop-grid">@for(crop of result.crops;track crop.cropName){<article class="crop-card"><h3>{{crop.cropName}}</h3><p>{{displayStatus(crop.evidenceStatus)}}</p><p>{{crop.explanation}}</p>@if(crop.candidateWindows?.length){<div class="notice warning"><strong>Calendar-supported establishment windows</strong><ul>@for(window of crop.candidateWindows;track window.id){<li><strong>{{window.season}}:</strong> {{monthNames(window.establishmentMonths)}} (PDF page {{window.sourcePages.join(', ')}}). {{window.interpretation}}</li>}</ul></div>}<p>{{crop.calendarEvidence.geographicApplicability}}</p><p>Documented conditions: {{crop.calendarEvidence.documentedConditions.join(', ')}}</p><p>{{displayStatus(crop.calendarEvidence.validationStatus)}}</p><ul>@for(source of crop.calendarEvidence.sourceUrls;track source){<li><a [href]="source" target="_blank" rel="noopener noreferrer">{{sourceLabel(source)}}</a></li>}</ul></article>}</div><ul>@for(item of result.limitations;track item){<li>{{item}}</li>}</ul></section>}
-@if(cropResult();as result){<section class="panel"><h2>{{result.cropName}}: {{displayStatus(result.evidenceStatus)}}</h2><p>{{result.explanation}}</p>@if(result.candidateWindows?.length){<div class="notice warning"><strong>Candidate cultivation periods</strong><ul>@for(window of result.candidateWindows;track window.id){<li><strong>{{window.season}}:</strong> establish approximately in {{monthNames(window.establishmentMonths)}}; harvest context {{monthNames(window.harvestMonths)}} (PDF page {{window.sourcePages.join(', ')}}). {{window.interpretation}}</li>}</ul></div>} @else {<p>No calendar-supported establishment window intersects this search period.</p>}<p>{{result.calendarEvidence.geographicApplicability}}</p><p>Documented conditions: {{result.calendarEvidence.documentedConditions.join(', ')}}</p><p>{{displayStatus(result.calendarEvidence.validationStatus)}}</p><ul>@for(source of result.calendarEvidence.sourceUrls;track source){<li><a [href]="source" target="_blank" rel="noopener noreferrer">{{sourceLabel(source)}}</a></li>}</ul><app-climate [months]="result.climateMonths"/><ul>@for(item of result.limitations;track item){<li>{{item}}</li>}</ul></section>}
-` })
-export class SeasonalPlanningComponent { readonly crops=supportedCrops; readonly loading=signal(false); readonly error=signal<string|null>(null); readonly rangeResult=signal<SeasonalRangeResponse|null>(null); readonly cropResult=signal<SeasonalCropResponse|null>(null); startDate=new Date().toISOString().slice(0,10); endDate=new Date(new Date().setMonth(new Date().getMonth()+3)).toISOString().slice(0,10); soilType=''; cropName='Paddy'; constructor(private api:ApiService){} findCrops(){this.run(this.api.findRecommendedCropsByDateRange(this.startDate,this.endDate,this.soilType||null),v=>this.rangeResult.set(v));} findPeriods(){this.run(this.api.findSuitablePeriodsByCrop(this.cropName,this.startDate,this.endDate,this.soilType||null),v=>this.cropResult.set(v));} displayStatus(value:string){return value.replaceAll('_',' ');} monthNames(months:number[]){return months.map(month=>new Intl.DateTimeFormat('en',{month:'long',timeZone:'UTC'}).format(new Date(Date.UTC(2026,month-1,1)))).join(', ');} sourceLabel(source:string){return source.includes('naicc-publications')?'Department of Agriculture calendar index':source.includes('etc-inter-provincial')?'Department of Agriculture Anuradhapura office':'Individual crop calendar';} private run<T>(request:import('rxjs').Observable<T>, set:(v:T)=>void){this.loading.set(true);this.error.set(null);request.pipe(finalize(()=>this.loading.set(false))).subscribe({next:set,error:e=>this.error.set(e.message)});} }
+import { SeasonalCropResponse, SeasonalRangeResponse, supportedCrops } from '../../core/api.models';
+
+@Component({
+  selector: 'app-seasonal-planning',
+  imports: [FormsModule],
+  template: `
+    <section class="page-title seasonal-title">
+      <p class="eyebrow">Anuradhapura District</p>
+      <h1>Seasonal Crop Planning</h1>
+      <p class="seasonal-note">Calendar guidance only</p>
+    </section>
+
+    <section class="seasonal-planner" aria-label="Seasonal crop planner">
+      <div class="seasonal-tabs" role="tablist" aria-label="Search type">
+        <button class="seasonal-tab" type="button" role="tab" [attr.aria-selected]="mode() === 'dates'" (click)="setMode('dates')">Search by dates</button>
+        <button class="seasonal-tab" type="button" role="tab" [attr.aria-selected]="mode() === 'crop'" (click)="setMode('crop')">Search by crop</button>
+      </div>
+
+      @if (mode() === 'dates') {
+        <form class="seasonal-search" (ngSubmit)="findCrops()">
+          <label>From <input type="date" name="rangeStart" [(ngModel)]="startDate" required></label>
+          <label>To <input type="date" name="rangeEnd" [(ngModel)]="endDate" required></label>
+          <button class="button primary" [disabled]="loading()">{{ loading() ? 'Checking…' : 'Check periods' }}</button>
+        </form>
+      } @else {
+        <form class="seasonal-search crop-search" (ngSubmit)="findPeriods()">
+          <label>Crop <select name="crop" [(ngModel)]="cropName">@for (crop of crops; track crop) { <option [value]="crop">{{ crop }}</option> }</select></label>
+          <label>From <input type="date" name="cropStart" [(ngModel)]="startDate" required></label>
+          <label>To <input type="date" name="cropEnd" [(ngModel)]="endDate" required></label>
+          <button class="button primary" [disabled]="loading()">{{ loading() ? 'Checking…' : 'Show periods' }}</button>
+        </form>
+      }
+    </section>
+
+    @if (error(); as message) { <p class="notice error" role="alert">{{ message }}</p> }
+
+    @if (rangeResult(); as result) {
+      <section class="seasonal-results" aria-live="polite">
+        <div class="seasonal-results-heading"><span>Your selected period</span><strong>{{ formatDate(result.startDate) }} – {{ formatDate(result.endDate) }}</strong></div>
+        <div class="seasonal-card-grid">
+          @for (crop of result.crops; track crop.cropName) {
+            <article class="seasonal-crop-card" [class.no-match]="!crop.candidateWindows?.length">
+              <h2>{{ crop.cropName }}</h2>
+              @if (crop.candidateWindows?.length) {
+                <p class="period-status available">Available period</p>
+                @for (window of crop.candidateWindows; track window.id) { <p class="period-value">{{ monthNames(window.establishmentMonths) }}</p> }
+              } @else {
+                <p class="period-status unavailable">No matching period</p>
+                @if (crop.alternativeWindows?.length) {
+                  <p class="try-label">Try instead</p>
+                  @for (window of crop.alternativeWindows; track window.id) { <p class="period-value">{{ monthNames(window.establishmentMonths) }}</p> }
+                } @else { <p class="period-value">No alternative period available</p> }
+              }
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    @if (cropResult(); as result) {
+      <section class="seasonal-results" aria-live="polite">
+        <div class="seasonal-results-heading"><span>Available periods</span><strong>{{ result.cropName }}</strong></div>
+        @if (result.candidateWindows?.length) {
+          <div class="seasonal-window-grid">
+            @for (window of result.candidateWindows; track window.id) {
+              <article class="seasonal-window-card"><p class="period-status available">Available period</p><h2>{{ monthNames(window.establishmentMonths) }}</h2></article>
+            }
+          </div>
+        } @else {
+          <article class="seasonal-empty"><p class="period-status unavailable">No matching period</p>
+            @if (result.alternativeWindows?.length) {
+              <p class="try-label">Try instead</p>
+              @for (window of result.alternativeWindows; track window.id) { <p class="period-value">{{ monthNames(window.establishmentMonths) }}</p> }
+            } @else { <p>Try another date range.</p> }
+          </article>
+        }
+      </section>
+    }
+  `,
+})
+export class SeasonalPlanningComponent {
+  readonly crops = supportedCrops;
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly mode = signal<'dates' | 'crop'>('dates');
+  readonly rangeResult = signal<SeasonalRangeResponse | null>(null);
+  readonly cropResult = signal<SeasonalCropResponse | null>(null);
+  startDate = new Date().toISOString().slice(0, 10);
+  endDate = new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().slice(0, 10);
+  cropName = 'Paddy';
+
+  constructor(private readonly api: ApiService) {}
+
+  setMode(mode: 'dates' | 'crop'): void {
+    this.mode.set(mode);
+    this.error.set(null);
+    this.rangeResult.set(null);
+    this.cropResult.set(null);
+  }
+
+  findCrops(): void {
+    this.run(this.api.findRecommendedCropsByDateRange(this.startDate, this.endDate, null), value => this.rangeResult.set(value));
+  }
+
+  findPeriods(): void {
+    this.run(this.api.findSuitablePeriodsByCrop(this.cropName, this.startDate, this.endDate, null), value => this.cropResult.set(value));
+  }
+
+  monthNames(months: number[]): string {
+    return months.map(month => new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, month - 1, 1)))).join(' – ');
+  }
+
+  formatDate(value: string): string {
+    return new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
+  }
+
+  private run<T>(request: Observable<T>, setResult: (value: T) => void): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.rangeResult.set(null);
+    this.cropResult.set(null);
+    request.pipe(finalize(() => this.loading.set(false))).subscribe({ next: setResult, error: error => this.error.set(error.message) });
+  }
+}

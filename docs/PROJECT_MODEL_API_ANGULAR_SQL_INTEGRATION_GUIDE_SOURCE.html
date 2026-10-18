@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Project Model, API, Angular and SQL Integration Guide</title>
+  <style>
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body { color: #17324d; font: 10.5pt/1.45 Arial, sans-serif; margin: 0; }
+    h1 { color: #0c4a6e; font-size: 25pt; line-height: 1.12; margin: 0 0 8px; }
+    h2 { border-bottom: 2px solid #38bdf8; color: #075985; font-size: 16pt; margin: 24px 0 10px; padding-bottom: 4px; }
+    h3 { color: #0f766e; font-size: 12pt; margin: 16px 0 6px; }
+    p { margin: 6px 0; }
+    ul, ol { margin: 6px 0 8px; padding-left: 22px; }
+    li { margin: 3px 0; }
+    .subtitle { color: #475569; font-size: 13pt; }
+    .tag { background: #e0f2fe; border-radius: 999px; color: #075985; display: inline-block; font-size: 9pt; font-weight: bold; margin: 7px 5px 12px 0; padding: 4px 9px; }
+    .diagram { align-items: stretch; display: flex; gap: 7px; margin: 15px 0; text-align: center; }
+    .box { background: #f0f9ff; border: 1px solid #7dd3fc; border-radius: 8px; flex: 1; min-height: 88px; padding: 10px 7px; }
+    .box strong { color: #075985; display: block; font-size: 11pt; margin-bottom: 5px; }
+    .arrow { align-self: center; color: #0284c7; font-size: 20pt; font-weight: bold; }
+    .note { background: #fefce8; border-left: 4px solid #eab308; margin: 12px 0; padding: 9px 12px; }
+    .success { background: #f0fdf4; border-left: 4px solid #22c55e; margin: 12px 0; padding: 9px 12px; }
+    code { background: #eff6ff; border-radius: 3px; color: #1e3a8a; font-family: Consolas, monospace; padding: 1px 3px; }
+    pre { background: #0f172a; border-radius: 7px; color: #e2e8f0; font: 8.8pt/1.42 Consolas, monospace; overflow-wrap: anywhere; padding: 10px; white-space: pre-wrap; }
+    table { border-collapse: collapse; margin: 8px 0 12px; width: 100%; }
+    th { background: #e0f2fe; color: #075985; }
+    td, th { border: 1px solid #bae6fd; padding: 7px; text-align: left; vertical-align: top; }
+    .page-break { break-before: page; }
+    .small { color: #475569; font-size: 9pt; }
+  </style>
+</head>
+<body>
+  <h1>Project Model, API, Angular &amp; SQL Integration Guide</h1>
+  <p class="subtitle">AI-Driven Weather Forecasting and Crop Recommendation System for Anuradhapura District</p>
+  <span class="tag">Angular</span><span class="tag">ASP.NET Core</span><span class="tag">Python FastAPI</span><span class="tag">LSTM v1</span><span class="tag">SQL Server</span>
+
+  <h2>1. What the system contains</h2>
+  <p>The system is deliberately split into three runnable projects. Each project has one responsibility, so the Angular user interface does not load or train the model directly.</p>
+  <table>
+    <tr><th>Project</th><th>Folder</th><th>Responsibility</th></tr>
+    <tr><td>Angular frontend</td><td><code>src/frontend</code></td><td>Displays forecasts, recommendations, history, Officer review and Administrator pages.</td></tr>
+    <tr><td>ASP.NET Core backend</td><td><code>src/backend/AnuradhapuraAI.Api</code></td><td>Provides secure APIs, authentication, suitability logic, SQL persistence and orchestration.</td></tr>
+    <tr><td>Python forecasting service</td><td><code>src/forecasting-service</code></td><td>Loads the saved LSTM v1 model and returns a seven-day weather forecast.</td></tr>
+  </table>
+
+  <h2>2. Overall architecture</h2>
+  <div class="diagram">
+    <div class="box"><strong>Angular</strong>Browser UI<br>Public, Registered, Officer and Administrator workflows</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>ASP.NET Core API</strong>Authentication, recommendation engine, orchestration and REST APIs</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>SQL Server</strong>Users, forecasts, recommendations, validation history and configuration</div>
+  </div>
+  <div class="diagram">
+    <div class="box"><strong>Open-Meteo</strong>Recent weather observations</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>ASP.NET Core API</strong>Validates 30 chronological days</div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Python FastAPI</strong>Loads LSTM v1 and predicts seven days</div>
+  </div>
+  <div class="note"><strong>Important:</strong> the Python service predicts weather only. Crop suitability remains in ASP.NET Core, where the approved six-crop explainable calculation is applied.</div>
+
+  <h2>3. LSTM v1 to SQL to Angular workflow</h2>
+  <ol>
+    <li>An Administrator requests an operational forecast.</li>
+    <li>ASP.NET Core obtains the approved recent weather observations from Open-Meteo.</li>
+    <li>The backend validates that exactly 30 daily observations are chronological and complete.</li>
+    <li>The backend sends those observations to the Python <code>POST /forecast</code> endpoint.</li>
+    <li>The Python service loads the saved <code>v1</code> model and scaler, then returns exactly seven rainfall, temperature and humidity predictions.</li>
+    <li>The backend validates the returned model version, dates and ranges, then stores a <code>ForecastRun</code> and seven <code>ForecastRecord</code> rows in SQL Server.</li>
+    <li>Angular calls <code>GET /api/forecasts/latest</code> and displays the stored forecast.</li>
+    <li>Angular calls the recommendation API; ASP.NET Core evaluates the approved crop rules against the stored seven-day forecast and returns factor-level explanations.</li>
+  </ol>
+
+  <div class="page-break"></div>
+  <h1>How to Run the Three Projects</h1>
+  <p class="subtitle">Use three terminals. Keep each terminal open while testing.</p>
+
+  <h2>4. Before you start</h2>
+  <ul>
+    <li>Use the project root: <code>D:\My\MSc\Assignment\Final Project\Reports\app</code>.</li>
+    <li>Start the backend before Angular.</li>
+    <li>Start the Python service before using Administrator operational forecast generation.</li>
+    <li>Do not run LSTM training commands. The commands below only load the existing trained model.</li>
+  </ul>
+
+  <h2>5. Run ASP.NET Core API — Visual Studio or terminal</h2>
+  <h3>Option A: Visual Studio</h3>
+  <ol>
+    <li>Open <code>src/backend/AnuradhapuraAI.slnx</code> in Visual Studio.</li>
+    <li>Set <code>AnuradhapuraAI.Api</code> as the startup project.</li>
+    <li>Select the <strong>https</strong> launch profile.</li>
+    <li>Press <strong>F5</strong> or click the green Run button.</li>
+    <li>Confirm the Output window shows the API listening at <code>https://localhost:7055</code>.</li>
+  </ol>
+  <h3>Option B: VS Code or terminal</h3>
+  <pre>cd "D:\My\MSc\Assignment\Final Project\Reports\app"
+dotnet run --project .\src\backend\AnuradhapuraAI.Api\AnuradhapuraAI.Api.csproj --launch-profile https</pre>
+  <p>Verify the backend in a browser:</p>
+  <pre>https://localhost:7055/health</pre>
+  <div class="note">If the browser reports an untrusted local certificate, run <code>dotnet dev-certs https --trust</code> once, then restart the API.</div>
+
+  <h2>6. Configure Angular to use the HTTPS API</h2>
+  <p>Angular keeps API calls as <code>/api/...</code>. Its local proxy forwards them to the ASP.NET Core API. In <code>src/frontend/proxy.conf.json</code>, use:</p>
+  <pre>{
+  "/api": {
+    "target": "https://localhost:7055",
+    "secure": false,
+    "changeOrigin": true
+  }
+}</pre>
+  <p><code>secure: false</code> is required only for the locally generated HTTPS development certificate. Restart Angular after saving this file.</p>
+
+  <h2>7. Run Angular — VS Code terminal</h2>
+  <pre>cd "D:\My\MSc\Assignment\Final Project\Reports\app\src\frontend"
+npm install
+npm start</pre>
+  <p>Open <code>http://localhost:4200</code>. The frontend proxies its API requests securely to <code>https://localhost:7055/api/...</code>.</p>
+
+  <div class="page-break"></div>
+  <h1>Run the Trained LSTM Model</h1>
+
+  <h2>8. Run Python FastAPI — VS Code terminal</h2>
+  <pre>cd "D:\My\MSc\Assignment\Final Project\Reports\app\src\forecasting-service"
+python -m uvicorn forecasting_service.api:app --host 127.0.0.1 --port 8000</pre>
+  <p>Verify that the trained model is loaded:</p>
+  <pre>http://127.0.0.1:8000/health</pre>
+  <p>The expected response contains <code>"status": "Healthy"</code> and <code>"modelVersion": "v1"</code>.</p>
+  <div class="note"><strong>No virtual environment?</strong> If the command reports a missing package, create one once: <code>python -m venv .venv</code>, activate it with <code>.\.venv\Scripts\Activate.ps1</code>, then run <code>python -m pip install -e .</code>.</div>
+
+  <h2>9. Startup order and manual test checklist</h2>
+  <table>
+    <tr><th>Order</th><th>Service</th><th>Address / check</th><th>Why it is needed</th></tr>
+    <tr><td>1</td><td>ASP.NET Core API</td><td><code>https://localhost:7055/health-ui</code></td><td>Required for Angular, SQL access, authentication and recommendations.</td></tr>
+    <tr><td>2</td><td>Python LSTM service</td><td><code>http://127.0.0.1:8000/health-ui</code></td><td>Required only when generating a fresh operational forecast.</td></tr>
+    <tr><td>3</td><td>Angular</td><td><code>http://localhost:4200</code></td><td>Browser application for manual testing.</td></tr>
+  </table>
+  <p>Each <code>/health-ui</code> address is a browser-friendly, read-only dashboard. The existing <code>/health</code> addresses remain the machine-readable JSON health endpoints.</p>
+  <ol>
+    <li>Open the dashboard and confirm a stored seven-day forecast appears.</li>
+    <li>Open Crop Recommendation and generate a public evaluation.</li>
+    <li>Register or log in as a Registered User; generate a recommendation and check History.</li>
+    <li>Log in as the authorized Agricultural Officer and review the safe QA recommendation.</li>
+    <li>Log in as Administrator. With the Python service running, use Generate operational forecast only when you intend to create the approved local-development operational run.</li>
+  </ol>
+
+  <h2>10. Quick troubleshooting</h2>
+  <table>
+    <tr><th>Message / symptom</th><th>Check</th><th>Safe correction</th></tr>
+    <tr><td>“The request could not be completed.”</td><td>Angular proxy and API use different ports.</td><td>Ensure API is on <code>https://localhost:7055</code>, update the proxy as shown, then restart Angular.</td></tr>
+    <tr><td>Recommendation or login fails</td><td>Open API Output/terminal for the HTTP status and safe message.</td><td>Confirm the API health endpoint and local database connection. Do not edit production configuration.</td></tr>
+    <tr><td>Operational forecast says service unavailable</td><td>Python service may not be running on port 8000.</td><td>Start FastAPI and check <code>/health</code>.</td></tr>
+    <tr><td>Certificate warning</td><td>.NET development certificate is not trusted.</td><td>Run <code>dotnet dev-certs https --trust</code> once.</td></tr>
+  </table>
+  <p class="small">This guide intentionally omits database server addresses, usernames, passwords and connection strings. Keep secrets in local user-secrets and never commit them.</p>
+</body>
+</html>

@@ -1,5 +1,17 @@
 # Complete System QA Report
 
+## 18 October 2026 reconciliation addendum
+
+This report preserves the earlier pre-configuration audit. Its original “PARTIALLY” verdict and listed blockers are superseded for current technical status by `docs/qa/QA_TEST_CASES.md` and this addendum.
+
+- `QA-001`: resolved technically. The approved strict six-crop, seven-day weather matrix is configured; optional soil remains unscored and weights are re-normalised. Backend regression verifies the outcome.
+- `QA-004`: resolved technically. Authorized Administrator, Registered User and Agricultural Officer workflows were exercised with a safe QA recommendation; Officer validation history was retained.
+- `QA-005`: resolved technically by the authorized compatible security dependency patch without modifying the protected API project file.
+- Full current regression passed on 18 October 2026: backend 299/299, Python 23/23, Angular 46/46, headed-Chrome E2E 14/14 and production build PASS.
+- Seasonal Planning remains approved conditional historical guidance only. It is not a long-range LSTM forecast, planting-date instruction, or a substitute for independent agronomic validation.
+
+Current technical QA total: **33 PASS, 0 PARTIAL, 0 BLOCKED, 0 FAIL**. Real participant UAT, ethics approval and independent expert agronomic validation remain external acceptance activities.
+
 ## Audit result
 
 **Overall verdict: PARTIALLY.** The application follows the approved Angular → ASP.NET Core → SQL Server/Python-LSTM architecture and delivers a real seven-day forecast to the browser. It does not deliver the approved, scored and ranked crop-suitability outcome because the live configuration has no evaluable crop requirements, soil compatibility or thresholds. The separately added seasonal-planning feature is honest historical climate exploration, not an approved replacement for crop recommendations.

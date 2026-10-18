@@ -31,6 +31,19 @@ import { RecommendationReviewResponse, validationStatuses } from '../../core/api
         <div><span>User</span><strong>{{ item.userId ?? 'Public' }}</strong></div>
       </section>
 
+      @if (forecastDays().length) {
+        <section class="forecast-days" aria-label="Stored seven day forecast evidence">
+          @for (day of forecastDays(); track day.targetDate) {
+            <article>
+              <strong>{{ day.targetDate }}</strong>
+              <span>{{ day.rainfall | number: '1.0-2' }} mm</span>
+              <span>{{ day.temperature | number: '1.0-2' }} deg C</span>
+              <span>{{ day.humidity | number: '1.0-2' }}%</span>
+            </article>
+          }
+        </section>
+      }
+
       <section class="crop-grid">
         @for (crop of item.crops; track crop.cropId) {
           <article class="crop-card">
@@ -41,6 +54,12 @@ import { RecommendationReviewResponse, validationStatuses } from '../../core/api
             <p class="score">{{ crop.overallScore !== null ? (crop.overallScore | number: '1.0-2') : 'No score' }}</p>
             <p>{{ crop.suitabilityCategory || crop.evaluationStatus }}</p>
             <p>{{ crop.explanation }}</p>
+            <div class="factor-list" aria-label="Suitability factor results">
+              <div><span>Rainfall</span><strong>{{ displayScore(crop.rainfallScore) }}</strong></div>
+              <div><span>Temperature</span><strong>{{ displayScore(crop.temperatureScore) }}</strong></div>
+              <div><span>Humidity</span><strong>{{ displayScore(crop.humidityScore) }}</strong></div>
+              <div><span>Soil</span><strong>{{ displayScore(crop.soilScore) }}</strong></div>
+            </div>
           </article>
         }
       </section>
@@ -87,6 +106,7 @@ export class OfficerDetailComponent {
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
   readonly recommendationId = computed(() => Number(this.route.snapshot.paramMap.get('id')));
+  readonly forecastDays = computed<StoredForecastDay[]>(() => readForecastDays(this.review()?.evidenceSnapshotJson));
   status = 'Pending Validation';
   comment = '';
 
@@ -126,5 +146,50 @@ export class OfficerDetailComponent {
         },
         error: error => this.error.set(error.message),
       });
+  }
+
+  displayScore(score: number | null): string {
+    return score === null ? 'Unavailable' : score.toFixed(2);
+  }
+}
+
+interface StoredForecastDay {
+  targetDate: string;
+  rainfall: number;
+  temperature: number;
+  humidity: number;
+}
+
+function readForecastDays(evidenceSnapshotJson: string | undefined): StoredForecastDay[] {
+  if (!evidenceSnapshotJson) {
+    return [];
+  }
+
+  try {
+    const snapshot = JSON.parse(evidenceSnapshotJson) as {
+      forecast?: {
+        days?: Array<{
+          targetDate?: unknown;
+          rainfall?: { value?: unknown };
+          temperature?: { value?: unknown };
+          humidity?: { value?: unknown };
+        }>;
+      };
+    };
+
+    return (snapshot.forecast?.days ?? []).flatMap(day => {
+      const targetDate = typeof day.targetDate === 'string' ? day.targetDate : null;
+      const rainfall = day.rainfall?.value;
+      const temperature = day.temperature?.value;
+      const humidity = day.humidity?.value;
+      return targetDate !== null
+        && typeof rainfall === 'number'
+        && typeof temperature === 'number'
+        && typeof humidity === 'number'
+        ? [{ targetDate, rainfall, temperature, humidity }]
+        : [];
+    });
+  } catch {
+    return [];
   }
 }

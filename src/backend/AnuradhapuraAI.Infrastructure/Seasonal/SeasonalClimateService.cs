@@ -37,9 +37,11 @@ public sealed class SeasonalClimateService(
         var climate = await GetClimateAsync(request.StartDate, request.EndDate, cancellationToken);
         var crop = calendarCatalog.GetRequiredCrop(request.CropName);
         var requestedMonths = EnumerateDays(request.StartDate, request.EndDate).Select(date => date.Month).ToHashSet();
-        var windows = crop.Patterns
-            .Where(pattern => pattern.SowingOrTransplantingMonths.Any(requestedMonths.Contains))
+        var allWindows = crop.Patterns
             .Select(pattern => ToWindow(pattern, crop.Conditions))
+            .ToList();
+        var windows = allWindows
+            .Where(window => window.EstablishmentMonths.Any(requestedMonths.Contains))
             .ToList();
         var candidateMonths = windows
             .SelectMany(window => window.EstablishmentMonths)
@@ -55,7 +57,10 @@ public sealed class SeasonalClimateService(
             ["Establishment months are month-approximate and require local review; no exact week or sowing date is inferred.", "Historical climate is not a forecast.", "Irrigation/rainfed conditions, soil and rainfall sufficiency are not established by the calendar alone."],
             GetCalendarEvidence(crop))
         {
-            CandidateWindows = windows
+            CandidateWindows = windows,
+            AlternativeWindows = allWindows
+                .Where(window => !windows.Any(candidate => candidate.Id == window.Id))
+                .ToList()
         };
     }
     private void Validate(DateOnly start, DateOnly end)
@@ -101,9 +106,11 @@ public sealed class SeasonalClimateService(
     private SeasonalCropResult ToRangeCropResult(string cropName, IReadOnlySet<int> requestedMonths)
     {
         var crop = calendarCatalog.GetRequiredCrop(cropName);
-        var windows = crop.Patterns
-            .Where(pattern => pattern.SowingOrTransplantingMonths.Any(requestedMonths.Contains))
+        var allWindows = crop.Patterns
             .Select(pattern => ToWindow(pattern, crop.Conditions))
+            .ToList();
+        var windows = allWindows
+            .Where(window => window.EstablishmentMonths.Any(requestedMonths.Contains))
             .ToList();
         var hasCandidate = windows.Count > 0;
         return new SeasonalCropResult(
@@ -116,7 +123,10 @@ public sealed class SeasonalClimateService(
             ["No time-compatible rainfall requirement", "No crop-specific seven-day humidity requirement", "No validated soil compatibility", "No local agronomist approval"],
             GetCalendarEvidence(crop))
         {
-            CandidateWindows = windows
+            CandidateWindows = windows,
+            AlternativeWindows = allWindows
+                .Where(window => !windows.Any(candidate => candidate.Id == window.Id))
+                .ToList()
         };
     }
 

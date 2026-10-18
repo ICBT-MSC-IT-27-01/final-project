@@ -8,11 +8,13 @@ public sealed record SeasonalCultivationWindow(string Id, string Season, IReadOn
 public sealed record SeasonalCropResult(string CropName, string EvidenceStatus, string? SuitabilityCategory, string Explanation, IReadOnlyList<string> MissingFactors, CropCalendarEvidence CalendarEvidence)
 {
     public IReadOnlyList<SeasonalCultivationWindow> CandidateWindows { get; init; } = [];
+    public IReadOnlyList<SeasonalCultivationWindow> AlternativeWindows { get; init; } = [];
 }
 public sealed record SeasonalRangeResponse(DateOnly StartDate, DateOnly EndDate, string AssessmentType, string DataSource, string EvidenceStatus, IReadOnlyList<SeasonalClimateMonth> ClimateMonths, IReadOnlyList<SeasonalCropResult> Crops, IReadOnlyList<string> Limitations);
 public sealed record SeasonalCropResponse(string CropName, DateOnly StartDate, DateOnly EndDate, string AssessmentType, string DataSource, string EvidenceStatus, IReadOnlyList<SeasonalClimateMonth> ClimateMonths, IReadOnlyList<string> CandidateMonths, string Explanation, IReadOnlyList<string> Limitations, CropCalendarEvidence CalendarEvidence)
 {
     public IReadOnlyList<SeasonalCultivationWindow> CandidateWindows { get; init; } = [];
+    public IReadOnlyList<SeasonalCultivationWindow> AlternativeWindows { get; init; } = [];
 }
 public interface ISeasonalClimateService
 {

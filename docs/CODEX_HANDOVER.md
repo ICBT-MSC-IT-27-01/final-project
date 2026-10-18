@@ -205,7 +205,7 @@ Implemented:
 - Public read-only recommendation evaluation endpoint: `POST /api/recommendations/evaluate`.
 - Recommendation history endpoint remains separate: `POST /api/recommendations`.
 - Recommendation history persistence is fail-closed unless `FeatureFlags:EnableRecommendationHistory` is enabled.
-- Angular recommendation page uses the read-only endpoint and displays forecast evidence, seven forecast days, crop rankings where evaluable, missing factor notices, and limitations.
+- Angular recommendation page uses the read-only endpoint for Public, Officer and Administrator evaluation, and the authenticated persistence endpoint for Registered Users so their generated recommendations are saved to history. It displays forecast evidence, seven forecast days, crop rankings where evaluable, missing factor notices, and limitations.
 - Agricultural Officer validation remains a review-only workflow and does not grant configuration, forecast, or model privileges.
 
 Scientific status:
@@ -798,8 +798,8 @@ The project owner subsequently accepted Seasonal Planning as approved project sc
 
 - Focused suitability/recommendation regression tests: included in the full backend suite.
 - Full backend test suite: **PASS — 299/299**. The operational-forecast feature-disabled test explicitly overrides the flag only inside its isolated in-memory test host, so it no longer inherits local user-secret settings.
-- Frontend tests: **PASS — 39/39**; production build: **PASS**.
-- Python tests: **PASS — 22/22**, with the existing upstream FastAPI/Starlette TestClient deprecation warning.
+- Frontend tests: **PASS — 46/46**; headed-Chrome E2E: **PASS — 14/14**; production build: **PASS**.
+- Python tests: **PASS — 23/23**, with the existing upstream FastAPI/Starlette TestClient deprecation warning.
 - Do not repeat LSTM training or evaluation without a genuine defect.
 
 ### Git and safety status
@@ -808,7 +808,7 @@ The project owner subsequently accepted Seasonal Planning as approved project sc
 - `qa-evidence/` contains retained QA evidence. `qa-runtime/` is generated runtime material and is intentionally not committed unless the owner explicitly requests it.
 - Do not change production settings, database records, or working feature flags without explicit owner approval.
 
-The next substantive completion item is a fresh visible-browser recommendation display run for the strict configuration, followed by final acceptance documentation. Recommendation History is implemented but requires an explicit local-development feature-flag decision before final live testing.
+Phase 10 completed the current Angular integration gap: a Registered User now persists a generated recommendation through the authenticated endpoint and receives a saved-to-history confirmation, while Officer review displays persisted forecast evidence and four factor results. The current strict configuration is covered by the headed-Chrome E2E suite. The next substantive completion item is final acceptance documentation and any owner-led live acceptance run desired beyond the automated/browser regression evidence.
 
 ## Startup Prompt for a New Codex Session
 

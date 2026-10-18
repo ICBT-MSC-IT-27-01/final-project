@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using AnuradhapuraAI.Api;
 using AnuradhapuraAI.Application.Authentication;
 using AnuradhapuraAI.Domain.Common;
 using AnuradhapuraAI.Infrastructure;
@@ -72,6 +73,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
+app.MapGet("/health-ui", () => Results.Content(
+    HealthDashboardPage.Render("Anuradhapura ASP.NET Core API"),
+    HealthDashboardPage.ContentType));
 app.MapControllers();
 
 app.Run();

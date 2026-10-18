@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
   await mockPhase16Api(page);
 });
 
-test('public dashboard and recommendation workflow render forecast evidence and insufficient-evidence states', async ({ page }) => {
+test('public dashboard and recommendation workflow render forecast evidence and optional-soil results', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Latest AI Weather Forecast' })).toBeVisible();
   await expect(page.getByText('2026-10-13 to 2026-10-19')).toBeVisible();
@@ -14,13 +14,16 @@ test('public dashboard and recommendation workflow render forecast evidence and 
 
   await page.getByRole('link', { name: 'Generate recommendation' }).click();
   await expect(page.getByRole('heading', { name: 'Crop Recommendation' })).toBeVisible();
-  await page.getByRole('button', { name: 'Generate recommendation' }).click();
+  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
 
   await expect(page.getByText('Read-only', { exact: true })).toBeVisible();
   await expect(page.getByText('Forecast run')).toBeVisible();
-  await expect(page.getByText('Missing: Humidity, Soil').first()).toBeVisible();
-  await expect(page.getByText('InsufficientEvidence').first()).toBeVisible();
-  await expect(page.getByText('Scientific/agronomic validation remains separate')).toBeVisible();
+  await expect(page.getByText('Missing: Soil').first()).toBeVisible();
+  await expect(page.locator('.crop-card').filter({ hasText: 'Highly Suitable' }).first()).toBeVisible();
+  await expect(page.getByText('excluded from the weighted calculation')).toBeVisible();
+  await page.getByLabel('Find a crop').fill('Paddy');
+  await expect(page.getByRole('heading', { name: 'Paddy' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Maize' })).toHaveCount(0);
 });
 
 test('public recommendation workflow displays safe API failure messages', async ({ page }) => {
@@ -31,9 +34,24 @@ test('public recommendation workflow displays safe API failure messages', async 
   }));
 
   await page.goto('/recommendations');
-  await page.getByRole('button', { name: 'Generate recommendation' }).click();
+  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
 
   await expect(page.getByRole('alert')).toContainText('No complete forecast is available.');
+});
+
+test('seasonal planning presents simple calendar periods and alternative dates without suitability claims', async ({ page }) => {
+  await page.goto('/seasonal-planning');
+  await page.getByRole('button', { name: 'Check periods' }).click();
+
+  await expect(page.getByText('Available period').first()).toBeVisible();
+  await expect(page.getByText('No matching period')).toBeVisible();
+  await expect(page.getByText('Try instead')).toBeVisible();
+  await expect(page.getByText('Highly Suitable')).toHaveCount(0);
+
+  await page.getByRole('tab', { name: 'Search by crop' }).click();
+  await page.getByRole('button', { name: 'Show periods' }).click();
+  await expect(page.getByText('Available periods')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'October – November' })).toBeVisible();
 });
 
 test('registered user can register, log in, log out, and view history without role escalation', async ({ page }) => {
@@ -51,6 +69,10 @@ test('registered user can register, log in, log out, and view history without ro
   await page.getByRole('button', { name: 'Login' }).click();
   await expect(page).toHaveURL(/\/recommendations$/);
   await expect(page.getByRole('link', { name: 'History' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
+  await expect(page.getByText('Saved to history', { exact: true })).toBeVisible();
+  await expect(page.getByText('This recommendation has been saved to your recommendation history.')).toBeVisible();
 
   await page.getByRole('link', { name: 'History' }).click();
   await expect(page.getByRole('heading', { name: 'Recommendation History' })).toBeVisible();
@@ -79,6 +101,8 @@ test('agricultural officer can validate only through the officer workflow', asyn
   await expect(page.getByRole('link', { name: 'Admin' })).toHaveCount(0);
   await page.getByRole('link', { name: 'Review' }).click();
   await expect(page.getByRole('heading', { name: 'Recommendation #1001' })).toBeVisible();
+  await expect(page.getByLabel('Stored seven day forecast evidence')).toBeVisible();
+  await expect(page.getByLabel('Suitability factor results').first()).toBeVisible();
   await page.getByLabel('Status').selectOption('Needs Review');
   await page.getByLabel('Comments').fill('Test fixture comment');
   await page.getByRole('button', { name: 'Submit validation' }).click();
@@ -100,7 +124,7 @@ test('administrator can view admin dashboard and forecast generation fails close
 
 test('mobile viewport keeps public recommendation content reachable', async ({ page }) => {
   await page.goto('/recommendations');
-  await page.getByRole('button', { name: 'Generate recommendation' }).click();
+  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
 
   await expect(page.getByRole('heading', { name: 'Crop Recommendation' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Paddy' })).toBeVisible();

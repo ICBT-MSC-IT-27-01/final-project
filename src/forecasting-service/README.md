@@ -80,6 +80,7 @@ python -m uvicorn forecasting_service.api:app --host 127.0.0.1 --port 8000
 The HTTP API exposes:
 
 - `GET /health`
+- `GET /health-ui` (browser-friendly read-only status page)
 - `POST /forecast`
 
 `POST /forecast` expects exactly 30 chronological daily observations with no duplicate dates or gaps. Each observation supplies `Date`, `Temperature`, `Rainfall`, and `Humidity`. The final observation date is used as the deterministic forecast date, and targets are `D + 1` through `D + 7`.

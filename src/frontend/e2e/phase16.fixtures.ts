@@ -18,6 +18,36 @@ export async function mockPhase16Api(page: Page): Promise<void> {
     });
   });
 
+  await page.route('**/api/seasonal-recommendations/by-date-range', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(seasonalRange()),
+  }));
+
+  await page.route('**/api/seasonal-recommendations/by-crop', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(seasonalCrop()),
+  }));
+
+  await page.route('**/api/recommendations', async route => {
+    const body = route.request().postDataJSON() as { soilType?: string | null };
+    const evaluation = recommendationEvaluation(body.soilType ?? null);
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        recommendationId: 1002,
+        forecastRunId: evaluation.forecastRunId,
+        userId: 3,
+        soilType: evaluation.soilType,
+        createdAt: '2026-10-13T09:10:00Z',
+        forecast: evaluation.forecast,
+        crops: evaluation.crops,
+      }),
+    });
+  });
+
   await page.route('**/api/recommendations/history**', route => route.fulfill({
     status: 200,
     contentType: 'application/json',
@@ -203,24 +233,44 @@ function recommendationEvaluation(soilType: string | null) {
     },
     crops: ['Paddy', 'Maize', 'Green Gram', 'Cowpea', 'Groundnut', 'Chilli'].map((cropName, index) => ({
       cropName,
-      evaluationStatus: index >= 4 ? 'InsufficientEvidence' : 'PartiallyEvaluated',
-      rainfallScore: index >= 4 ? null : 80 - index,
-      temperatureScore: index >= 4 ? null : 75 - index,
-      humidityScore: null,
+      evaluationStatus: 'Evaluated',
+      rainfallScore: 80 - index,
+      temperatureScore: 75 - index,
+      humidityScore: 70 - index,
       soilScore: null,
-      overallScore: index >= 4 ? null : 74 - index,
-      suitabilityCategory: index >= 4 ? null : 'Suitable',
-      rank: index >= 4 ? null : index + 1,
-      unavailableFactors: ['Humidity', 'Soil'],
+      overallScore: 84 - index,
+      suitabilityCategory: 'Highly Suitable',
+      rank: index + 1,
+      assessmentState: 'COMPLETE',
+      assessmentBasis: 'Mandatory weather factors assessed; optional soil omitted.',
+      unavailableFactors: ['Soil'],
       factors: [
         {
           factor: 'Rainfall',
-          isEvaluable: index < 4,
-          score: index >= 4 ? null : 80 - index,
-          aggregatedValue: index >= 4 ? null : 28,
-          configuredWeight: 25,
-          effectiveWeight: index >= 4 ? null : 0.5,
+          isEvaluable: true,
+          score: 80 - index,
+          aggregatedValue: 28,
+          configuredWeight: 40,
+          effectiveWeight: 0.615,
           explanation: 'Synthetic Phase 16 fixture rainfall evidence.',
+        },
+        {
+          factor: 'Temperature',
+          isEvaluable: true,
+          score: 75 - index,
+          aggregatedValue: 27.3,
+          configuredWeight: 15,
+          effectiveWeight: 0.231,
+          explanation: 'Synthetic Phase 16 fixture temperature evidence.',
+        },
+        {
+          factor: 'Humidity',
+          isEvaluable: true,
+          score: 70 - index,
+          aggregatedValue: 71,
+          configuredWeight: 10,
+          effectiveWeight: 0.154,
+          explanation: 'Synthetic Phase 16 fixture humidity evidence.',
         },
         {
           factor: 'Soil',
@@ -233,16 +283,15 @@ function recommendationEvaluation(soilType: string | null) {
         },
       ],
       evidenceCoverage: {
-        evaluatedFactorCount: index >= 4 ? 0 : 2,
+        evaluatedFactorCount: 3,
         totalFactorCount: 4,
-        evaluatedConfiguredWeightTotal: index >= 4 ? 0 : 50,
+        evaluatedConfiguredWeightTotal: 65,
       },
       climateRisks: [],
       explanation: `${cropName} Phase 16 browser-test suitability explanation.`,
     })),
     limitations: [
-      'Scientific/agronomic validation remains separate from technical system validation.',
-      'Missing factors are not replaced with fabricated scores.',
+      'Soil was not supplied and is excluded from the weather-only calculation.',
     ],
   };
 }
@@ -274,7 +323,16 @@ function officerReview() {
     userId: null,
     soilType: null,
     createdAt: '2026-10-13T09:00:00Z',
-    evidenceSnapshotJson: '{}',
+    evidenceSnapshotJson: JSON.stringify({
+      forecast: {
+        days: recommendationEvaluation(null).forecast.days.map(day => ({
+          targetDate: day.targetDate,
+          rainfall: { value: day.rainfall },
+          temperature: { value: day.temperature },
+          humidity: { value: day.humidity },
+        })),
+      },
+    }),
     crops: recommendationEvaluation(null).crops.map((crop, index) => ({
       cropId: index + 1,
       cropName: crop.cropName,
@@ -299,4 +357,28 @@ function adminRows(url: string): unknown[] {
   }
 
   return [{ id: 1, name: 'Paddy', isActive: true, createdAt: '2026-10-13T09:00:00Z' }];
+}
+
+function seasonalWindow(id: string, months: number[]) {
+  return { id, season: 'Maha', establishmentMonths: months, harvestMonths: [2], sourcePages: [1], evidenceStatus: 'CALENDAR_SUPPORTED_CANDIDATE', interpretation: '', conditions: [], requiresLocalReview: true };
+}
+
+function seasonalEvidence() {
+  return { geographicApplicability: 'Anuradhapura', documentedConditions: [], sourceUrls: [], validationStatus: '', limitations: [] };
+}
+
+function seasonalRange() {
+  return {
+    startDate: '2026-10-18', endDate: '2027-01-18', assessmentType: 'HISTORICAL_SEASONAL_CLIMATE', dataSource: '', evidenceStatus: 'CALENDAR_SUPPORTED_CANDIDATES', climateMonths: [], limitations: [],
+    crops: [
+      { cropName: 'Paddy', evidenceStatus: 'CALENDAR_SUPPORTED_CANDIDATE', suitabilityCategory: null, explanation: '', missingFactors: [], calendarEvidence: seasonalEvidence(), candidateWindows: [seasonalWindow('paddy-maha', [10, 11])] },
+      { cropName: 'Maize', evidenceStatus: 'CLIMATE_CONTEXT_ONLY', suitabilityCategory: null, explanation: '', missingFactors: [], calendarEvidence: seasonalEvidence(), candidateWindows: [], alternativeWindows: [seasonalWindow('maize-yala', [4, 5])] },
+    ],
+  };
+}
+
+function seasonalCrop() {
+  return {
+    cropName: 'Paddy', startDate: '2026-10-18', endDate: '2027-01-18', assessmentType: 'HISTORICAL_SEASONAL_CLIMATE', dataSource: '', evidenceStatus: 'CALENDAR_SUPPORTED_CANDIDATE', climateMonths: [], candidateMonths: ['October'], explanation: '', limitations: [], calendarEvidence: seasonalEvidence(), candidateWindows: [seasonalWindow('paddy-maha', [10, 11])], alternativeWindows: [seasonalWindow('paddy-yala', [4, 5])],
+  };
 }

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seasonal Planning — UI Mockup</title>
+  <style>
+    :root {
+      --ink: #17332b;
+      --muted: #65766e;
+      --field: #f7f3e8;
+      --leaf: #1f6a4a;
+      --leaf-dark: #124331;
+      --sun: #f4b740;
+      --line: #d7dfd3;
+      --good-bg: #e2f3e8;
+      --good-ink: #17613e;
+      --wait-bg: #fff1ce;
+      --wait-ink: #895b00;
+      --card: #fffefa;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      background: radial-gradient(circle at 92% 4%, #fff5d9 0 10%, transparent 34%), var(--field);
+      color: var(--ink);
+      font: 16px/1.45 Georgia, 'Times New Roman', serif;
+      margin: 0;
+    }
+
+    main { margin: 0 auto; max-width: 1120px; padding: 42px 24px 68px; }
+    .eyebrow { color: var(--leaf); font: 700 12px/1.2 'Trebuchet MS', sans-serif; letter-spacing: .13em; margin: 0 0 9px; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(2.2rem, 6vw, 4.8rem); letter-spacing: -.055em; line-height: .95; margin-bottom: 14px; max-width: 780px; }
+    h2 { font-size: 1.5rem; letter-spacing: -.025em; margin-bottom: 4px; }
+    h3 { font-size: 1.35rem; margin-bottom: 2px; }
+    .lead { color: var(--muted); font-size: 1.1rem; max-width: 610px; }
+    .demo { background: #fff8db; border: 1px solid #edcd77; border-radius: 999px; color: #725100; display: inline-block; font: 700 12px/1 'Trebuchet MS', sans-serif; margin: 8px 0 30px; padding: 7px 10px; }
+
+    .planner { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 18px 38px #28483216; padding: 22px; }
+    .fields { align-items: end; display: grid; gap: 14px; grid-template-columns: 1fr 1fr auto; }
+    label { color: var(--muted); display: grid; font: 700 12px/1.2 'Trebuchet MS', sans-serif; gap: 8px; letter-spacing: .04em; text-transform: uppercase; }
+    input, select { background: #fff; border: 1px solid #bfcdbf; border-radius: 8px; color: var(--ink); font: 16px Georgia, serif; padding: 12px; }
+    button { background: var(--leaf); border: 0; border-radius: 8px; box-shadow: 0 5px 0 var(--leaf-dark); color: white; cursor: pointer; font: 700 15px 'Trebuchet MS', sans-serif; min-height: 45px; padding: 0 18px; }
+    button:active { box-shadow: none; transform: translateY(4px); }
+    .mode-switch { border-bottom: 1px solid var(--line); display: flex; gap: 16px; margin-bottom: 20px; }
+    .mode-switch button { background: transparent; border-radius: 0; box-shadow: none; color: var(--muted); min-height: 39px; padding: 0 0 10px; }
+    .mode-switch button[aria-selected="true"] { border-bottom: 3px solid var(--leaf); color: var(--leaf-dark); }
+    .crop-search, .by-crop-results { display: none; }
+    .planner[data-mode="crop"] .date-search, main[data-mode="crop"] .by-date-results { display: none; }
+    .planner[data-mode="crop"] .crop-search, main[data-mode="crop"] .by-crop-results { display: block; }
+    .crop-search .fields { grid-template-columns: minmax(220px, 1fr) auto; }
+
+    .result-header { align-items: end; display: flex; gap: 16px; justify-content: space-between; margin: 43px 0 16px; }
+    .result-header p { color: var(--muted); margin: 0; }
+    .key { display: flex; flex-wrap: wrap; font: 700 12px 'Trebuchet MS', sans-serif; gap: 9px; }
+    .chip { border-radius: 999px; padding: 6px 9px; }
+    .chip.good { background: var(--good-bg); color: var(--good-ink); }
+    .chip.wait { background: var(--wait-bg); color: var(--wait-ink); }
+
+    .crop-list { display: grid; gap: 12px; }
+    .crop { align-items: center; background: var(--card); border: 1px solid var(--line); border-left: 7px solid var(--sun); border-radius: 12px; display: grid; gap: 18px; grid-template-columns: 1.15fr 1fr auto; padding: 18px 20px; }
+    .crop.available { border-left-color: #3b9565; }
+    .crop p { color: var(--muted); margin: 0; }
+    .status { display: inline-block; font: 700 13px 'Trebuchet MS', sans-serif; margin-bottom: 8px; }
+    .when { color: var(--leaf-dark); font-weight: 700; }
+    .arrow { color: var(--leaf); font: 700 19px Arial, sans-serif; }
+    .empty { background: #fff8e4; border: 1px dashed #d5b663; border-radius: 12px; color: #735400; margin-top: 16px; padding: 15px; }
+    .footnote { color: var(--muted); font-size: .86rem; margin-top: 28px; max-width: 720px; }
+
+    @media (max-width: 740px) {
+      main { padding: 30px 16px 50px; }
+      .fields, .crop { grid-template-columns: 1fr; }
+      .crop-search .fields { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .result-header { align-items: start; flex-direction: column; }
+      .arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main data-mode="dates">
+    <p class="eyebrow">Anuradhapura District</p>
+    <h1>Find a better crop period.</h1>
+    <p class="lead">Choose dates. See crops that have an available calendar period. If a crop does not match, see the next period to try.</p>
+    <p class="demo">UI mockup — sample display data only</p>
+
+    <section class="planner" data-mode="dates">
+      <div class="mode-switch" role="tablist" aria-label="Seasonal planning search mode">
+        <button type="button" role="tab" aria-selected="true" data-mode="dates">Search by dates</button>
+        <button type="button" role="tab" aria-selected="false" data-mode="crop">Search by crop</button>
+      </div>
+      <form class="date-search" onsubmit="event.preventDefault(); document.getElementById('results').scrollIntoView({behavior:'smooth'});">
+        <div class="fields">
+          <label>Start date <input type="date" value="2026-04-01"></label>
+          <label>End date <input type="date" value="2026-05-31"></label>
+          <button type="submit">Check periods</button>
+        </div>
+      </form>
+      <form class="crop-search" onsubmit="event.preventDefault(); document.getElementById('results').scrollIntoView({behavior:'smooth'});">
+        <div class="fields">
+          <label>Choose a crop
+            <select><option>Paddy</option><option>Maize</option><option>Green Gram</option><option>Cowpea</option><option>Groundnut</option><option>Chilli</option></select>
+          </label>
+          <button type="submit">Show periods</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="results">
+      <div class="by-date-results">
+      <div class="result-header">
+        <div>
+          <p class="eyebrow">Your selected period</p>
+          <h2>1 April – 31 May</h2>
+          <p>Six crops checked</p>
+        </div>
+        <div class="key"><span class="chip good">Available period</span><span class="chip wait">Try another period</span></div>
+      </div>
+
+      <div class="crop-list">
+        <article class="crop available">
+          <div><h3>Green Gram</h3><p class="status chip good">Available period</p><p>This date range matches an available calendar period.</p></div>
+          <div><p class="when">Use this period</p><p>April – May</p></div><span class="arrow">✓</span>
+        </article>
+        <article class="crop available">
+          <div><h3>Cowpea</h3><p class="status chip good">Available period</p><p>This date range matches an available calendar period.</p></div>
+          <div><p class="when">Use this period</p><p>April – May</p></div><span class="arrow">✓</span>
+        </article>
+        <article class="crop">
+          <div><h3>Paddy</h3><p class="status chip wait">No match in these dates</p><p>Choose a matching calendar period instead.</p></div>
+          <div><p class="when">Try instead</p><p>October – November</p></div><span class="arrow">→</span>
+        </article>
+        <article class="crop">
+          <div><h3>Groundnut</h3><p class="status chip wait">No match in these dates</p><p>Choose a matching calendar period instead.</p></div>
+          <div><p class="when">Try instead</p><p>July – August</p></div><span class="arrow">→</span>
+        </article>
+      </div>
+      <div class="empty"><strong>Maize and Chilli</strong> — no matching period is shown in this sample.</div>
+      </div>
+      <div class="by-crop-results">
+        <div class="result-header">
+          <div><p class="eyebrow">Crop calendar</p><h2>Paddy</h2><p>Choose one of these periods</p></div>
+          <div class="key"><span class="chip good">Available period</span></div>
+        </div>
+        <div class="crop-list">
+          <article class="crop available"><div><h3>October – November</h3><p class="status chip good">Available period</p><p>Plan the field for this period.</p></div><div><p class="when">Season</p><p>Maha</p></div><span class="arrow">✓</span></article>
+          <article class="crop available"><div><h3>April – May</h3><p class="status chip good">Available period</p><p>Plan the field for this period.</p></div><div><p class="when">Season</p><p>Yala</p></div><span class="arrow">✓</span></article>
+        </div>
+      </div>
+      <p class="footnote">This mockup demonstrates a simpler display only. The final live page must use only periods returned by the approved system data.</p>
+    </section>
+  </main>
+  <script>
+    const main = document.querySelector('main');
+    const planner = document.querySelector('.planner');
+    document.querySelectorAll('[role="tab"][data-mode]').forEach(button => button.addEventListener('click', () => {
+      const mode = button.dataset.mode;
+      main.dataset.mode = mode;
+      planner.dataset.mode = mode;
+      document.querySelectorAll('[role="tab"]').forEach(tab => tab.setAttribute('aria-selected', String(tab === button)));
+    }));
+  </script>
+</body>
+</html>

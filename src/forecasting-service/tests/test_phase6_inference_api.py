@@ -135,6 +135,17 @@ def test_health_endpoint_reports_model_version(predictor: WeatherForecastPredict
     assert response.json()["modelVersion"] == "v1"
 
 
+def test_health_dashboard_is_a_read_only_html_page() -> None:
+    client = TestClient(app)
+
+    response = client.get("/health-ui")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Python LSTM Forecasting Service" in response.text
+    assert "/health" in response.text
+
+
 def test_forecast_endpoint_returns_seven_forecast_rows(predictor: WeatherForecastPredictor) -> None:
     app.dependency_overrides[get_predictor] = lambda: predictor
     try:

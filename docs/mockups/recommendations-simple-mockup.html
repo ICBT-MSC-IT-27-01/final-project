@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crop Recommendations — UI Mockup</title>
+  <style>
+    :root {
+      --ink: #19372d;
+      --muted: #62746b;
+      --paper: #f6f2e8;
+      --card: #fffefa;
+      --line: #d5ddd2;
+      --leaf: #216c4b;
+      --leaf-dark: #12432f;
+      --sun: #e6a83b;
+      --good-bg: #e4f3e9;
+      --good-ink: #17623f;
+      --warm-bg: #fff2d1;
+      --warm-ink: #805600;
+      --quiet-bg: #edf0ec;
+    }
+
+    * { box-sizing: border-box; }
+    body { background: radial-gradient(circle at 90% 0, #fff4d2 0 11%, transparent 35%), var(--paper); color: var(--ink); font: 16px/1.45 Georgia, 'Times New Roman', serif; margin: 0; }
+    main { margin: 0 auto; max-width: 1120px; padding: 44px 24px 72px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(2.3rem, 6vw, 4.6rem); letter-spacing: -.055em; line-height: .95; margin-bottom: 12px; }
+    h2 { font-size: 1.55rem; letter-spacing: -.025em; margin-bottom: 5px; }
+    h3 { font-size: 1.35rem; margin-bottom: 4px; }
+    .eyebrow, .label { color: var(--leaf); font: 700 12px/1.2 'Trebuchet MS', sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+    .eyebrow { margin-bottom: 9px; }
+    .lead { color: var(--muted); font-size: 1.08rem; max-width: 620px; }
+    .demo { background: #fff8dd; border: 1px solid #e7ca77; border-radius: 999px; color: #765400; display: inline-block; font: 700 12px/1 'Trebuchet MS', sans-serif; margin: 6px 0 30px; padding: 7px 10px; }
+
+    .search { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 38px #23442d14; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) auto; padding: 21px; }
+    .search-copy { align-items: center; display: flex; gap: 14px; }
+    .scope { background: #e6f2e9; border: 1px solid #b8d1bd; border-radius: 9px; color: var(--leaf-dark); flex: 0 0 auto; font: 700 13px 'Trebuchet MS', sans-serif; padding: 9px 11px; }
+    .search p { color: var(--muted); margin: 0; }
+    button { background: var(--leaf); border: 0; border-radius: 8px; box-shadow: 0 5px 0 var(--leaf-dark); color: #fff; cursor: pointer; font: 700 15px 'Trebuchet MS', sans-serif; min-height: 46px; padding: 0 18px; }
+    button:active { box-shadow: none; transform: translateY(4px); }
+    .soil { border-top: 1px solid var(--line); display: flex; gap: 10px; grid-column: 1 / -1; padding-top: 16px; }
+    label { color: var(--muted); font: 700 12px 'Trebuchet MS', sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+    input { background: white; border: 1px solid #bdcabc; border-radius: 7px; color: var(--ink); font: 16px Georgia, serif; max-width: 390px; padding: 9px 11px; width: 100%; }
+
+    .summary { align-items: end; display: flex; gap: 18px; justify-content: space-between; margin: 42px 0 16px; }
+    .summary p { color: var(--muted); margin: 0; }
+    .forecast { background: var(--quiet-bg); border-radius: 999px; color: var(--muted); font: 700 12px 'Trebuchet MS', sans-serif; padding: 8px 11px; white-space: nowrap; }
+    .filter { align-items: center; display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 16px; }
+    .filter span { color: var(--muted); font: 700 12px 'Trebuchet MS', sans-serif; letter-spacing: .05em; text-transform: uppercase; }
+    .filter button { background: transparent; border: 1px solid var(--line); box-shadow: none; color: var(--ink); min-height: auto; padding: 7px 10px; }
+    .filter button.active { background: var(--leaf); border-color: var(--leaf); color: white; }
+
+    .recommendations { display: grid; gap: 12px; }
+    .crop { align-items: center; background: var(--card); border: 1px solid var(--line); border-left: 7px solid var(--sun); border-radius: 12px; display: grid; gap: 16px; grid-template-columns: 54px minmax(150px, 1fr) minmax(180px, 1.4fr) auto; padding: 17px 20px; }
+    .crop.high { border-left-color: #38945f; }
+    .crop.suitable { border-left-color: #d69b2f; }
+    .crop.partial { border-left-color: #b7c0b9; }
+    .rank { color: var(--leaf-dark); font: 700 22px Georgia, serif; }
+    .crop p { color: var(--muted); margin: 0; }
+    .status { border-radius: 999px; display: inline-block; font: 700 12px 'Trebuchet MS', sans-serif; margin-top: 4px; padding: 6px 9px; }
+    .status.high { background: var(--good-bg); color: var(--good-ink); }
+    .status.suitable { background: var(--warm-bg); color: var(--warm-ink); }
+    .status.partial { background: var(--quiet-bg); color: #56645b; }
+    .reason { border-left: 1px solid var(--line); padding-left: 16px; }
+    .view { color: var(--leaf); font: 700 14px 'Trebuchet MS', sans-serif; white-space: nowrap; }
+    .view::after { content: '  →'; }
+    .partial-note { background: #f0f2ef; border: 1px dashed #b8c1b9; border-radius: 11px; color: var(--muted); margin-top: 16px; padding: 14px 16px; }
+    .footnote { color: var(--muted); font-size: .86rem; margin-top: 30px; max-width: 760px; }
+
+    @media (max-width: 760px) {
+      main { padding: 32px 16px 54px; }
+      .search, .crop { grid-template-columns: 1fr; }
+      .search-copy, .summary { align-items: start; flex-direction: column; }
+      .soil { align-items: stretch; flex-direction: column; }
+      .crop .reason { border-left: 0; border-top: 1px solid var(--line); padding: 12px 0 0; }
+      .view { margin-top: -8px; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Anuradhapura District</p>
+    <h1>Crop recommendations</h1>
+    <p class="lead">Get a clear view of the crops assessed from the latest seven-day weather forecast.</p>
+    <p class="demo">UI mockup — sample display data only</p>
+
+    <section class="search" aria-label="Recommendation search">
+      <div class="search-copy">
+        <span class="scope">Anuradhapura District</span>
+        <p>Use the latest available forecast.</p>
+      </div>
+      <button type="button">Find recommendations</button>
+      <div class="soil">
+        <label for="soil">Soil type <small>(optional)</small></label>
+        <input id="soil" placeholder="For example: Reddish Brown Earth">
+      </div>
+    </section>
+
+    <section aria-label="Sample recommendation results">
+      <div class="summary">
+        <div>
+          <p class="eyebrow">Results</p>
+          <h2>Crops assessed for this forecast</h2>
+          <p>Ordered by the returned recommendation result.</p>
+        </div>
+        <span class="forecast">Forecast: 13 – 19 October</span>
+      </div>
+
+      <div class="filter" aria-label="Sample result filter">
+        <span>Show</span>
+        <button type="button" class="active">All crops</button>
+        <button type="button">Highly Suitable</button>
+        <button type="button">Suitable</button>
+        <button type="button">Needs review</button>
+      </div>
+
+      <div class="recommendations">
+        <article class="crop high">
+          <strong class="rank">#1</strong>
+          <div><h3>Paddy</h3><span class="status high">Highly Suitable</span></div>
+          <div class="reason"><p class="label">Why shown</p><p>Weather factors were assessed for this result.</p></div>
+          <span class="view">View details</span>
+        </article>
+        <article class="crop suitable">
+          <strong class="rank">#2</strong>
+          <div><h3>Maize</h3><span class="status suitable">Suitable</span></div>
+          <div class="reason"><p class="label">Why shown</p><p>Weather factors were assessed for this result.</p></div>
+          <span class="view">View details</span>
+        </article>
+        <article class="crop suitable">
+          <strong class="rank">#3</strong>
+          <div><h3>Green Gram</h3><span class="status suitable">Suitable</span></div>
+          <div class="reason"><p class="label">Why shown</p><p>Weather factors were assessed for this result.</p></div>
+          <span class="view">View details</span>
+        </article>
+        <article class="crop partial">
+          <strong class="rank">—</strong>
+          <div><h3>Chilli</h3><span class="status partial">Needs more information</span></div>
+          <div class="reason"><p class="label">Available now</p><p>Factor-level information only. This crop is not ranked.</p></div>
+          <span class="view">View details</span>
+        </article>
+      </div>
+      <p class="partial-note"><strong>Needs more information</strong> means the system does not show an overall score, category, or rank for that crop.</p>
+    </section>
+
+    <p class="footnote">This mockup changes presentation only. The live page must continue to show only API-returned forecast, scores, categories, ranks, risk indicators, and evidence limitations.</p>
+  </main>
+</body>
+</html>

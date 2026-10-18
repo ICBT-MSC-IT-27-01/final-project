@@ -10,9 +10,9 @@ export interface ApiMessage {
 export interface SeasonalClimateMonth { month: number; monthName: string; meanTemperature: number; meanRainfall: number; meanHumidity: number; rainfallStandardDeviation: number; observationCount: number; yearCount: number; requestedDayCount: number; }
 export interface CropCalendarEvidence { geographicApplicability: string; documentedConditions: string[]; sourceUrls: string[]; validationStatus: string; limitations: string[]; }
 export interface SeasonalCultivationWindow { id: string; season: string; establishmentMonths: number[]; harvestMonths: number[]; sourcePages: number[]; evidenceStatus: string; interpretation: string; conditions: string[]; requiresLocalReview: boolean; }
-export interface SeasonalCropResult { cropName: string; evidenceStatus: string; suitabilityCategory: string | null; explanation: string; missingFactors: string[]; calendarEvidence: CropCalendarEvidence; candidateWindows?: SeasonalCultivationWindow[]; }
+export interface SeasonalCropResult { cropName: string; evidenceStatus: string; suitabilityCategory: string | null; explanation: string; missingFactors: string[]; calendarEvidence: CropCalendarEvidence; candidateWindows?: SeasonalCultivationWindow[]; alternativeWindows?: SeasonalCultivationWindow[]; }
 export interface SeasonalRangeResponse { startDate: string; endDate: string; assessmentType: string; dataSource: string; evidenceStatus: string; climateMonths: SeasonalClimateMonth[]; crops: SeasonalCropResult[]; limitations: string[]; }
-export interface SeasonalCropResponse { cropName: string; startDate: string; endDate: string; assessmentType: string; dataSource: string; evidenceStatus: string; climateMonths: SeasonalClimateMonth[]; candidateMonths: string[]; explanation: string; limitations: string[]; calendarEvidence: CropCalendarEvidence; candidateWindows?: SeasonalCultivationWindow[]; }
+export interface SeasonalCropResponse { cropName: string; startDate: string; endDate: string; assessmentType: string; dataSource: string; evidenceStatus: string; climateMonths: SeasonalClimateMonth[]; candidateMonths: string[]; explanation: string; limitations: string[]; calendarEvidence: CropCalendarEvidence; candidateWindows?: SeasonalCultivationWindow[]; alternativeWindows?: SeasonalCultivationWindow[]; }
 
 export interface LoginRequest {
   email: string;
