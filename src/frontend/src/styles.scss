@@ -201,6 +201,22 @@ textarea:focus-visible {
 .dashboard-context { background: #faf4e5; border-color: #e4cb90; }.dashboard-context h2 { color: #67531b; }.dashboard-context small { border-top: 1px solid #e5d29f; color: #6b5a27; display: block; margin-top: 1rem; padding-top: 0.85rem; }
 .dashboard-limitations { color: var(--muted); margin: -1.5rem 0 3rem; }.dashboard-limitations summary { color: var(--leaf-dark); cursor: pointer; font-weight: 800; }.dashboard-limitations li { margin: 0.3rem 0; }
 
+.admin-page-heading { align-items: end; display: flex; justify-content: space-between; margin: 1rem 0 1.5rem; }
+.admin-page-heading h1 { font-size: clamp(2.3rem, 5vw, 4rem); margin: 0.15rem 0 0.65rem; }
+.admin-page-heading p:not(.eyebrow) { color: var(--muted); margin: 0; max-width: 720px; }
+.admin-access-status { background: #e4f0e6; border: 1px solid #bdd3bf; border-radius: 999px; color: var(--leaf-dark); flex: 0 0 auto; font-size: 0.82rem; font-weight: 800; padding: 0.55rem 0.8rem; }
+.admin-overview-grid { display: grid; gap: 0.8rem; grid-template-columns: minmax(250px, 1.35fr) repeat(3, minmax(0, 1fr)); margin-bottom: 1.5rem; }
+.admin-forecast-card, .admin-summary-card { border-radius: 12px; box-shadow: 0 10px 26px rgba(23, 63, 48, 0.06); padding: 1.15rem; }
+.admin-forecast-card { background: linear-gradient(135deg, var(--leaf-dark), var(--leaf)); border: 1px solid var(--leaf-dark); color: white; }
+.admin-forecast-card .eyebrow { color: #cde0d2; }.admin-forecast-card h2 { font-family: Cambria, Georgia, serif; font-size: 1.55rem; margin: 0.3rem 0; }.admin-forecast-card > p:not(.eyebrow):not(.admin-run-summary) { color: #d5e7da; margin: 0 0 1rem; }.admin-forecast-card .button.primary { background: white; border-color: white; color: var(--leaf-dark); }.admin-run-summary { border-top: 1px solid rgba(255,255,255,.22); color: #d5e7da; font-size: .85rem; margin: 1rem 0 0; padding-top: .8rem; }
+.admin-summary-card { background: var(--panel); border: 1px solid var(--line); }.admin-summary-card span { color: var(--muted); display: block; font-size: .72rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }.admin-summary-card strong { color: var(--leaf-dark); display: block; font-family: Cambria, Georgia, serif; font-size: 2rem; line-height: 1; margin: 1rem 0 .3rem; }.admin-summary-card p { color: var(--muted); font-size: .85rem; margin: 0; }
+.admin-workspace { display: grid; gap: 1.25rem; grid-template-columns: 210px minmax(0, 1fr); margin-bottom: 3rem; }
+.admin-side-nav { align-self: start; background: var(--leaf-dark); border-radius: 12px; display: grid; gap: .25rem; padding: .8rem; position: sticky; top: 1rem; }
+.admin-side-nav > span { color: #bad4c4; font-size: .7rem; font-weight: 800; letter-spacing: .06em; padding: .45rem .6rem .25rem; text-transform: uppercase; }.admin-side-nav .admin-nav-records { border-top: 1px solid rgba(255,255,255,.18); margin-top: .45rem; padding-top: .85rem; }
+.admin-side-nav button { background: transparent; border: 0; border-radius: 7px; color: #e2eee6; cursor: pointer; font: 700 .9rem Candara, "Segoe UI", sans-serif; padding: .6rem; text-align: left; }.admin-side-nav button:hover, .admin-side-nav button.active { background: #347456; color: white; }
+.admin-workspace-content { min-width: 0; }.admin-section-heading { border-bottom: 1px solid var(--line); margin-bottom: 1rem; padding-bottom: .9rem; }.admin-section-heading h2 { color: var(--leaf-dark); font-family: Cambria, Georgia, serif; font-size: 1.8rem; margin: .15rem 0 .25rem; }.admin-section-heading p:not(.eyebrow) { color: var(--muted); margin: 0; }
+.admin-workspace-content .grid-two { align-items: start; }.admin-workspace-content .form-panel { max-width: none; }.admin-workspace-content .table-panel { margin-top: 0; }
+
 h1 {
   font-family: Cambria, Georgia, serif;
   font-size: clamp(2rem, 6vw, 5rem);
@@ -696,6 +712,13 @@ code {
   .dashboard-bottom-grid { grid-template-columns: 1fr; }
   .dashboard-forecast-days { overflow-x: auto; }
   .dashboard-forecast-days article { min-width: 135px; }
+
+  .admin-overview-grid { grid-template-columns: 1fr 1fr; }
+  .admin-forecast-card { grid-column: span 2; }
+  .admin-workspace { grid-template-columns: 1fr; }
+  .admin-side-nav { display: flex; overflow-x: auto; position: static; }
+  .admin-side-nav > span { display: none; }
+  .admin-side-nav button { white-space: nowrap; }
 }
 
 @media (max-width: 520px) {
@@ -736,6 +759,10 @@ code {
 
   .forecast-status-meta { grid-template-columns: 1fr; }
   .dashboard-hero-refined { min-height: auto; }
+
+  .admin-page-heading { align-items: flex-start; flex-direction: column; gap: 0.8rem; }
+  .admin-overview-grid { grid-template-columns: 1fr; }
+  .admin-forecast-card { grid-column: auto; }
 
   h1 {
     font-size: 2rem;

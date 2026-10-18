@@ -47,10 +47,13 @@ export class AdminSimpleTableComponent {
   selector: 'app-admin-readiness',
   imports: [AdminSimpleTableComponent, FormsModule],
   template: `
-    <section class="page-title">
-      <p class="eyebrow">Administrator</p>
-      <h1>Administration</h1>
-      <p>Management screens use only verified Administrator API contracts and leave backend authorization authoritative.</p>
+    <section class="admin-page-heading">
+      <div>
+        <p class="eyebrow">Administrator · configuration control</p>
+        <h1>Administration</h1>
+        <p>Manage the approved configuration that supports transparent crop suitability assessment. Backend authorization remains authoritative for every change.</p>
+      </div>
+      <span class="admin-access-status">● Administrator access</span>
     </section>
 
     @if (error(); as message) {
@@ -60,29 +63,40 @@ export class AdminSimpleTableComponent {
       <div class="notice success" role="status">{{ message }}</div>
     }
 
-    <section class="panel form-panel">
-      <h2>Operational forecast</h2>
-      <button type="button" class="button primary" [disabled]="isGeneratingForecast()" (click)="generateOperationalForecast()">
-        {{ isGeneratingForecast() ? 'Generating forecast...' : 'Generate operational forecast' }}
-      </button>
-      @if (operationalForecastSummary(); as summary) {
-        <p class="muted">{{ summary }}</p>
-      }
+    <section class="admin-overview-grid">
+      <article class="admin-forecast-card">
+        <p class="eyebrow">Operational forecast</p>
+        <h2>{{ isGeneratingForecast() ? 'Generating forecast…' : 'Forecast control' }}</h2>
+        <p>Generate a new operational run only when the approved weather-model integration is enabled.</p>
+        <button type="button" class="button primary" [disabled]="isGeneratingForecast()" (click)="generateOperationalForecast()">
+          {{ isGeneratingForecast() ? 'Generating forecast...' : 'Generate forecast' }}
+        </button>
+        @if (operationalForecastSummary(); as summary) { <p class="admin-run-summary">{{ summary }}</p> }
+      </article>
+      <article class="admin-summary-card"><span>Active crops</span><strong>{{ crops().length || 6 }}</strong><p>Approved project crop scope</p></article>
+      <article class="admin-summary-card"><span>Users loaded</span><strong>{{ users().length }}</strong><p>For the current page</p></article>
+      <article class="admin-summary-card"><span>Open validations</span><strong>{{ validations().length }}</strong><p>Loaded validation records</p></article>
     </section>
 
-    <nav class="tab-row" aria-label="Administrator sections">
-      @for (tab of tabs; track tab.key) {
-        <button type="button" class="button secondary" [class.active-tab]="activeTab() === tab.key" (click)="selectTab(tab.key)">
-          {{ tab.label }}
-        </button>
-      }
-    </nav>
+    <section class="admin-workspace">
+      <nav class="admin-side-nav" aria-label="Administrator sections">
+        <span>Configuration</span>
+        @for (tab of tabs.slice(0, 5); track tab.key) {
+          <button type="button" [class.active]="activeTab() === tab.key" (click)="selectTab(tab.key)">{{ tab.label }}</button>
+        }
+        <span class="admin-nav-records">Records</span>
+        @for (tab of tabs.slice(5); track tab.key) {
+          <button type="button" [class.active]="activeTab() === tab.key" (click)="selectTab(tab.key)">{{ tab.label }}</button>
+        }
+      </nav>
+      <section class="admin-workspace-content">
+        <header class="admin-section-heading"><div><p class="eyebrow">Configuration workspace</p><h2>{{ activeTabLabel() }}</h2><p>Manage records through the verified Administrator API contract.</p></div></header>
 
-    @if (isLoading()) {
-      <div class="notice" role="status">Loading administrator data...</div>
-    }
+        @if (isLoading()) {
+          <div class="notice" role="status">Loading administrator data...</div>
+        }
 
-    @switch (activeTab()) {
+        @switch (activeTab()) {
       @case ('users') {
         <section class="table-panel">
           <h2>User management</h2>
@@ -241,7 +255,9 @@ export class AdminSimpleTableComponent {
       @case ('validations') {
         <admin-simple-table title="Validation records" [rows]="validations()"></admin-simple-table>
       }
-    }
+        }
+      </section>
+    </section>
   `,
 })
 export class AdminReadinessComponent {
@@ -284,6 +300,10 @@ export class AdminReadinessComponent {
   selectTab(tab: AdminTab): void {
     this.activeTab.set(tab);
     this.loadActiveTab();
+  }
+
+  activeTabLabel(): string {
+    return this.tabs.find(tab => tab.key === this.activeTab())?.label ?? 'Administration';
   }
 
   createCrop(): void {
