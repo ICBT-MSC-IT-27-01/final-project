@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\AnuradhapuraAI.Application\AnuradhapuraAI.Application.csproj" />
@@ -17,6 +17,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ace5c1c8-e38d-4d56-9812-0ff8ed48184e</UserSecretsId>
   </PropertyGroup>
 
 </Project>

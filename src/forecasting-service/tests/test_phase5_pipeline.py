@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from forecasting_service.artifacts import build_metadata
+from forecasting_service.artifacts import build_metadata, dataset_sha256
 from forecasting_service.config.training_config import SplitConfig
 from forecasting_service.evaluation.metrics import regression_metrics
 from forecasting_service.ingestion.csv_ingestion import load_weather_csv
@@ -92,6 +92,18 @@ def test_scaler_fit_only_uses_training_data() -> None:
     assert scaler.scaler is not None
     assert scaler.scaler.data_max_.tolist() == [10, 30, 60]
     assert transformed[0, 0] == 2
+
+
+def test_log1p_rainfall_scaler_round_trips_zero_and_positive_values() -> None:
+    values = pd.DataFrame(
+        {"Rainfall": [0.0, 2.0, 10.0], "Temperature": [20.0, 25.0, 30.0], "Humidity": [60.0, 70.0, 80.0]}
+    )
+    scaler = MinMaxFeatureScaler(rainfall_transform="log1p").fit(values)
+
+    restored = scaler.inverse_transform(scaler.transform(values))
+
+    assert np.allclose(restored, values.to_numpy(dtype=float))
+    assert restored[:, 0].min() >= 0
 
 
 def test_baseline_forecast_shape() -> None:
@@ -208,3 +220,10 @@ def test_metadata_records_phase5b_artifact_and_sequence_fields() -> None:
     assert metadata["artifact_paths"]["scaler"].endswith(".joblib")
     assert metadata["sequence_metadata"]["test_sequence_count"] == 725
     assert metadata["package_versions"]["keras"] is not None or metadata["package_versions"]["tensorflow"] is None
+
+
+def test_dataset_sha256_is_stable_for_same_file(tmp_path: Path) -> None:
+    dataset = tmp_path / "weather.csv"
+    dataset.write_text("Date,Rainfall,Temperature,Humidity\n2020-01-01,0,25,70\n", encoding="utf-8")
+
+    assert dataset_sha256(dataset) == dataset_sha256(dataset)

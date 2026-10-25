@@ -1,16 +1,19 @@
 :root {
-  --ink: #17211c;
-  --muted: #5c6a61;
-  --paper: #f7f5ec;
-  --panel: #fffdf6;
-  --line: #d9d0bd;
-  --leaf: #286247;
-  --leaf-dark: #173f30;
-  --sun: #d6a13b;
-  --water: #2a7186;
-  --danger: #9b2f24;
-  --success: #236b3a;
-  --shadow: 0 18px 48px rgba(23, 33, 28, 0.12);
+  color-scheme: light;
+  --ink: #172b29;
+  --ink-soft: #294440;
+  --muted: #617773;
+  --paper: #f5f7f3;
+  --panel: #ffffff;
+  --line: #e1e9e3;
+  --leaf: #176e5a;
+  --leaf-dark: #105344;
+  --leaf-light: #e9f3ed;
+  --sun: #f4c563;
+  --water: #377c94;
+  --danger: #ad453a;
+  --success: #216b4c;
+  --shadow: 0 16px 42px rgba(24, 60, 48, .055);
 }
 
 * {
@@ -27,7 +30,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: Candara, "Segoe UI", sans-serif;
+  font-family: Aptos, "Segoe UI", sans-serif;
   overflow-wrap: break-word;
 }
 
@@ -367,6 +370,21 @@ h2 {
 }
 .seasonal-crop-card.no-match { border-color: #dfcda2; }
 .seasonal-crop-card h2, .seasonal-window-card h2 { color: var(--leaf-dark); font-size: 1.25rem; margin: 0 0 1rem; }
+.seasonal-weather-context {
+  display: grid; grid-template-columns: 1.65fr repeat(3, minmax(0, 1fr)); gap: 0;
+  margin: 0 0 1.1rem; border: 1px solid var(--line); border-radius: 13px; background: #fff;
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.seasonal-weather-context div { display: grid; gap: 3px; min-width: 0; padding: 16px 18px; border-right: 1px solid var(--line); }
+.seasonal-weather-context div:last-of-type { border-right: 0; }
+.seasonal-weather-context span { color: var(--muted); font-size: .7rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+.seasonal-weather-context strong { color: var(--leaf-dark); font-size: .87rem; overflow-wrap: anywhere; }
+.seasonal-weather-context p { grid-column: 1 / -1; margin: 0; padding: 10px 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
+.seasonal-context-note, .seasonal-disclaimer { color: var(--muted); font-size: .82rem; margin: 0 0 1rem; }
+.seasonal-evidence { color: var(--muted); font-size: .83rem; margin: .8rem 0; }
+.seasonal-recommendation-link { display: inline-flex; align-items: center; gap: 8px; color: var(--leaf-dark); font-size: .83rem; font-weight: 800; text-decoration: none; }
+.seasonal-recommendation-link:hover { text-decoration: underline; }
+.seasonal-card-note { border-top: 1px solid var(--line); color: var(--muted); font-size: .74rem; line-height: 1.45; margin: .9rem 0 0; padding-top: .8rem; }
 .period-status { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; margin: 0 0 0.45rem; text-transform: uppercase; }
 .period-status.available { color: var(--success); }
 .period-status.unavailable { color: #876015; }
@@ -696,6 +714,10 @@ code {
   .seasonal-search,
   .crop-search { grid-template-columns: 1fr 1fr; }
 
+  .seasonal-weather-context { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .seasonal-weather-context div:nth-child(2) { border-right: 0; }
+  .seasonal-weather-context div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+
   .seasonal-search .button { grid-column: span 2; }
 
   .recommendation-trust-bar { flex-wrap: wrap; }
@@ -744,6 +766,9 @@ code {
 
   .seasonal-search,
   .crop-search { grid-template-columns: 1fr; }
+
+  .seasonal-weather-context { grid-template-columns: 1fr; }
+  .seasonal-weather-context div, .seasonal-weather-context div:nth-child(2) { border-right: 0; border-bottom: 1px solid var(--line); }
 
   .seasonal-search .button { grid-column: auto; }
 
@@ -796,4 +821,96 @@ code {
   .forecast-days article {
     box-shadow: 0 10px 28px rgba(23, 33, 28, 0.08);
   }
+}
+
+/* CropCompass shared shell and component refinements. */
+.site-frame { min-height: 100vh; display: flex; flex-direction: column; }
+.shell-header {
+  position: relative; z-index: 10; display: block; padding: 0;
+  background: rgba(255, 255, 255, .96); border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  width: min(1400px, calc(100% - 64px)); min-height: 82px; margin: auto;
+  display: grid; grid-template-columns: minmax(210px, 1fr) auto minmax(150px, 1fr);
+  gap: 22px; align-items: center;
+}
+.brand { gap: 11px; }
+.brand-mark {
+  width: 44px; height: 44px; flex: none; border-radius: 13px; background: #145c4a;
+  box-shadow: 0 7px 14px rgba(20, 92, 74, .17);
+}
+.brand-mark img { width: 34px; height: 34px; }
+.brand-copy { display: grid; line-height: 1.2; min-width: 0; }
+.brand-copy strong { font-size: 1rem; letter-spacing: -.02em; white-space: nowrap; }
+.brand-copy small { color: var(--muted); font-size: .68rem; line-height: 1.25; margin-top: 3px; max-width: 290px; }
+.top-nav { gap: 3px; flex-wrap: nowrap; }
+.top-nav a {
+  padding: 10px 14px; color: #47605b; border-radius: 9px; font-size: .88rem;
+  font-weight: 650; white-space: nowrap; transition: background .18s, color .18s;
+}
+.top-nav a:hover, .top-nav a.active { color: var(--leaf-dark); background: var(--leaf-light); }
+.session-panel { justify-content: flex-end; gap: 12px; min-width: 0; flex-wrap: nowrap; }
+.session-user { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: var(--muted); }
+.session-panel a, .link-button { font-size: .88rem; font-weight: 700; }
+.login-link, .link-button { color: var(--ink-soft); background: transparent; border: 0; padding: 9px 4px; }
+.register-link {
+  background: var(--leaf); color: #fff !important; padding: 10px 17px !important; border-radius: 9px;
+  box-shadow: 0 6px 12px rgba(23, 110, 90, .13);
+}
+.register-link:hover { background: var(--leaf-dark); }
+.app-shell { width: min(1400px, calc(100% - 64px)); margin: 0 auto; padding: 34px 0 80px; flex: 1; }
+.shell-footer {
+  padding: 25px max(32px, calc((100vw - 1400px) / 2)); border-top: 1px solid var(--line);
+  background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  color: var(--muted); font-size: .78rem;
+}
+.shell-footer span:first-child { color: var(--leaf-dark); font-weight: 800; letter-spacing: .12em; }
+.shell-footer p { margin: 0; }
+
+h1, h2, h3 { letter-spacing: -.03em; }
+.panel, .status-board, .table-panel, .crop-card, .forecast-days article,
+.weather-metric, .dashboard-forecast-panel, .seasonal-planner, .seasonal-crop-card,
+.seasonal-window-card, .seasonal-empty {
+  border-color: var(--line); border-radius: 15px; box-shadow: var(--shadow);
+}
+.button { border-radius: 9px; font-weight: 750; transition: transform .18s, background .18s, box-shadow .18s; }
+.button:hover:not(:disabled) { transform: translateY(-1px); }
+.button.primary { background: var(--leaf); border-color: var(--leaf); }
+.button.primary:hover { background: var(--leaf-dark); }
+.button.secondary { background: #fff; border-color: #c9d9d1; color: var(--leaf-dark); }
+.button.secondary:hover { background: var(--leaf-light); }
+.dashboard-hero, .forecast-status-board, .admin-forecast-card {
+  background: radial-gradient(circle at 90% 12%, rgba(161, 210, 154, .25), transparent 30%),
+    linear-gradient(116deg, #123d35 0%, #155849 56%, #22725b 100%);
+}
+.dashboard-hero { border: 0; border-radius: 22px; box-shadow: 0 24px 46px rgba(17, 70, 56, .12); padding: clamp(2.5rem, 5vw, 4.4rem); }
+.forecast-status-board, .admin-forecast-card { border-color: #155849; }
+.notice.success { border-color: #b6dbbf; background: #f3faf4; color: var(--success); }
+.notice.warning { border-color: #ead7a9; background: #fffcf2; color: #72531e; }
+.notice.error { border-color: #edc3bd; background: #fff8f6; color: var(--danger); }
+
+@media (max-width: 1180px) {
+  .header-inner { grid-template-columns: 1fr auto; }
+  .top-nav { grid-column: 1 / -1; grid-row: 2; justify-content: center; padding-bottom: 12px; overflow-x: auto; }
+}
+
+@media (max-width: 850px) {
+  .header-inner, .app-shell { width: min(100% - 40px, 700px); }
+  .header-inner { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .brand-copy small { display: none; }
+  .dashboard-hero { padding: 32px; }
+  .shell-footer { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 620px) {
+  .header-inner { width: min(100% - 28px, 560px); min-height: 70px; }
+  .brand-mark { width: 38px; height: 38px; border-radius: 11px; }
+  .brand-mark img { width: 30px; height: 30px; }
+  .brand-copy strong { font-size: .92rem; }
+  .session-user { display: none; }
+  .top-nav { justify-content: flex-start; }
+  .top-nav a { padding: 8px 10px; font-size: .8rem; }
+  .app-shell { width: min(100% - 28px, 560px); padding: 24px 0 52px; }
+  .dashboard-hero { padding: 25px; border-radius: 16px; }
+  .shell-footer { padding: 22px 14px; }
 }

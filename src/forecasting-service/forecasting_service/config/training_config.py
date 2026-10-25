@@ -26,6 +26,7 @@ class TrainingConfig:
     model_version: str = "v1"
     date_column: str = "Date"
     feature_columns: tuple[str, str, str] = FEATURE_COLUMNS
+    rainfall_transform: str = "none"
     lookback_days: int = 30
     forecast_horizon_days: int = 7
     max_interpolation_gap_days: int = 3
@@ -52,6 +53,8 @@ class TrainingConfig:
             raise ValueError("forecast_horizon_days must remain 7 for the approved Phase 5 scope.")
         if self.max_interpolation_gap_days < 0:
             raise ValueError("max_interpolation_gap_days cannot be negative.")
+        if self.rainfall_transform not in {"none", "log1p"}:
+            raise ValueError("rainfall_transform must be 'none' or 'log1p'.")
         if self.lstm_layers not in (1, 2):
             raise ValueError("lstm_layers must be 1 or 2 for the initial approved architecture.")
         self.split.validate()

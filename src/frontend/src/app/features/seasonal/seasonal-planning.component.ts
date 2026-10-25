@@ -1,13 +1,15 @@
-import { Component, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../../core/api.service';
-import { SeasonalCropResponse, SeasonalRangeResponse, supportedCrops } from '../../core/api.models';
+import { LatestForecastResponse, SeasonalCropResponse, SeasonalRangeResponse, supportedCrops } from '../../core/api.models';
 
 @Component({
   selector: 'app-seasonal-planning',
-  imports: [FormsModule],
+  imports: [DecimalPipe, FormsModule, RouterLink],
   template: `
     <section class="page-title seasonal-title">
       <p class="eyebrow">Anuradhapura District</p>
@@ -42,6 +44,17 @@ import { SeasonalCropResponse, SeasonalRangeResponse, supportedCrops } from '../
     @if (rangeResult(); as result) {
       <section class="seasonal-results" aria-live="polite">
         <div class="seasonal-results-heading"><span>Your selected period</span><strong>{{ formatDate(result.startDate) }} – {{ formatDate(result.endDate) }}</strong></div>
+        @if (latestForecast(); as forecast) {
+          <aside class="seasonal-weather-context" aria-label="Current seven-day weather context">
+            <div><span>Current 7-day weather context</span><strong>{{ forecast.forecastPeriodStart }} to {{ forecast.forecastPeriodEnd }}</strong></div>
+            <div><span>Rainfall</span><strong>{{ totalRainfall() | number: '1.0-1' }} mm</strong></div>
+            <div><span>Mean temperature</span><strong>{{ meanTemperature() | number: '1.0-1' }}°C</strong></div>
+            <div><span>Mean humidity</span><strong>{{ meanHumidity() | number: '1.0-1' }}%</strong></div>
+            <p>Predicted weather context for decision support; it does not change the calendar result.</p>
+          </aside>
+        } @else if (forecastUnavailable()) {
+          <p class="seasonal-context-note">Current seven-day weather context is unavailable. You can still review the calendar-supported periods below.</p>
+        }
         <div class="seasonal-card-grid">
           @for (crop of result.crops; track crop.cropName) {
             <article class="seasonal-crop-card" [class.no-match]="!crop.candidateWindows?.length">
@@ -56,9 +69,13 @@ import { SeasonalCropResponse, SeasonalRangeResponse, supportedCrops } from '../
                   @for (window of crop.alternativeWindows; track window.id) { <p class="period-value">{{ monthNames(window.establishmentMonths) }}</p> }
                 } @else { <p class="period-value">No alternative period available</p> }
               }
+              @if (crop.explanation) { <p class="seasonal-evidence">{{ crop.explanation }}</p> }
+              <a routerLink="/recommendations" class="seasonal-recommendation-link">View crop recommendations <span aria-hidden="true">→</span></a>
+              <p class="seasonal-card-note">Suitability and approved climate-risk indicators are shown in the full forecast-based recommendation.</p>
             </article>
           }
         </div>
+        <p class="seasonal-disclaimer">Seasonal planning is calendar reference information. Final crop suitability uses the current seven-day forecast and configured crop requirements.</p>
       </section>
     }
 
@@ -90,6 +107,11 @@ export class SeasonalPlanningComponent {
   readonly mode = signal<'dates' | 'crop'>('dates');
   readonly rangeResult = signal<SeasonalRangeResponse | null>(null);
   readonly cropResult = signal<SeasonalCropResponse | null>(null);
+  readonly latestForecast = signal<LatestForecastResponse | null>(null);
+  readonly forecastUnavailable = signal(false);
+  readonly totalRainfall = computed(() => this.latestForecast()?.dailyForecasts.reduce((total, day) => total + day.rainfallMm, 0) ?? 0);
+  readonly meanTemperature = computed(() => average(this.latestForecast()?.dailyForecasts.map(day => day.temperatureC) ?? []));
+  readonly meanHumidity = computed(() => average(this.latestForecast()?.dailyForecasts.map(day => day.humidityPercent) ?? []));
   startDate = new Date().toISOString().slice(0, 10);
   endDate = new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().slice(0, 10);
   cropName = 'Paddy';
@@ -104,7 +126,10 @@ export class SeasonalPlanningComponent {
   }
 
   findCrops(): void {
-    this.run(this.api.findRecommendedCropsByDateRange(this.startDate, this.endDate, null), value => this.rangeResult.set(value));
+    this.run(this.api.findRecommendedCropsByDateRange(this.startDate, this.endDate, null), value => {
+      this.rangeResult.set(value);
+      this.loadLatestForecast();
+    });
   }
 
   findPeriods(): void {
@@ -124,6 +149,24 @@ export class SeasonalPlanningComponent {
     this.error.set(null);
     this.rangeResult.set(null);
     this.cropResult.set(null);
+    this.latestForecast.set(null);
+    this.forecastUnavailable.set(false);
     request.pipe(finalize(() => this.loading.set(false))).subscribe({ next: setResult, error: error => this.error.set(error.message) });
   }
+
+  private loadLatestForecast(): void {
+    this.latestForecast.set(null);
+    this.forecastUnavailable.set(false);
+    this.api.getLatestForecast().subscribe({
+      next: forecast => {
+        this.latestForecast.set(forecast.dailyForecasts.length === 7 ? forecast : null);
+        this.forecastUnavailable.set(forecast.dailyForecasts.length !== 7);
+      },
+      error: () => this.forecastUnavailable.set(true),
+    });
+  }
+}
+
+function average(values: number[]): number {
+  return values.length ? values.reduce((total, value) => total + value, 0) / values.length : 0;
 }

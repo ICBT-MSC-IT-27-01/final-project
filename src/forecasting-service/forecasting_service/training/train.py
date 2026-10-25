@@ -4,7 +4,7 @@ import random
 import joblib
 import numpy as np
 
-from forecasting_service.artifacts import build_metadata, save_metadata
+from forecasting_service.artifacts import build_metadata, dataset_sha256, save_metadata
 from forecasting_service.config.training_config import TrainingConfig
 from forecasting_service.evaluation.metrics import regression_metrics
 from forecasting_service.ingestion.csv_ingestion import load_weather_csv
@@ -15,11 +15,14 @@ from forecasting_service.preprocessing.cleaner import clean_weather_data
 from forecasting_service.preprocessing.scaler import MinMaxFeatureScaler
 from forecasting_service.preprocessing.sequences import create_sequences_for_target_period
 from forecasting_service.preprocessing.split import date_based_split, verify_date_continuity
+from forecasting_service.training.experiment_registry import append_experiment_record
 
 
-def train_from_config(config: TrainingConfig) -> dict:
+def train_from_config(config: TrainingConfig, evaluation_split: str = "test") -> dict:
     if config.dataset_path is None:
         raise ValueError("An approved dataset_path is required before final training.")
+    if evaluation_split not in {"validation", "test"}:
+        raise ValueError("evaluation_split must be 'validation' or 'test'.")
     config.validate()
     _set_seeds(config.random_seed)
 
@@ -39,7 +42,9 @@ def train_from_config(config: TrainingConfig) -> dict:
         test_end=config.test_end,
     )
 
-    scaler = MinMaxFeatureScaler().fit(train[list(config.feature_columns)])
+    scaler = MinMaxFeatureScaler(rainfall_transform=config.rainfall_transform).fit(
+        train[list(config.feature_columns)]
+    )
     full_scaled = scaler.transform(cleaned[list(config.feature_columns)])
 
     x_train, y_train, train_target_dates = create_sequences_for_target_period(
@@ -69,11 +74,6 @@ def train_from_config(config: TrainingConfig) -> dict:
     if min(len(x_train), len(x_validation), len(x_test)) == 0:
         raise ValueError("One or more splits is too small for the configured lookback/horizon.")
 
-    baseline_predictions = persistence_forecast(x_test, config.forecast_horizon_days)
-    y_test_original = _inverse_sequence(scaler, y_test)
-    baseline_original = _inverse_sequence(scaler, baseline_predictions)
-    baseline_metrics = regression_metrics(y_test_original, baseline_original, config.feature_columns)
-
     model = build_lstm_model(config)
     import tensorflow as tf
 
@@ -92,11 +92,20 @@ def train_from_config(config: TrainingConfig) -> dict:
         batch_size=config.batch_size,
         callbacks=callbacks,
         shuffle=False,
-        verbose=1,
+        verbose=0,
     )
-    lstm_predictions = model.predict(x_test)
+    evaluation_inputs, evaluation_targets, evaluation_target_dates = (
+        (x_validation, y_validation, validation_target_dates)
+        if evaluation_split == "validation"
+        else (x_test, y_test, test_target_dates)
+    )
+    baseline_predictions = persistence_forecast(evaluation_inputs, config.forecast_horizon_days)
+    targets_original = _inverse_sequence(scaler, evaluation_targets)
+    baseline_original = _inverse_sequence(scaler, baseline_predictions)
+    baseline_metrics = regression_metrics(targets_original, baseline_original, config.feature_columns)
+    lstm_predictions = model.predict(evaluation_inputs, verbose=0)
     lstm_original = _inverse_sequence(scaler, lstm_predictions)
-    lstm_metrics = regression_metrics(y_test_original, lstm_original, config.feature_columns)
+    lstm_metrics = regression_metrics(targets_original, lstm_original, config.feature_columns)
 
     output_dir = Path(config.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -107,15 +116,21 @@ def train_from_config(config: TrainingConfig) -> dict:
     history_path = output_dir / f"{config.model_version}_training_history.json"
     sample_path = output_dir / f"{config.model_version}_sample_forecast.json"
     model.save(model_path)
-    joblib.dump(scaler.scaler, scaler_path)
+    joblib.dump(scaler, scaler_path)
 
-    sample_forecast = _sample_forecast(test_target_dates[0], lstm_original[0], y_test_original[0], config.feature_columns)
+    sample_forecast = _sample_forecast(
+        evaluation_target_dates[0],
+        lstm_original[0],
+        targets_original[0],
+        config.feature_columns,
+    )
     evaluation_results = {
+        "evaluation_split": evaluation_split,
         "baseline_metrics": baseline_metrics,
         "lstm_metrics": lstm_metrics,
-        "test_target_date_range": {
-            "first": test_target_dates[0][0],
-            "last": test_target_dates[-1][-1],
+        "evaluation_target_date_range": {
+            "first": evaluation_target_dates[0][0],
+            "last": evaluation_target_dates[-1][-1],
         },
         "sample_historical_test_forecast": sample_forecast,
     }
@@ -128,7 +143,11 @@ def train_from_config(config: TrainingConfig) -> dict:
         dataset_profile=profile,
         split_metadata=split_metadata,
         config=config.to_dict(),
-        preprocessing_metadata={**preprocessing_metadata, "date_continuity": continuity},
+        preprocessing_metadata={
+            **preprocessing_metadata,
+            "date_continuity": continuity,
+            "rainfall_transform": config.rainfall_transform,
+        },
         baseline_metrics=baseline_metrics,
         lstm_metrics=lstm_metrics,
         artifact_paths={
@@ -146,6 +165,7 @@ def train_from_config(config: TrainingConfig) -> dict:
             "train_target_date_range": {"first": train_target_dates[0][0], "last": train_target_dates[-1][-1]},
             "validation_target_date_range": {"first": validation_target_dates[0][0], "last": validation_target_dates[-1][-1]},
             "test_target_date_range": {"first": test_target_dates[0][0], "last": test_target_dates[-1][-1]},
+            "evaluation_split": evaluation_split,
             "input_shape": list(x_train.shape[1:]),
             "output_shape": list(y_train.shape[1:]),
             "boundary_context_rule": "Inputs may include immediately preceding historical rows; targets remain inside the approved split date range.",
@@ -153,6 +173,19 @@ def train_from_config(config: TrainingConfig) -> dict:
     )
     save_metadata(metadata, metadata_path)
     save_metadata(sample_forecast, sample_path)
+    experiment_id = f"{config.model_version}-{evaluation_split}"
+    register_path = append_experiment_record(
+        output_dir.parent / "experiments",
+        experiment_id=experiment_id,
+        model_version=config.model_version,
+        dataset_sha256=dataset_sha256(config.dataset_path),
+        evaluation_split=evaluation_split,
+        config=config.to_dict(),
+        metrics={"baseline_metrics": baseline_metrics, "lstm_metrics": lstm_metrics},
+        artifact_directory=output_dir,
+    )
+    metadata["experiment_record_path"] = str(register_path)
+    save_metadata(metadata, metadata_path)
     return metadata
 
 

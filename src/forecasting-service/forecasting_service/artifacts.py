@@ -1,5 +1,6 @@
 import json
 import platform
+from hashlib import sha256
 from datetime import datetime, timezone
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -39,6 +40,15 @@ def save_metadata(metadata: dict, output_path: Path | str) -> None:
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+
+
+def dataset_sha256(dataset_path: Path | str) -> str:
+    """Return a stable fingerprint for an approved training dataset."""
+    digest = sha256()
+    with Path(dataset_path).open("rb") as dataset_file:
+        for chunk in iter(lambda: dataset_file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _package_versions(package_names: list[str]) -> dict[str, str | None]:
