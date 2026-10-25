@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService, FrontendApiError } from '../../core/api.service';
@@ -7,7 +8,7 @@ import { RecommendationHistorySummaryResponse } from '../../core/api.models';
 
 @Component({
   selector: 'app-registered-history-blocked',
-  imports: [DecimalPipe, RouterLink],
+  imports: [DecimalPipe, FormsModule, RouterLink],
   template: `
     <section class="page-title">
       <p class="eyebrow">Registered User</p>
@@ -31,6 +32,9 @@ import { RecommendationHistorySummaryResponse } from '../../core/api.models';
 
     @if (items().length) {
       <section class="table-panel">
+        <label>Find on this page <input name="historySearch" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Crop, soil or forecast run" /></label>
+        @if (!visibleItems().length) { <p>No saved recommendation on this page matches your search.</p> }
+        @else {
         <table>
           <thead>
             <tr>
@@ -43,7 +47,7 @@ import { RecommendationHistorySummaryResponse } from '../../core/api.models';
             </tr>
           </thead>
           <tbody>
-            @for (item of items(); track item.recommendationId) {
+            @for (item of visibleItems(); track item.recommendationId) {
               <tr>
                 <td>{{ item.createdAt }}</td>
                 <td><code>{{ item.forecastRunId }}</code></td>
@@ -55,6 +59,7 @@ import { RecommendationHistorySummaryResponse } from '../../core/api.models';
             }
           </tbody>
         </table>
+        }
       </section>
 
       <div class="action-row">
@@ -67,6 +72,12 @@ import { RecommendationHistorySummaryResponse } from '../../core/api.models';
 })
 export class RegisteredHistoryBlockedComponent {
   readonly items = signal<RecommendationHistorySummaryResponse[]>([]);
+  readonly search = signal('');
+  readonly visibleItems = computed(() => {
+    const query = this.search().trim().toLowerCase();
+    return this.items().filter(item => !query || [item.topCropName, item.soilType, item.forecastRunId]
+      .some(value => value?.toLowerCase().includes(query)));
+  });
   readonly page = signal(1);
   readonly pageSize = 10;
   readonly totalCount = signal(0);
@@ -88,6 +99,7 @@ export class RegisteredHistoryBlockedComponent {
     }
 
     this.page.set(nextPage);
+    this.search.set('');
     this.load();
   }
 

@@ -1,0 +1,12 @@
+flowchart LR
+  U[Public or authenticated user] -->|forecast and recommendation requests| P[0.0 Anuradhapura AI system]
+  U -->|date range or crop planning request| P
+  O[Officer] -->|controlled validation| P
+  A[Administrator] -->|configuration and role updates| P
+  W[(Historical and operational weather evidence)] --> P
+  C[(Crop calendar evidence)] --> P
+  D[(SQL Server records and configuration)] <--> P
+  M[Python LSTM service] <--> |30 day observations and 7 day forecast| P
+  P -->|7 day forecast, evidence gated suitability, conditional calendar candidates| U
+  P -->|review evidence and history| O
+  P -->|management records| A

@@ -33,7 +33,8 @@ public sealed class AdminManagementService(
 
     public async Task<AdminResult<CropResponse>> CreateCropAsync(CreateCropRequest request, CancellationToken cancellationToken = default)
     {
-        var name = request.Name.Trim();
+        var name = ApprovedCropNames.All.FirstOrDefault(approved => string.Equals(approved, request.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (name is null) return AdminResult<CropResponse>.Failure(AdminErrorCodes.InvalidCrop);
         if (await dbContext.Crops.AnyAsync(crop => crop.Name == name, cancellationToken)) return Duplicate<CropResponse>();
 
         var crop = new Crop { Name = name, IsActive = true };
@@ -46,7 +47,8 @@ public sealed class AdminManagementService(
     {
         var crop = await dbContext.Crops.SingleOrDefaultAsync(candidate => candidate.Id == id, cancellationToken);
         if (crop is null) return NotFound<CropResponse>();
-        var name = request.Name.Trim();
+        var name = ApprovedCropNames.All.FirstOrDefault(approved => string.Equals(approved, request.Name?.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (name is null) return AdminResult<CropResponse>.Failure(AdminErrorCodes.InvalidCrop);
         if (await dbContext.Crops.AnyAsync(candidate => candidate.Id != id && candidate.Name == name, cancellationToken)) return Duplicate<CropResponse>();
 
         crop.Name = name;

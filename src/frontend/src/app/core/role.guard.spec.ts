@@ -24,7 +24,7 @@ describe('roleGuard', () => {
 
     const result = TestBed.runInInjectionContext(() => roleGuard(['Agricultural Officer'])({} as never, {} as never));
 
-    expect(result).toEqual({ redirectTo: '/login' });
+    expect(result).toEqual({ redirectTo: '/staff/login' });
   });
 
   it('allows an authenticated officer to access officer routes', () => {

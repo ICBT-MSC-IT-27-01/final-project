@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiService, FrontendApiError } from '../../core/api.service';
 import { LatestForecastResponse } from '../../core/api.models';
+import { AuthService } from '../../core/auth.service';
 import { PublicDashboardComponent } from './public-dashboard.component';
 
 describe('PublicDashboardComponent', () => {
@@ -16,7 +17,7 @@ describe('PublicDashboardComponent', () => {
     vi.clearAllMocks();
     await TestBed.configureTestingModule({
       imports: [PublicDashboardComponent],
-      providers: [{ provide: ApiService, useValue: api }, provideRouter([])],
+      providers: [{ provide: ApiService, useValue: api }, { provide: AuthService, useValue: { isAuthenticated: () => false } }, provideRouter([])],
     }).compileComponents();
   });
 
@@ -31,11 +32,11 @@ describe('PublicDashboardComponent', () => {
     expect(text).toContain('Anuradhapura');
     expect(text).toContain('2026-10-11 to 2026-10-17');
     expect(text).toContain('v1');
-    expect(text).toContain('1 mm rainfall');
-    expect(text).toContain('28 deg C mean temperature');
-    expect(text).toContain('70% mean humidity');
+    expect(text).toContain('1 mm rain');
+    expect(text).toContain('28°C');
+    expect(text).toContain('70% humidity');
     expect(text).toContain('AI-predicted weather forecasts');
-    expect(fixture.nativeElement.querySelectorAll('.forecast-days article')).toHaveLength(7);
+    expect(fixture.nativeElement.querySelectorAll('.dashboard-forecast-days article')).toHaveLength(7);
   });
 
   it('shows a no-forecast state for HTTP 404 responses', () => {
@@ -46,7 +47,7 @@ describe('PublicDashboardComponent', () => {
 
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('No seven-day AI weather forecast is available yet.');
-    expect(text).not.toContain('1 mm rainfall');
+    expect(text).not.toContain('1 mm rain');
   });
 
   it('shows a service-unavailable state for HTTP 503 responses', () => {
@@ -57,7 +58,7 @@ describe('PublicDashboardComponent', () => {
 
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('Forecast data is temporarily unavailable. Please try again later.');
-    expect(text).not.toContain('1 mm rainfall');
+    expect(text).not.toContain('1 mm rain');
   });
 
   it('shows a generic state for HTTP 500 responses', () => {
@@ -68,7 +69,7 @@ describe('PublicDashboardComponent', () => {
 
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('The latest forecast could not be loaded.');
-    expect(text).not.toContain('1 mm rainfall');
+    expect(text).not.toContain('1 mm rain');
   });
 
   it('rejects malformed forecast responses with fewer than seven days', () => {
@@ -79,7 +80,7 @@ describe('PublicDashboardComponent', () => {
 
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('The latest forecast response is incomplete.');
-    expect(fixture.nativeElement.querySelectorAll('.forecast-days article')).toHaveLength(0);
+    expect(fixture.nativeElement.querySelectorAll('.dashboard-forecast-days article')).toHaveLength(0);
   });
 });
 

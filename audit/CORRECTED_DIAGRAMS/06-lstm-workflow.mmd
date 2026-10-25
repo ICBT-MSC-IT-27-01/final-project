@@ -1,0 +1,16 @@
+flowchart LR
+  ERA5[Historical ERA5 daily rainfall, temperature and humidity] --> Clean[Clean and verify continuity]
+  Clean --> Split[Chronological train, validation and test dates]
+  Split --> Train[Fit scaler on training rows only]
+  Train --> Transform[Transform all chronological rows]
+  Transform --> Window[Prepare 30 by 3 input windows and 7 by 3 targets]
+  Window --> Model[64 unit LSTM with dropout 0.2]
+  Model --> Dense[Dense 21 and reshape to 7 by 3]
+  Dense --> Eval[Evaluate test set against persistence baseline with MAE and RMSE]
+  Dense --> Save[Save versioned model, scaler and metadata]
+  Operational[30 operational daily observations] --> Inference[FastAPI inference with saved artifacts]
+  Save --> Inference
+  Inference --> Seven[Seven dated weather predictions]
+  Seven --> API[ASP.NET Core persistence and display]
+  note[Crop scoring and seasonal planning are outside the neural network]
+  note -.-> API

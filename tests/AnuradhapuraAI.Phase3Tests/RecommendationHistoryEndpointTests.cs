@@ -58,6 +58,9 @@ public sealed class RecommendationHistoryEndpointTests(Phase3WebApplicationFacto
             crop.OverallScore is null &&
             crop.UnavailableFactors.Contains(SuitabilityFactors.Soil));
         Assert.Contains(body.Crops, crop => crop.Factors.Count > 0);
+        Assert.Contains(body.Crops.SelectMany(crop => crop.Factors), factor =>
+            factor.Factor == SuitabilityFactors.Soil &&
+            factor.Score is null && factor.AggregatedValue is null && factor.EffectiveWeight is null);
     }
 
     [Fact]
@@ -246,6 +249,15 @@ public sealed class RecommendationHistoryEndpointTests(Phase3WebApplicationFacto
               "configuredWeight": 25,
               "effectiveWeight": 1,
               "explanation": "Stored temperature factor evidence."
+            },
+            {
+              "factor": "Soil",
+              "isEvaluable": false,
+              "score": null,
+              "aggregatedValue": null,
+              "configuredWeight": 35,
+              "effectiveWeight": null,
+              "explanation": "Optional soil was not supplied."
             }
           ],
           "climateRisks": ["Low rainfall"]

@@ -33,7 +33,7 @@ describe('SeasonalPlanningComponent', () => {
 
     expect(api.findRecommendedCropsByDateRange).toHaveBeenCalledWith(component.startDate, component.endDate, null);
     const text = fixture.nativeElement.textContent as string;
-    expect(text).toContain('Available period');
+    expect(text).toContain('Conditional calendar window');
     expect(text).toContain('No matching period');
     expect(text).toContain('Try instead');
     expect(text).toContain('Current 7-day weather context');
@@ -50,7 +50,7 @@ describe('SeasonalPlanningComponent', () => {
     fixture.detectChanges();
 
     expect(api.findSuitablePeriodsByCrop).toHaveBeenCalledWith('Paddy', component.startDate, component.endDate, null);
-    expect(fixture.nativeElement.textContent).toContain('Available periods');
+    expect(fixture.nativeElement.textContent).toContain('Candidate establishment periods');
     expect(fixture.nativeElement.textContent).toContain('October');
   });
 });

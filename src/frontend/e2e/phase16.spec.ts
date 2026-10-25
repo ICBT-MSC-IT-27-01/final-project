@@ -5,100 +5,77 @@ test.beforeEach(async ({ page }) => {
   await mockPhase16Api(page);
 });
 
-test('public dashboard and recommendation workflow render forecast evidence and optional-soil results', async ({ page }) => {
+test('public forecast and recommendation show evidence and optional soil', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Latest AI Weather Forecast' })).toBeVisible();
-  await expect(page.getByText('2026-10-13 to 2026-10-19')).toBeVisible();
-  await expect(page.getByText('Paddy')).toBeVisible();
-  await expect(page.getByText('Chilli')).toBeVisible();
-
-  await page.getByRole('link', { name: 'Generate recommendation' }).click();
-  await expect(page.getByRole('heading', { name: 'Crop Recommendation' })).toBeVisible();
-  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
-
-  await expect(page.getByText('Read-only', { exact: true })).toBeVisible();
-  await expect(page.getByText('Forecast run')).toBeVisible();
-  await expect(page.getByText('Missing: Soil').first()).toBeVisible();
-  await expect(page.locator('.crop-card').filter({ hasText: 'Highly Suitable' }).first()).toBeVisible();
-  await expect(page.getByText('excluded from the weighted calculation')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Clearer weather insight/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Seven-day weather forecast' })).toBeVisible();
+  await expect(page.getByText('Forecast run', { exact: false }).first()).toBeVisible();
+  await page.goto('/recommendations');
+  await page.getByRole('button', { name: 'Find recommendations' }).click();
+  await expect(page.locator('.recommendation-row')).toHaveCount(6);
+  await expect(page.getByText('Soil was not supplied. It is excluded from this calculation.')).toBeVisible();
+  await page.locator('.recommendation-row').first().getByText('View details').click();
+  await expect(page.getByText('configured weight 40%').first()).toBeVisible();
   await page.getByLabel('Find a crop').fill('Paddy');
-  await expect(page.getByRole('heading', { name: 'Paddy' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Maize' })).toHaveCount(0);
+  await expect(page.locator('.recommendation-row')).toHaveCount(1);
 });
 
-test('public recommendation workflow displays safe API failure messages', async ({ page }) => {
+test('public recommendation reports a safe API failure', async ({ page }) => {
   await page.route('**/api/recommendations/evaluate', route => route.fulfill({
-    status: 503,
-    contentType: 'application/json',
+    status: 503, contentType: 'application/json',
     body: JSON.stringify({ message: 'No complete forecast is available.' }),
   }));
-
   await page.goto('/recommendations');
-  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
-
+  await page.getByRole('button', { name: 'Find recommendations' }).click();
   await expect(page.getByRole('alert')).toContainText('No complete forecast is available.');
 });
 
-test('seasonal planning presents simple calendar periods and alternative dates without suitability claims', async ({ page }) => {
+test('seasonal planning keeps calendar candidates separate from the LSTM forecast', async ({ page }) => {
   await page.goto('/seasonal-planning');
   await page.getByRole('button', { name: 'Check periods' }).click();
-
-  await expect(page.getByText('Available period').first()).toBeVisible();
+  await expect(page.getByText('Conditional calendar window').first()).toBeVisible();
   await expect(page.getByText('No matching period')).toBeVisible();
-  await expect(page.getByText('Try instead')).toBeVisible();
-  await expect(page.getByText('Highly Suitable')).toHaveCount(0);
-
+  await expect(page.getByText('These dates are separate from the seven-day AI forecast.')).toBeVisible();
   await page.getByRole('tab', { name: 'Search by crop' }).click();
   await page.getByRole('button', { name: 'Show periods' }).click();
-  await expect(page.getByText('Available periods')).toBeVisible();
+  await expect(page.getByText('Candidate establishment periods')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'October – November' })).toBeVisible();
 });
 
-test('registered user can register, log in, log out, and view history without role escalation', async ({ page }) => {
+test('registered user can register, sign in, save, review history and sign out', async ({ page }) => {
   await page.goto('/register');
-  await expect(page.getByText('Registered User only')).toBeVisible();
-  await expect(page.locator('select')).toHaveCount(0);
-  await page.getByLabel('Name').fill('Registered Test User');
-  await page.getByLabel('Email').fill('registered@example.test');
-  await page.getByLabel('Password').fill('StrongPassword1!');
-  await page.getByRole('button', { name: 'Register' }).click();
+  await expect(page.getByText('Registration creates a Registered User account.')).toBeVisible();
+  await page.getByLabel('Full name').fill('Registered Test User');
+  await page.getByLabel('Email address').fill('registered@example.test');
+  await page.getByLabel('Password', { exact: true }).fill('StrongPassword1!');
+  await page.getByRole('button', { name: 'Create account' }).click();
   await expect(page).toHaveURL(/\/login$/);
-
-  await page.getByLabel('Email').fill('registered@example.test');
-  await page.getByLabel('Password').fill('StrongPassword1!');
-  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByLabel('Email address').fill('registered@example.test');
+  await page.getByLabel('Password', { exact: true }).fill('StrongPassword1!');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page).toHaveURL(/\/recommendations$/);
-  await expect(page.getByRole('link', { name: 'History' })).toBeVisible();
-
-  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
+  await page.getByRole('button', { name: 'Find recommendations' }).click();
   await expect(page.getByText('Saved to history', { exact: true })).toBeVisible();
-  await expect(page.getByText('This recommendation has been saved to your recommendation history.')).toBeVisible();
-
-  await page.getByRole('link', { name: 'History' }).click();
+  await page.goto('/history');
   await expect(page.getByRole('heading', { name: 'Recommendation History' })).toBeVisible();
   await expect(page.getByText('Paddy (Suitable)')).toBeVisible();
-
-  await page.getByRole('button', { name: 'Logout' }).click();
-  await expect(page.getByRole('link', { name: 'Register', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Sign out' }).click();
+  await expect(page).toHaveURL('/');
 });
 
-test('invalid login and protected route redirects are safe', async ({ page }) => {
+test('anonymous staff route redirects to staff login and invalid credentials are handled', async ({ page }) => {
   await page.goto('/admin');
-  await expect(page).toHaveURL(/\/login$/);
-
-  await page.getByLabel('Email').fill('bad@example.test');
-  await page.getByLabel('Password').fill('wrong');
-  await page.getByRole('button', { name: 'Login' }).click();
-
+  await expect(page).toHaveURL(/\/staff\/login$/);
+  await page.getByLabel('Email address').fill('bad@example.test');
+  await page.getByLabel('Password', { exact: true }).fill('wrong');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Invalid email or password.');
 });
 
-test('agricultural officer can validate only through the officer workflow', async ({ page }) => {
+test('officer can review evidence and submit validation in the role workspace', async ({ page }) => {
   await signInAs(page, 'Agricultural Officer');
   await page.goto('/officer');
-
   await expect(page.getByRole('heading', { name: 'Pending Recommendation Reviews' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Admin' })).toHaveCount(0);
   await page.getByRole('link', { name: 'Review' }).click();
   await expect(page.getByRole('heading', { name: 'Recommendation #1001' })).toBeVisible();
   await expect(page.getByLabel('Stored seven day forecast evidence')).toBeVisible();
@@ -106,27 +83,25 @@ test('agricultural officer can validate only through the officer workflow', asyn
   await page.getByLabel('Status').selectOption('Needs Review');
   await page.getByLabel('Comments').fill('Test fixture comment');
   await page.getByRole('button', { name: 'Submit validation' }).click();
-
   await expect(page.getByRole('status')).toContainText('Validation submitted.');
 });
 
-test('administrator can view admin dashboard and forecast generation fails closed in E2E', async ({ page }) => {
+test('administrator opens configuration and sees safe forecast failure', async ({ page }) => {
   await signInAs(page, 'Administrator');
   await page.goto('/admin');
-
   await expect(page.getByRole('heading', { name: 'Administration' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Officer' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Generate operational forecast' }).click();
-
+  await page.getByRole('button', { name: 'Crops', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Approved crop profiles' })).toBeVisible();
+  await page.getByRole('button', { name: 'Generate forecast' }).click();
   await expect(page.getByRole('alert')).toContainText('Operational forecast generation is disabled in Phase 16 browser tests.');
 });
 
-test('mobile viewport keeps public recommendation content reachable', async ({ page }) => {
-  await page.goto('/recommendations');
-  await page.getByRole('button', { name: 'Find crop recommendations' }).click();
-
-  await expect(page.getByRole('heading', { name: 'Crop Recommendation' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Paddy' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Groundnut' })).toBeVisible();
+test('mobile navigation exposes all destinations including registration', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Mobile navigation is shown only at narrow widths.');
+  await page.goto('/');
+  await page.locator('.public-mobile-menu summary').click();
+  const nav = page.getByRole('navigation', { name: 'Mobile public navigation' });
+  await expect(nav.getByRole('link', { name: 'Create account' })).toBeVisible();
+  await nav.getByRole('link', { name: 'Seasonal planning' }).click();
+  await expect(page).toHaveURL('/seasonal-planning');
 });

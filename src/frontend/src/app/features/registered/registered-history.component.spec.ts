@@ -44,6 +44,26 @@ describe('Registered recommendation history components', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Paddy');
   });
 
+  it('filters only the loaded history page by crop or soil', async () => {
+    api.listRecommendationHistory.mockReturnValue(of({
+      items: [
+        { recommendationId: 1, forecastRunId: 'run-one', soilType: 'Reddish Brown Earth', topCropName: 'Paddy', topSuitabilityCategory: 'Suitable', topOverallScore: 70, createdAt: '2026-10-10' },
+        { recommendationId: 2, forecastRunId: 'run-two', soilType: null, topCropName: 'Maize', topSuitabilityCategory: null, topOverallScore: null, createdAt: '2026-10-11' },
+      ], page: 1, pageSize: 10, totalCount: 2,
+    }));
+    await TestBed.configureTestingModule({
+      imports: [RegisteredHistoryBlockedComponent],
+      providers: [{ provide: ApiService, useValue: api }, provideRouter([])],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(RegisteredHistoryBlockedComponent);
+    fixture.componentInstance.search.set('reddish');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.visibleItems().map(item => item.recommendationId)).toEqual([1]);
+    expect(fixture.nativeElement.textContent).toContain('Find on this page');
+  });
+
   it('renders stored detail evidence, missing factors and insufficient evidence', async () => {
     api.getRecommendationHistoryDetail.mockReturnValue(of(sampleDetail()));
     await TestBed.configureTestingModule({

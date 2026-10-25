@@ -277,7 +277,7 @@ function recommendationEvaluation(soilType: string | null) {
           isEvaluable: false,
           score: null,
           aggregatedValue: null,
-          configuredWeight: 25,
+          configuredWeight: 35,
           effectiveWeight: null,
           explanation: 'Soil was not supplied.',
         },

@@ -1,0 +1,23 @@
+{
+    "checkedAtUtc":  "2026-10-25T12:55:02.6860701Z",
+    "accountTypes":  [
+                         "Disposable local QA accounts; credentials held in process memory only"
+                     ],
+    "registeredUserCanSaveRecommendation":  true,
+    "registeredUserAdminStatus":  403,
+    "officerRole":  "Agricultural Officer",
+    "officerPendingListReturned":  true,
+    "officerReviewCropCount":  6,
+    "officerValidationStatus":  "Needs Review",
+    "officerAdminStatus":  403,
+    "administratorRole":  "Administrator",
+    "administratorCropCount":  6,
+    "unsupportedCropCreateStatus":  400,
+    "operationalForecastGenerationStatus":  200,
+    "generatedForecastRunId":  "b63e58a3-7dbe-43ae-a710-e85822b019f6",
+    "generatedForecastDayCount":  7,
+    "generatedObservationStartDate":  "2026-09-25",
+    "generatedObservationEndDate":  "2026-10-24",
+    "latestForecastDayCount":  7,
+    "latestForecastFreshnessStatus":  "Operational"
+}

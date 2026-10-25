@@ -1,0 +1,15 @@
+sequenceDiagram
+  actor User
+  participant UI as Angular UI
+  participant API as ASP.NET Core API
+  participant DB as SQL Server
+  User->>UI: Register or sign in
+  UI->>API: POST /api/auth/register or /login
+  API->>DB: Read or create user and role
+  DB-->>API: Account and password hash
+  API->>API: Verify password and issue JWT on login
+  API-->>UI: User role and token or safe error
+  UI->>UI: Route to user or staff workspace
+  UI->>API: Request protected resource with JWT
+  API->>DB: Confirm active user and authorized role
+  API-->>UI: Authorized data or 401/403

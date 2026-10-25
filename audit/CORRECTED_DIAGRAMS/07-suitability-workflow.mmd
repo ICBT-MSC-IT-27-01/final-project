@@ -1,0 +1,18 @@
+flowchart TD
+  Request[Assessment request and optional soil] --> Forecast[Read eligible 7 day forecast]
+  Forecast --> Six[Load exactly six approved crop profiles]
+  Six --> Evidence[Check time basis, source status and configuration]
+  Evidence --> Enough{Mandatory rainfall, temperature and humidity evaluable?}
+  Enough -->|No| Partial[Factor details and explicit insufficient evidence; no score, category or rank]
+  Enough -->|Yes| Factors[Calculate rainfall, temperature and humidity factors]
+  Factors --> Soil{Compatible selected soil configured?}
+  Soil -->|Yes| Include[Include soil factor]
+  Soil -->|No| Normalize[Exclude optional soil and renormalize active weights]
+  Include --> Score[Weighted score and configured category]
+  Normalize --> Score
+  Score --> Rank[Rank assessed crops and explain factors]
+  Rank --> Warn{All categories Unsuitable?}
+  Warn -->|Yes| Unsuitable[Show rank with all Unsuitable warning]
+  Warn -->|No| Results[Show assessed results with limitations]
+  Partial --> Results
+  Unsuitable --> Results

@@ -1,5 +1,4 @@
-import { JsonPipe } from '@angular/common';
-import { Component, Input, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -13,39 +12,15 @@ import {
   SoilCompatibilityResponse,
   SuitabilityConfigurationResponse,
   UserRole,
+  supportedCrops,
 } from '../../core/api.models';
 import { ApiService, FrontendApiError } from '../../core/api.service';
 
 type AdminTab = 'users' | 'crops' | 'crop-requirements' | 'soil-compatibility' | 'suitability-config' | 'recommendations' | 'validations';
 
 @Component({
-  selector: 'admin-simple-table',
-  imports: [JsonPipe],
-  template: `
-    <section class="table-panel">
-      <h2>{{ title }}</h2>
-      @if (!rows.length) {
-        <p>No records returned.</p>
-      } @else {
-        <table>
-          <tbody>
-            @for (row of rows; track row) {
-              <tr><td><code>{{ row | json }}</code></td></tr>
-            }
-          </tbody>
-        </table>
-      }
-    </section>
-  `,
-})
-export class AdminSimpleTableComponent {
-  @Input({ required: true }) title = '';
-  @Input({ required: true }) rows: unknown[] = [];
-}
-
-@Component({
   selector: 'app-admin-readiness',
-  imports: [AdminSimpleTableComponent, FormsModule],
+  imports: [FormsModule],
   template: `
     <section class="admin-page-heading">
       <div>
@@ -73,9 +48,9 @@ export class AdminSimpleTableComponent {
         </button>
         @if (operationalForecastSummary(); as summary) { <p class="admin-run-summary">{{ summary }}</p> }
       </article>
-      <article class="admin-summary-card"><span>Active crops</span><strong>{{ crops().length || 6 }}</strong><p>Approved project crop scope</p></article>
+      <article class="admin-summary-card"><span>Approved crops</span><strong>6</strong><p>Project crop scope</p></article>
       <article class="admin-summary-card"><span>Users loaded</span><strong>{{ users().length }}</strong><p>For the current page</p></article>
-      <article class="admin-summary-card"><span>Open validations</span><strong>{{ validations().length }}</strong><p>Loaded validation records</p></article>
+      <article class="admin-summary-card"><span>Validations loaded</span><strong>{{ validations().length }}</strong><p>For the current page</p></article>
     </section>
 
     <section class="admin-workspace">
@@ -125,9 +100,12 @@ export class AdminSimpleTableComponent {
       @case ('crops') {
         <section class="grid-two">
           <form class="panel form-panel" (ngSubmit)="createCrop()">
-            <h2>Create crop</h2>
-            <label>Name <input name="cropName" [(ngModel)]="cropForm.name" maxlength="100" required /></label>
-            <button type="submit" class="button primary">Save crop</button>
+            <h2>Approved crop profiles</h2>
+            @if (missingCrops().length) {
+              <p>Add a missing crop from the approved six-crop scope.</p>
+              <label>Crop <select name="cropName" [(ngModel)]="cropForm.name" required><option value="">Select a crop</option>@for (name of missingCrops(); track name) { <option [value]="name">{{ name }}</option> }</select></label>
+              <button type="submit" class="button primary">Add crop</button>
+            } @else { <p>All six approved crop profiles are present. Use the status controls to manage availability.</p> }
           </form>
           <section class="table-panel">
             <h2>Crops</h2>
@@ -136,10 +114,9 @@ export class AdminSimpleTableComponent {
               <tbody>
                 @for (crop of crops(); track crop.id) {
                   <tr>
-                    <td><input [ngModel]="crop.name" (ngModelChange)="cropEdits[crop.id] = $event" /></td>
+                    <td>{{ crop.name }}</td>
                     <td>{{ crop.isActive ? 'Active' : 'Inactive' }}</td>
                     <td>
-                      <button type="button" class="button secondary" (click)="updateCrop(crop)">Update</button>
                       <button type="button" class="button secondary" (click)="setActive('crops', crop.id, !crop.isActive)">Set {{ crop.isActive ? 'inactive' : 'active' }}</button>
                     </td>
                   </tr>
@@ -153,7 +130,7 @@ export class AdminSimpleTableComponent {
         <section class="grid-two">
           <form class="panel form-panel" (ngSubmit)="createRequirement()">
             <h2>Crop requirement</h2>
-            <label>Crop ID <input type="number" name="reqCropId" [(ngModel)]="requirementForm.cropId" min="1" required /></label>
+            <label>Crop <select name="reqCropId" [(ngModel)]="requirementForm.cropId" required><option [ngValue]="0">Select a crop</option>@for (crop of crops(); track crop.id) { <option [ngValue]="crop.id">{{ crop.name }}</option> }</select></label>
             <label>Variable <select name="variableType" [(ngModel)]="requirementForm.variableType"><option>Rainfall</option><option>Temperature</option><option>Humidity</option></select></label>
             <label>Minimum <input type="number" name="minimumValue" [(ngModel)]="requirementForm.minimumValue" required /></label>
             <label>Maximum <input type="number" name="maximumValue" [(ngModel)]="requirementForm.maximumValue" required /></label>
@@ -191,7 +168,7 @@ export class AdminSimpleTableComponent {
         <section class="grid-two">
           <form class="panel form-panel" (ngSubmit)="createSoilCompatibility()">
             <h2>Soil compatibility</h2>
-            <label>Crop ID <input type="number" name="soilCropId" [(ngModel)]="soilForm.cropId" min="1" required /></label>
+            <label>Crop <select name="soilCropId" [(ngModel)]="soilForm.cropId" required><option [ngValue]="0">Select a crop</option>@for (crop of crops(); track crop.id) { <option [ngValue]="crop.id">{{ crop.name }}</option> }</select></label>
             <label>Soil type <input name="soilType" [(ngModel)]="soilForm.soilType" maxlength="100" required /></label>
             <label>Compatibility score <input type="number" name="compatibilityScore" [(ngModel)]="soilForm.compatibilityScore" min="0" max="100" required /></label>
             <button type="submit" class="button primary">Save compatibility</button>
@@ -250,10 +227,26 @@ export class AdminSimpleTableComponent {
         </section>
       }
       @case ('recommendations') {
-        <admin-simple-table title="Recommendation records" [rows]="recommendations()"></admin-simple-table>
+        <section class="table-panel admin-records-table">
+          <h2>Recommendation records</h2>
+          @if (!recommendations().length) { <p class="admin-empty">No recommendation records are available.</p> }
+          @else {
+            <table><thead><tr><th>ID</th><th>User</th><th>Forecast run</th><th>Soil type</th><th>Crops</th><th>Created</th></tr></thead><tbody>
+              @for (record of recommendations(); track record.id) { <tr><td><strong>#{{ record.id }}</strong></td><td>{{ record.userEmail || 'Public request' }}</td><td class="record-id" [title]="record.forecastRunId">{{ record.forecastRunId }}</td><td>{{ record.soilType || 'Not supplied' }}</td><td>{{ record.cropResultCount }}</td><td>{{ record.createdAt }}</td></tr> }
+            </tbody></table>
+          }
+        </section>
       }
       @case ('validations') {
-        <admin-simple-table title="Validation records" [rows]="validations()"></admin-simple-table>
+        <section class="table-panel admin-records-table">
+          <h2>Validation records</h2>
+          @if (!validations().length) { <p class="admin-empty">No validation records are available.</p> }
+          @else {
+            <table><thead><tr><th>ID</th><th>Recommendation</th><th>Officer</th><th>Status</th><th>Comment</th><th>Created</th></tr></thead><tbody>
+              @for (record of validations(); track record.id) { <tr><td><strong>#{{ record.id }}</strong></td><td>#{{ record.recommendationId }}</td><td>{{ record.officerEmail }}</td><td><span class="record-status">{{ record.status }}</span></td><td>{{ record.comment || '—' }}</td><td>{{ record.createdAt }}</td></tr> }
+            </tbody></table>
+          }
+        </section>
       }
         }
       </section>
@@ -279,6 +272,7 @@ export class AdminReadinessComponent {
   readonly operationalForecastSummary = signal<string | null>(null);
   readonly users = signal<AdminUserResponse[]>([]);
   readonly crops = signal<CropResponse[]>([]);
+  readonly missingCrops = computed(() => supportedCrops.filter(name => !this.crops().some(crop => crop.name === name)));
   readonly requirements = signal<CropRequirementResponse[]>([]);
   readonly soilCompatibilities = signal<SoilCompatibilityResponse[]>([]);
   readonly suitabilityConfigs = signal<SuitabilityConfigurationResponse[]>([]);
@@ -294,6 +288,7 @@ export class AdminReadinessComponent {
   readonly configForm = { configurationType: '', configurationKey: '', value: 0 };
 
   constructor(private readonly api: ApiService) {
+    this.loadCropOptions();
     this.loadActiveTab();
   }
 
@@ -307,12 +302,13 @@ export class AdminReadinessComponent {
   }
 
   createCrop(): void {
-    if (!this.cropForm.name.trim()) {
-      this.error.set('Crop name is required.');
+    const name = this.cropForm.name.trim();
+    if (!this.missingCrops().includes(name as typeof supportedCrops[number])) {
+      this.error.set('Select one of the missing approved crops.');
       return;
     }
 
-    this.save(this.api.createAdminResource('crops', { name: this.cropForm.name.trim() }), 'Crop saved.');
+    this.save(this.api.createAdminResource('crops', { name }), 'Crop saved.');
   }
 
   updateCrop(crop: CropResponse): void {
@@ -326,6 +322,7 @@ export class AdminReadinessComponent {
   }
 
   createRequirement(): void {
+    if (!this.crops().some(crop => crop.id === this.requirementForm.cropId)) { this.error.set('Select a crop.'); return; }
     this.save(this.api.createAdminResource('crop-requirements', this.requirementForm), 'Crop requirement saved.');
   }
 
@@ -346,6 +343,7 @@ export class AdminReadinessComponent {
   }
 
   createSoilCompatibility(): void {
+    if (!this.crops().some(crop => crop.id === this.soilForm.cropId)) { this.error.set('Select a crop.'); return; }
     this.save(this.api.createAdminResource('soil-compatibility', this.soilForm), 'Soil compatibility saved.');
   }
 
@@ -432,13 +430,21 @@ export class AdminReadinessComponent {
       });
   }
 
+  private loadCropOptions(): void {
+    this.api.listAdminResources<CropResponse>('crops', 1, 100).subscribe({
+      next: page => this.crops.set(page.items),
+      error: (error: FrontendApiError) => this.error.set(error.message),
+    });
+  }
+
   private save(request: Observable<unknown>, message: string): void {
     this.error.set(null);
     this.success.set(null);
     request.subscribe({
       next: () => {
-        this.success.set(message);
         this.loadActiveTab();
+        this.loadCropOptions();
+        this.success.set(message);
       },
       error: (error: FrontendApiError) => this.error.set(error.message),
     });

@@ -1,0 +1,47 @@
+{
+    "checkedAtUtc":  "2026-10-25T12:47:52.1010448Z",
+    "forecastDayCount":  7,
+    "forecastFreshnessStatus":  "Operational",
+    "recommendationCropCount":  6,
+    "recommendationCompleteCount":  6,
+    "recommendationUnsuitableCount":  6,
+    "dateRangeEvidenceStatus":  "CALENDAR_SUPPORTED_CANDIDATES",
+    "dateRangeCropCount":  6,
+    "byCrop":  [
+                   {
+                       "evidenceStatus":  "CALENDAR_SUPPORTED_CANDIDATE",
+                       "cropName":  "Paddy",
+                       "candidateWindowCount":  1
+                   },
+                   {
+                       "evidenceStatus":  "CLIMATE_CONTEXT_ONLY",
+                       "cropName":  "Maize",
+                       "candidateWindowCount":  0
+                   },
+                   {
+                       "evidenceStatus":  "CALENDAR_SUPPORTED_CANDIDATE",
+                       "cropName":  "Green Gram",
+                       "candidateWindowCount":  1
+                   },
+                   {
+                       "evidenceStatus":  "CALENDAR_SUPPORTED_CANDIDATE",
+                       "cropName":  "Cowpea",
+                       "candidateWindowCount":  1
+                   },
+                   {
+                       "evidenceStatus":  "CALENDAR_SUPPORTED_CANDIDATE",
+                       "cropName":  "Groundnut",
+                       "candidateWindowCount":  1
+                   },
+                   {
+                       "evidenceStatus":  "CALENDAR_SUPPORTED_CANDIDATE",
+                       "cropName":  "Chilli",
+                       "candidateWindowCount":  1
+                   }
+               ],
+    "pastDateStatus":  400,
+    "over366DaysStatus":  400,
+    "unsupportedCropStatus":  400,
+    "anonymousAdminStatus":  401,
+    "anonymousOfficerStatus":  401
+}

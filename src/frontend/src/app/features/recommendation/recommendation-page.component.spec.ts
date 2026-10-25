@@ -58,6 +58,42 @@ describe('RecommendationPageComponent', () => {
     expect(text).toContain('Missing: Soil');
   });
 
+  it('warns when every assessed crop is unsuitable without presenting rank as suitability', () => {
+    const result = sampleRecommendation();
+    result.crops = result.crops.map(crop => ({ ...crop, suitabilityCategory: crop.overallScore === null ? null : 'Unsuitable' }));
+    component.recommendation.set(result);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('All assessed crops are Unsuitable');
+    expect(fixture.nativeElement.textContent).toContain('does not make the highest-ranked crop suitable');
+  });
+
+  it('warns when no crop can be ranked from available evidence', () => {
+    const result = sampleRecommendation();
+    result.crops = result.crops.map(crop => ({ ...crop, overallScore: null, rank: null, suitabilityCategory: null }));
+    component.recommendation.set(result);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('No crop can be ranked from the available evidence');
+  });
+
+  it('shows repository evidence as text and external evidence as a link', () => {
+    const result = sampleRecommendation();
+    result.crops[0].evidenceSources = [
+      { title: 'Local matrix', sourceUrl: 'docs/qa/matrix.md', publicationDetails: null, location: null, evidenceStatus: 'PROJECT_OWNER_APPROVED_CONFIGURATION' },
+      { title: 'Official calendar', sourceUrl: 'https://example.org/calendar', publicationDetails: null, location: null, evidenceStatus: 'OFFICIAL_CONDITIONALLY_APPLICABLE' },
+    ];
+    component.recommendation.set(result);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.textContent).toContain('Repository reference: docs/qa/matrix.md');
+    expect(element.querySelector('a[href="docs/qa/matrix.md"]')).toBeNull();
+    expect(element.querySelector('a[href="https://example.org/calendar"]')).not.toBeNull();
+  });
+
   it('saves a registered user recommendation through the authenticated history endpoint', () => {
     auth.hasRole.mockReturnValue(true);
     api.createRecommendation.mockReturnValue(of(savedRecommendation()));

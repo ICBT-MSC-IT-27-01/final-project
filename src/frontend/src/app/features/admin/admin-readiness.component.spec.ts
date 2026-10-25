@@ -54,7 +54,7 @@ describe('AdminReadinessComponent', () => {
     component.createCrop();
 
     expect(api.createAdminResource).not.toHaveBeenCalled();
-    expect(component.error()).toBe('Crop name is required.');
+    expect(component.error()).toBe('Select one of the missing approved crops.');
   });
 
   it('uses confirmation before active-status updates', () => {

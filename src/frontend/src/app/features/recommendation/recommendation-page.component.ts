@@ -84,6 +84,12 @@ import {
         </div>
       </section>
 
+      @if (result.crops.length && assessedCrops().length === 0) {
+        <div class="notice warning" role="status"><strong>No crop can be ranked from the available evidence.</strong> Review each crop's missing factors and the evidence limitations below. These results are not cultivation advice.</div>
+      } @else if (allAssessedCropsUnsuitable()) {
+        <div class="notice warning" role="status"><strong>All assessed crops are Unsuitable for this forecast and supplied inputs.</strong> A rank only orders their scores; it does not make the highest-ranked crop suitable for cultivation.</div>
+      }
+
       @if (!soilType.trim()) {
         <div class="notice warning">Soil was not supplied. It is excluded from this calculation.</div>
       }
@@ -159,13 +165,13 @@ import {
               @if (crop.unavailableFactors.length) { <div class="missing">Missing: {{ crop.unavailableFactors.join(', ') }}</div> }
               <div class="factor-list">
                 @for (factor of crop.factors; track factor.factor) {
-                  <div><span>{{ factor.factor }}</span><strong>{{ factor.isEvaluable ? (factor.score | number: '1.0-2') : 'Unavailable' }}</strong></div>
+                  <div><span>{{ factor.factor }} · configured weight {{ factor.configuredWeight | number: '1.0-2' }}%</span><strong>{{ factor.isEvaluable ? (factor.score | number: '1.0-2') : 'Unavailable' }}</strong><small>{{ factor.explanation }}</small></div>
                 }
               </div>
               @if (crop.climateRisks.length) { <div class="risks">{{ crop.climateRisks.join(', ') }}</div> }
               @if (crop.evidenceSources?.length) {
                 <div class="factor-list" aria-label="Evidence sources">
-                  @for (source of crop.evidenceSources; track source.sourceUrl) { <div><span>{{ source.evidenceStatus }}</span><a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.title }}</a></div> }
+                  @for (source of crop.evidenceSources; track source.sourceUrl) { <div><span>{{ source.evidenceStatus }}</span>@if (isExternalUrl(source.sourceUrl)) { <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.title }}</a> } @else { <strong>{{ source.title }}</strong><small>Repository reference: {{ source.sourceUrl }}</small> }</div> }
                 </div>
               }
               @if (crop.scientificLimitations?.length) { <div class="missing">Limitations: {{ (crop.scientificLimitations || []).join(' ') }}</div> }
@@ -210,6 +216,11 @@ export class RecommendationPageComponent {
   ));
   readonly riskOptions = computed(() => uniqueSorted(this.recommendation()?.crops.flatMap(crop => crop.climateRisks) ?? []));
   readonly visibleCrops = computed(() => this.filterAndSortCrops(this.recommendation()?.crops ?? []));
+  readonly assessedCrops = computed(() => (this.recommendation()?.crops ?? []).filter(crop => !this.isPartiallyAssessed(crop)));
+  readonly allAssessedCropsUnsuitable = computed(() => {
+    const assessed = this.assessedCrops();
+    return assessed.length > 0 && assessed.every(crop => crop.suitabilityCategory === 'Unsuitable');
+  });
   district = 'Anuradhapura District';
   soilType = '';
 
@@ -263,6 +274,10 @@ export class RecommendationPageComponent {
       || crop.overallScore === null
       || crop.suitabilityCategory === null
       || crop.rank === null;
+  }
+
+  isExternalUrl(value: string): boolean {
+    return /^https?:\/\//i.test(value);
   }
 
   private filterAndSortCrops(crops: RecommendationCropResponse[]): RecommendationCropResponse[] {

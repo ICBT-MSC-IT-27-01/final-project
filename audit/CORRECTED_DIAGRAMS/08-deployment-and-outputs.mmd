@@ -1,0 +1,17 @@
+flowchart LR
+  Browser[Angular browser application] <--> |HTTP API requests| API[ASP.NET Core Web API]
+  API <--> DB[(SQL Server users, configuration, forecast and recommendation records)]
+  API <--> |30 daily observations and 7 forecast days| Python[Python FastAPI LSTM service]
+  Provider[Operational observation source] --> API
+  ERA5[(Repository historical ERA5 CSV)] --> Python
+  ERA5 --> Seasonal[Backend seasonal climate logic]
+  Calendar[(Repository DoA calendar JSON)] --> Seasonal
+  Seasonal --> API
+  API --> Out1[Output 1: 7 day AI weather]
+  API --> Out2[Output 2: conditional crops by date range]
+  API --> Out3[Output 3: approximate periods by crop]
+  API --> Suitability[Separate evidence gated suitability assessment]
+  Out1 --> Browser
+  Out2 --> Browser
+  Out3 --> Browser
+  Suitability --> Browser

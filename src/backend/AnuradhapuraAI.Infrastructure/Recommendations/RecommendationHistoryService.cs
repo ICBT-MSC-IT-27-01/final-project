@@ -320,12 +320,15 @@ public sealed class RecommendationHistoryService(
         property.ValueKind == JsonValueKind.True;
 
     private static decimal? ReadDecimal(JsonElement element, string propertyName) =>
-        element.TryGetProperty(propertyName, out var property) && property.TryGetDecimal(out var value)
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty(propertyName, out var property) &&
+        property.ValueKind == JsonValueKind.Number &&
+        property.TryGetDecimal(out var value)
             ? value
             : null;
 
     private static decimal? ReadNestedDecimal(JsonElement element, string propertyName, string nestedPropertyName) =>
-        element.TryGetProperty(propertyName, out var property)
+        element.ValueKind == JsonValueKind.Object && element.TryGetProperty(propertyName, out var property)
             ? ReadDecimal(property, nestedPropertyName)
             : null;
 

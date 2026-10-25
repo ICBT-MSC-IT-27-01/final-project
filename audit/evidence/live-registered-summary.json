@@ -1,0 +1,13 @@
+{
+  "checkedAtUtc": "2026-10-25T12:41:48.8775272Z",
+  "accountType": "Disposable local QA account",
+  "registeredRole": "Registered User",
+  "authenticatedRole": "Registered User",
+  "savedCropCount": 6,
+  "historyContainsSavedRecommendation": true,
+  "detailMatchesSavedRecommendation": true,
+  "adminStatus": 403,
+  "officerStatus": 403,
+  "accountEmail": "qa-audit-1f9194f4016b@example.test",
+  "recommendationId": 2
+}

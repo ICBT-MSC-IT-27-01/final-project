@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../../core/api.service';
@@ -6,7 +7,7 @@ import { RecommendationReviewSummaryResponse } from '../../core/api.models';
 
 @Component({
   selector: 'app-officer-list',
-  imports: [RouterLink],
+  imports: [FormsModule, RouterLink],
   template: `
     <section class="page-title">
       <p class="eyebrow">Agricultural Officer</p>
@@ -15,6 +16,7 @@ import { RecommendationReviewSummaryResponse } from '../../core/api.models';
     </section>
 
     <button type="button" class="button secondary" (click)="load()" [disabled]="isLoading()">Refresh</button>
+    <label class="officer-filter">Find a review <input name="reviewSearch" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Recommendation ID or forecast run" /></label>
 
     @if (error(); as message) {
       <div class="notice error" role="alert">{{ message }}</div>
@@ -25,6 +27,8 @@ import { RecommendationReviewSummaryResponse } from '../../core/api.models';
         <p>Loading pending reviews...</p>
       } @else if (!reviews().length) {
         <p>No pending recommendations are currently available for officer review.</p>
+      } @else if (!visibleReviews().length) {
+        <p>No pending review matches this search.</p>
       } @else {
         <table>
           <thead>
@@ -37,7 +41,7 @@ import { RecommendationReviewSummaryResponse } from '../../core/api.models';
             </tr>
           </thead>
           <tbody>
-            @for (review of reviews(); track review.recommendationId) {
+            @for (review of visibleReviews(); track review.recommendationId) {
               <tr>
                 <td>#{{ review.recommendationId }}</td>
                 <td>{{ review.forecastRunId }}</td>
@@ -54,6 +58,11 @@ import { RecommendationReviewSummaryResponse } from '../../core/api.models';
 })
 export class OfficerListComponent {
   readonly reviews = signal<RecommendationReviewSummaryResponse[]>([]);
+  readonly search = signal('');
+  readonly visibleReviews = computed(() => {
+    const query = this.search().trim().toLowerCase();
+    return this.reviews().filter(review => !query || String(review.recommendationId).includes(query) || review.forecastRunId.toLowerCase().includes(query));
+  });
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
 

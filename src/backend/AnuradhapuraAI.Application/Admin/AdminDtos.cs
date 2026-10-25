@@ -16,6 +16,7 @@ public static class AdminErrorCodes
     public const string NotFound = "NotFound";
     public const string Duplicate = "Duplicate";
     public const string InvalidRole = "InvalidRole";
+    public const string InvalidCrop = "InvalidCrop";
     public const string InvalidVariableType = "InvalidVariableType";
     public const string InvalidConfigurationType = "InvalidConfigurationType";
     public const string InvalidConfigurationKey = "InvalidConfigurationKey";

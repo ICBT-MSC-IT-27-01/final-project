@@ -10,7 +10,8 @@ export function roleGuard(allowedRoles: UserRole[]): CanActivateFn {
     const user = auth.currentUser();
 
     if (!user || !auth.isAuthenticated()) {
-      return router.createUrlTree(['/login']);
+      const loginPath = allowedRoles.includes('Registered User') ? '/login' : '/staff/login';
+      return router.createUrlTree([loginPath]);
     }
 
     if (!allowedRoles.includes(user.role)) {

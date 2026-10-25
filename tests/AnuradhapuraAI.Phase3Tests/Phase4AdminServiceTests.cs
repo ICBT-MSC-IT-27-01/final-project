@@ -13,17 +13,31 @@ public sealed class Phase4AdminServiceTests
     {
         await using var host = await Phase4AdminServiceTestHost.CreateAsync();
 
-        var create = await host.AdminService.CreateCropAsync(new CreateCropRequest { Name = "Test Crop" });
-        var duplicate = await host.AdminService.CreateCropAsync(new CreateCropRequest { Name = "Test Crop" });
-        var update = await host.AdminService.UpdateCropAsync(create.Value!.Id, new UpdateCropRequest { Name = "Updated Crop", IsActive = true });
+        var create = await host.AdminService.CreateCropAsync(new CreateCropRequest { Name = ApprovedCropNames.GreenGram });
+        var duplicate = await host.AdminService.CreateCropAsync(new CreateCropRequest { Name = ApprovedCropNames.GreenGram });
+        var update = await host.AdminService.UpdateCropAsync(create.Value!.Id, new UpdateCropRequest { Name = ApprovedCropNames.Cowpea, IsActive = true });
         var deactivate = await host.AdminService.SetCropActiveStatusAsync(create.Value!.Id, false);
         var list = await host.AdminService.ListCropsAsync(isActive: false, page: 1, pageSize: 20);
 
         Assert.True(create.Succeeded);
         Assert.Equal(AdminErrorCodes.Duplicate, duplicate.ErrorCode);
-        Assert.Equal("Updated Crop", update.Value!.Name);
+        Assert.Equal(ApprovedCropNames.Cowpea, update.Value!.Name);
         Assert.False(deactivate.Value!.IsActive);
         Assert.Contains(list.Items, crop => crop.Id == create.Value.Id);
+    }
+
+    [Fact]
+    public async Task Crop_CreateAndRename_RejectsUnapprovedNames()
+    {
+        await using var host = await Phase4AdminServiceTestHost.CreateAsync();
+
+        var create = await host.AdminService.CreateCropAsync(new CreateCropRequest { Name = "Rice" });
+        var update = await host.AdminService.UpdateCropAsync(1, new UpdateCropRequest { Name = "Rice", IsActive = true });
+        var existing = await host.AdminService.GetCropAsync(1);
+
+        Assert.Equal(AdminErrorCodes.InvalidCrop, create.ErrorCode);
+        Assert.Equal(AdminErrorCodes.InvalidCrop, update.ErrorCode);
+        Assert.Equal(ApprovedCropNames.Paddy, existing.Value!.Name);
     }
 
     [Fact]

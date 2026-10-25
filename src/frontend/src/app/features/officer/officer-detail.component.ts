@@ -1,19 +1,20 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../../core/api.service';
 import { RecommendationReviewResponse, validationStatuses } from '../../core/api.models';
 
 @Component({
   selector: 'app-officer-detail',
-  imports: [DecimalPipe, FormsModule],
+  imports: [DecimalPipe, FormsModule, RouterLink],
   template: `
     <section class="page-title">
       <p class="eyebrow">Officer review</p>
       <h1>Recommendation #{{ recommendationId() }}</h1>
       <p>Validation metadata is recorded separately from the original AI recommendation.</p>
+      <a routerLink="/officer">← Back to validation queue</a>
     </section>
 
     @if (error(); as message) {

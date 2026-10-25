@@ -57,3 +57,7 @@ cd src/backend/AnuradhapuraAI.Api
 dotnet user-secrets init
 dotnet user-secrets set "Jwt:SigningKey" "<local-development-key-at-least-32-characters>"
 ```
+
+## Account and Role Management
+
+See [Account and role management](docs/ACCOUNT_AND_ROLE_MANAGEMENT.md) for Registered User registration, Administrator and Agricultural Officer assignment, sign-in routing, and first-Administrator provisioning. Do not commit account credentials.

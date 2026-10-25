@@ -44,6 +44,7 @@ import { LatestForecastResponse, SeasonalCropResponse, SeasonalRangeResponse, su
     @if (rangeResult(); as result) {
       <section class="seasonal-results" aria-live="polite">
         <div class="seasonal-results-heading"><span>Your selected period</span><strong>{{ formatDate(result.startDate) }} – {{ formatDate(result.endDate) }}</strong></div>
+        <p class="seasonal-disclaimer">Historical calendar and climate context · {{ result.evidenceStatus }}. These dates are separate from the seven-day AI forecast.</p>
         @if (latestForecast(); as forecast) {
           <aside class="seasonal-weather-context" aria-label="Current seven-day weather context">
             <div><span>Current 7-day weather context</span><strong>{{ forecast.forecastPeriodStart }} to {{ forecast.forecastPeriodEnd }}</strong></div>
@@ -60,7 +61,7 @@ import { LatestForecastResponse, SeasonalCropResponse, SeasonalRangeResponse, su
             <article class="seasonal-crop-card" [class.no-match]="!crop.candidateWindows?.length">
               <h2>{{ crop.cropName }}</h2>
               @if (crop.candidateWindows?.length) {
-                <p class="period-status available">Available period</p>
+                <p class="period-status available">Conditional calendar window</p>
                 @for (window of crop.candidateWindows; track window.id) { <p class="period-value">{{ monthNames(window.establishmentMonths) }}</p> }
               } @else {
                 <p class="period-status unavailable">No matching period</p>
@@ -70,22 +71,25 @@ import { LatestForecastResponse, SeasonalCropResponse, SeasonalRangeResponse, su
                 } @else { <p class="period-value">No alternative period available</p> }
               }
               @if (crop.explanation) { <p class="seasonal-evidence">{{ crop.explanation }}</p> }
+              <details><summary>Calendar evidence and conditions</summary><p>Status: {{ crop.evidenceStatus }} · {{ crop.calendarEvidence.validationStatus }}</p>@for (condition of crop.calendarEvidence.documentedConditions; track condition) { <p>{{ condition }}</p> }@for (source of crop.calendarEvidence.sourceUrls; track source) { <p><a [href]="source" target="_blank" rel="noopener noreferrer">Source document</a></p> }</details>
               <a routerLink="/recommendations" class="seasonal-recommendation-link">View crop recommendations <span aria-hidden="true">→</span></a>
-              <p class="seasonal-card-note">Suitability and approved climate-risk indicators are shown in the full forecast-based recommendation.</p>
+              <p class="seasonal-card-note">Forecast-based suitability is a separate assessment and may report insufficient evidence.</p>
             </article>
           }
         </div>
         <p class="seasonal-disclaimer">Seasonal planning is calendar reference information. Final crop suitability uses the current seven-day forecast and configured crop requirements.</p>
+        @if (result.limitations.length) { <details><summary>Planning limitations</summary>@for (limitation of result.limitations; track limitation) { <p>{{ limitation }}</p> }</details> }
       </section>
     }
 
     @if (cropResult(); as result) {
       <section class="seasonal-results" aria-live="polite">
-        <div class="seasonal-results-heading"><span>Available periods</span><strong>{{ result.cropName }}</strong></div>
+        <div class="seasonal-results-heading"><span>Candidate establishment periods</span><strong>{{ result.cropName }}</strong></div>
+        <p class="seasonal-disclaimer">Historical calendar and climate context · {{ result.evidenceStatus }}. These approximate months are separate from the seven-day AI forecast.</p>
         @if (result.candidateWindows?.length) {
           <div class="seasonal-window-grid">
             @for (window of result.candidateWindows; track window.id) {
-              <article class="seasonal-window-card"><p class="period-status available">Available period</p><h2>{{ monthNames(window.establishmentMonths) }}</h2></article>
+              <article class="seasonal-window-card"><p class="period-status available">Conditional calendar window</p><h2>{{ monthNames(window.establishmentMonths) }}</h2><p>{{ window.interpretation }}</p></article>
             }
           </div>
         } @else {
@@ -96,6 +100,7 @@ import { LatestForecastResponse, SeasonalCropResponse, SeasonalRangeResponse, su
             } @else { <p>Try another date range.</p> }
           </article>
         }
+        <details><summary>Calendar evidence and limitations</summary><p>{{ result.explanation }}</p><p>Status: {{ result.calendarEvidence.validationStatus }}</p>@for (limitation of result.limitations; track limitation) { <p>{{ limitation }}</p> }@for (source of result.calendarEvidence.sourceUrls; track source) { <p><a [href]="source" target="_blank" rel="noopener noreferrer">Source document</a></p> }</details>
       </section>
     }
   `,

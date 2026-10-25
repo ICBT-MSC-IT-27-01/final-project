@@ -3,38 +3,47 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ApiService, FrontendApiError } from '../../core/api.service';
 import { LatestForecastResponse } from '../../core/api.models';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-public-dashboard',
   imports: [DecimalPipe, RouterLink],
   template: `
-    <section class="dashboard-hero dashboard-hero-refined">
-      <div>
-        <p class="eyebrow">Anuradhapura District · seven-day outlook</p>
-        <h1>Weather context, made clear for each farming decision.</h1>
-        <p>
-          Review the latest backend-generated forecast before exploring the six approved crop
-          recommendations. Forecast information is shown as predicted weather, not measured observations.
-        </p>
-        <div class="action-row">
-          <a routerLink="/recommendations" class="button primary">Explore crop recommendations</a>
-          <a routerLink="/seasonal-planning" class="button secondary">View seasonal planning</a>
+    @if (auth.isAuthenticated()) {
+      <section class="workspace-welcome"><div><p class="eyebrow">ANURADHAPURA DISTRICT</p><h1>Weather overview</h1><p>Review the latest seven-day forecast and continue to crop suitability, seasonal planning, or your role workspace.</p></div><a routerLink="/recommendations" class="button primary">Open recommendations →</a></section>
+    } @else {
+    <section class="landing-hero" aria-labelledby="landing-title">
+      <div class="landing-orbit landing-orbit-one" aria-hidden="true"></div>
+      <div class="landing-orbit landing-orbit-two" aria-hidden="true"></div>
+      <div class="landing-hero-inner">
+        <div class="landing-copy">
+          <span class="landing-pill"><span class="landing-pill-dot"></span> ANURADHAPURA DISTRICT · SRI LANKA</span>
+          <h1 id="landing-title">Clearer weather insight.<br><em>More informed crop decisions.</em></h1>
+          <p>Explore a seven-day AI weather forecast and transparent crop suitability results for six approved crops. Built to support decisions with evidence you can review.</p>
+          <div class="landing-actions"><a routerLink="/recommendations" class="landing-primary">Explore recommendations <span aria-hidden="true">↗</span></a><a routerLink="/seasonal-planning" class="landing-secondary">Seasonal planning <span aria-hidden="true">→</span></a></div>
+          <div class="landing-trust"><span><b>07</b> day forecast</span><span><b>06</b> approved crops</span><span><b>01</b> district focus</span></div>
         </div>
+        <aside class="landing-preview" aria-label="Latest forecast preview">
+          <div class="preview-topline"><span>FORECAST INTELLIGENCE</span><span class="preview-signal" [class.is-ready]="!!forecast()"><i></i>{{ forecast() ? 'Forecast ready' : loading() ? 'Checking forecast' : 'Forecast unavailable' }}</span></div>
+          <div class="preview-heading"><div><small>Current outlook</small><h2>Seven-day forecast</h2></div><span class="preview-compass" aria-hidden="true">✳</span></div>
+          @if (forecast(); as latest) {
+            <p class="preview-period">{{ latest.forecastPeriodStart }} – {{ latest.forecastPeriodEnd }}</p>
+            <div class="preview-metrics"><div><span>Rainfall total</span><strong>{{ totalRainfall() | number: '1.0-1' }} <small>mm</small></strong></div><div><span>Mean temperature</span><strong>{{ meanTemperature() | number: '1.0-1' }} <small>°C</small></strong></div></div>
+            <div class="preview-days">@for (day of latest.dailyForecasts.slice(0, 4); track day.targetDate) { <div><span>{{ day.targetDate }}</span><strong>{{ day.temperatureC | number: '1.0-1' }}°</strong></div> }</div>
+            <p class="preview-footnote">AI-predicted weather · {{ latest.modelVersion || 'Model version unavailable' }} · {{ latest.freshnessStatus }}</p>
+          } @else {
+            <div class="preview-empty"><span aria-hidden="true">◌</span><p>{{ loading() ? 'Loading the latest forecast…' : 'The latest seven-day forecast is not available yet.' }}</p></div>
+          }
+        </aside>
       </div>
-      <aside class="forecast-status-board" aria-label="Forecast availability">
-        <span class="forecast-live"><span></span> Forecast available</span>
-        <h2>Latest forecast run</h2>
-        <p>A complete seven-day operational forecast has been selected by the backend and is ready for read-only evaluation.</p>
-        @if (forecast(); as latest) {
-          <div class="forecast-status-meta">
-            <div><span>Model</span><strong>{{ latest.modelVersion || 'Not recorded' }}</strong></div>
-            <div><span>Freshness</span><strong>{{ latest.freshnessStatus }}</strong></div>
-            <div><span>Forecast run</span><strong>Operational</strong></div>
-            <div><span>Period</span><strong>{{ latest.forecastPeriodStart }}</strong></div>
-          </div>
-        }
-      </aside>
     </section>
+
+    <section class="landing-capabilities" aria-label="Platform capabilities">
+      <article><span class="capability-icon" aria-hidden="true">↗</span><div><h2>Forecast with context</h2><p>Review predicted rainfall, temperature, and humidity for the coming seven days.</p></div></article>
+      <article><span class="capability-icon" aria-hidden="true">◎</span><div><h2>Explainable suitability</h2><p>See the factors behind each crop result, with approved climate-risk indicators.</p></div></article>
+      <article><span class="capability-icon" aria-hidden="true">▤</span><div><h2>Role-based workspaces</h2><p>Registered users, officers, and administrators get tools for their responsibilities.</p></div></article>
+    </section>
+    }
 
     @if (loading()) {
       <p class="notice">Loading the latest persisted forecast...</p>
@@ -50,10 +59,12 @@ import { LatestForecastResponse } from '../../core/api.models';
         <span class="dashboard-period">{{ latest.forecastPeriodStart }} to {{ latest.forecastPeriodEnd }}</span>
       </section>
 
+      <p class="dashboard-provenance">Forecast run {{ latest.forecastRunId }} · Generated {{ latest.createdAt }} · Status: {{ latest.freshnessStatus }} · Model: {{ latest.modelVersion || 'Not provided' }}</p>
+
       <section class="weather-metric-grid" aria-label="Seven-day forecast summary">
-        <article class="weather-metric rain-metric"><span class="weather-symbol">☔</span><strong>{{ totalRainfall() | number: '1.0-2' }} mm</strong><p>Total forecast rainfall</p></article>
-        <article class="weather-metric"><span class="weather-symbol">☀</span><strong>{{ meanTemperature() | number: '1.0-2' }}°C</strong><p>Mean forecast temperature</p></article>
-        <article class="weather-metric"><span class="weather-symbol">◌</span><strong>{{ meanHumidity() | number: '1.0-2' }}%</strong><p>Mean forecast humidity</p></article>
+        <article class="weather-metric rain-metric"><span class="weather-symbol" aria-hidden="true">↘</span><strong>{{ totalRainfall() | number: '1.0-2' }} mm</strong><p>Total forecast rainfall</p></article>
+        <article class="weather-metric"><span class="weather-symbol" aria-hidden="true">°</span><strong>{{ meanTemperature() | number: '1.0-2' }}°C</strong><p>Mean forecast temperature</p></article>
+        <article class="weather-metric"><span class="weather-symbol" aria-hidden="true">%</span><strong>{{ meanHumidity() | number: '1.0-2' }}%</strong><p>Mean forecast humidity</p></article>
       </section>
 
       <section class="dashboard-forecast-panel" aria-label="Seven day AI weather forecast">
@@ -62,10 +73,10 @@ import { LatestForecastResponse } from '../../core/api.models';
           <span>Forecast information</span>
         </div>
         <div class="dashboard-forecast-days">
-          @for (day of latest.dailyForecasts; track day.targetDate; let first = $first) {
+          @for (day of latest.dailyForecasts; track day.targetDate; let first = $first; let index = $index) {
             <article [class.today]="first">
               <span class="forecast-date">{{ day.targetDate }}</span>
-              <span class="weather-symbol">{{ weatherSymbol(day.rainfallMm) }}</span>
+              <span class="forecast-day-index">DAY {{ index + 1 }}</span>
               <strong>{{ day.temperatureC | number: '1.0-2' }}°C</strong>
               <span class="rainfall">{{ day.rainfallMm | number: '1.0-2' }} mm rain</span>
               <span class="humidity">{{ day.humidityPercent | number: '1.0-2' }}% humidity</span>
@@ -95,7 +106,7 @@ export class PublicDashboardComponent implements OnInit {
   readonly meanTemperature = computed(() => average(this.forecast()?.dailyForecasts.map(day => day.temperatureC) ?? []));
   readonly meanHumidity = computed(() => average(this.forecast()?.dailyForecasts.map(day => day.humidityPercent) ?? []));
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly api: ApiService, public readonly auth: AuthService) {}
 
   ngOnInit(): void {
     this.api.getLatestForecast().subscribe({
@@ -112,11 +123,6 @@ export class PublicDashboardComponent implements OnInit {
     });
   }
 
-  weatherSymbol(rainfallMm: number): string {
-    if (rainfallMm >= 5) return '🌦';
-    if (rainfallMm >= 1) return '⛅';
-    return '☀';
-  }
 }
 
 function average(values: number[]): number {

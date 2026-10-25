@@ -1,0 +1,19 @@
+flowchart LR
+  Public[Public User] --> Forecast[View seven day forecast]
+  Public --> Suitability[Request evidence gated crop assessment]
+  Public --> Dates[Explore crops by date range]
+  Public --> Periods[View candidate periods by crop]
+  Registered[Registered User] --> Public
+  Registered --> Save[Save recommendation]
+  Registered --> History[Review own history and detail]
+  Officer[Agricultural Officer] --> Public
+  Officer --> Review[Review recommendation evidence]
+  Officer --> Validate[Record status and optional comment]
+  Admin[Administrator] --> Public
+  Admin --> Crops[Manage six approved crop profiles and requirements]
+  Admin --> Config[Manage soil compatibility, weights and thresholds]
+  Admin --> Roles[Manage users and roles]
+  Admin --> Records[View recommendation and validation records]
+  flag[Officer validation and history require enabled development features]
+  flag -.-> Validate
+  flag -.-> History

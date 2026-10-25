@@ -12,10 +12,11 @@ import { RecommendationPageComponent } from './features/recommendation/recommend
 import { SeasonalPlanningComponent } from './features/seasonal/seasonal-planning.component';
 
 export const routes: Routes = [
-  { path: '', component: PublicDashboardComponent, title: 'Anuradhapura AI' },
+  { path: '', component: PublicDashboardComponent, title: 'CropCompass | Weather and crop insights' },
   { path: 'recommendations', component: RecommendationPageComponent, title: 'Crop recommendation' },
   { path: 'seasonal-planning', component: SeasonalPlanningComponent, title: 'Seasonal crop planning' },
-  { path: 'login', component: LoginComponent, title: 'Login' },
+  { path: 'login', component: LoginComponent, data: { loginArea: 'user' }, title: 'User sign in' },
+  { path: 'staff/login', component: LoginComponent, data: { loginArea: 'staff' }, title: 'Staff sign in' },
   { path: 'register', component: RegisterComponent, title: 'Register' },
   {
     path: 'officer',

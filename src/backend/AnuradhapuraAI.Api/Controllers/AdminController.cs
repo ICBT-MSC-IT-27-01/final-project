@@ -144,6 +144,7 @@ public sealed class AdminController(
         AdminErrorCodes.NotFound => NotFound(new { message = "Resource was not found." }),
         AdminErrorCodes.Duplicate => Conflict(new { message = "A duplicate record already exists." }),
         AdminErrorCodes.InvalidRole => BadRequest(new { message = "Role is invalid." }),
+        AdminErrorCodes.InvalidCrop => BadRequest(new { message = "Crop must be one of the six approved crops." }),
         AdminErrorCodes.InvalidVariableType => BadRequest(new { message = "Variable type is invalid." }),
         AdminErrorCodes.InvalidConfigurationType => BadRequest(new { message = "Configuration type is invalid." }),
         AdminErrorCodes.InvalidConfigurationKey => BadRequest(new { message = "Configuration key is invalid." }),

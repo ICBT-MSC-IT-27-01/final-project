@@ -6,6 +6,7 @@ import { CurrentUserResponse, LoginRequest, LoginResponse, RegisterRequest, User
 
 const tokenStorageKey = 'anuradhapura-ai-access-token';
 const userStorageKey = 'anuradhapura-ai-current-user';
+export type LoginArea = 'user' | 'staff';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,14 +23,23 @@ export class AuthService {
     return localStorage.getItem(tokenStorageKey);
   }
 
-  login(request: LoginRequest): void {
+  login(request: LoginRequest, area: LoginArea): void {
     this.isLoading.set(true);
     this.authError.set(null);
     this.api
       .login(request)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: response => this.establishSession(response),
+        next: response => {
+          const isStaff = response.role === 'Administrator' || response.role === 'Agricultural Officer';
+          if (isStaff !== (area === 'staff')) {
+            this.authError.set(area === 'staff'
+              ? 'This account uses the user sign-in page.'
+              : 'This account uses the staff sign-in page.');
+            return;
+          }
+          this.establishSession(response);
+        },
         error: error => this.authError.set(error.message),
       });
   }

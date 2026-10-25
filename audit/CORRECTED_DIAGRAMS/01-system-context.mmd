@@ -1,0 +1,14 @@
+flowchart LR
+  Public[Public User] -->|forecast, suitability and planning requests| System[Anuradhapura decision support system]
+  Registered[Registered User] -->|save and review own recommendations| System
+  Officer[Agricultural Officer] -->|review and validation status or comment| System
+  Admin[Administrator] -->|configuration, users and records| System
+  System -->|seven day weather forecast| Public
+  System -->|conditional date range crop candidates| Public
+  System -->|conditional crop establishment months| Public
+  System -->|evidence gated crop suitability| Public
+  Historical[Historical ERA5 weather data] -->|training and monthly climate context| System
+  Calendar[DoA crop calendar evidence] -->|approximate establishment months| System
+  Operational[Operational weather observations] -->|30 daily inputs when enabled| System
+  note[Calendar planning does not extend the LSTM forecast horizon]
+  note -.-> System
